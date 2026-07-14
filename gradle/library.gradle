@@ -1,0 +1,31 @@
+apply plugin: libs.plugins.androidLibrary.get().pluginId
+
+def agpPlugin = project.plugins.getPlugin(libs.plugins.androidLibrary.get().pluginId)
+def jvm17 = agpPlugin.class.classLoader.loadClass('org.jetbrains.kotlin.gradle.dsl.JvmTarget').JVM_17
+
+android {
+    namespace = "com.tanda" + project.path.replace(':', '.')
+    compileSdk = libs.versions.android.compileSdk.get().toInteger()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInteger()
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDir 'libs'
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        jvmTarget = jvm17
+    }
+}

@@ -1,0 +1,29 @@
+apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
+apply plugin: libs.plugins.androidMultiplatformLibrary.get().pluginId
+apply plugin: libs.plugins.composeMultiplatform.get().pluginId
+apply plugin: libs.plugins.composeCompiler.get().pluginId
+
+def kmpPlugin = project.plugins.getPlugin(libs.plugins.kotlinMultiplatform.get().pluginId)
+def jvm11 = kmpPlugin.class.classLoader.loadClass('org.jetbrains.kotlin.gradle.dsl.JvmTarget').JVM_11
+
+kotlin {
+    androidLibrary {
+        namespace = "com.tanda" + project.path.replace(':', '.')
+        compileSdk = libs.versions.android.compileSdk.get().toInteger()
+        minSdk = libs.versions.android.minSdk.get().toInteger()
+
+        compilerOptions {
+            jvmTarget = jvm11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.compose.uiTooling)
+}

@@ -1,0 +1,27 @@
+apply plugin: libs.plugins.androidApplication.get().pluginId
+apply plugin: libs.plugins.composeMultiplatform.get().pluginId
+apply plugin: libs.plugins.composeCompiler.get().pluginId
+
+dependencies {
+    implementation(libs.androidx.activity.compose)
+
+    implementation(libs.compose.uiToolingPreview)
+    debugImplementation(libs.compose.uiTooling)
+}
+
+android {
+    compileSdk = libs.versions.android.compileSdk.get().toInteger()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInteger()
+        targetSdk = libs.versions.android.targetSdk.get().toInteger()
+    }
+    buildTypes {
+        release {
+            minifyEnabled = false
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}

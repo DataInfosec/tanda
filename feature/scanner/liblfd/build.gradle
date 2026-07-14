@@ -1,0 +1,8 @@
+
+android {
+    namespace 'org.zz.jni'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}

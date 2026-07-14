@@ -1,0 +1,11 @@
+
+android {
+    namespace 'com.integratedbiometrics.ibscanultimate'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':feature:scanner:libibscancommon')
+	implementation project(':feature:scanner:libusb')
+}
