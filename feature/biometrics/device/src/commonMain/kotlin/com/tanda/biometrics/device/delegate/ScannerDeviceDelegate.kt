@@ -2,7 +2,7 @@ package com.tanda.biometrics.device.delegate
 
 import com.tanda.biometrics.data.device.ScannerDevice
 import com.tanda.biometrics.device.interactor.ScannerInteractor
-import com.tanda.biometrics.domain.model.Event
+import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Posture
 import com.tanda.biometrics.domain.model.State
@@ -16,10 +16,14 @@ class ScannerDeviceDelegate(private val interactor: ScannerInteractor) : Scanner
 
     override val status: Flow<Status> get() = interactor.status
 
-    override val event: Flow<Event> get() = interactor.event
+    override val mode: Flow<Mode> get() = interactor.mode
 
     override fun start() {
         interactor.start()
+    }
+
+    override fun hasPermission(id: Int): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun requestPermission(id: Int) {

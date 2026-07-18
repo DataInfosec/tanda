@@ -1,6 +1,6 @@
 package com.tanda.biometrics.data.device
 
-import com.tanda.biometrics.domain.model.Event
+import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Posture
 import com.tanda.biometrics.domain.model.State
@@ -12,9 +12,11 @@ interface ScannerDevice {
 
     val status: Flow<Status>
 
-    val event: Flow<Event>
+    val mode: Flow<Mode>
 
     fun start()
+
+    fun hasPermission(id: Int): Boolean
 
     fun requestPermission(id: Int)
 

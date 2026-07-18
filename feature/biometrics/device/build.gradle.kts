@@ -16,8 +16,6 @@ kotlin {
             implementation(projects.feature.scanner.libibscanuitimate)
         }
         commonMain.dependencies {
-            implementation(projects.core.common)
-
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.data)
 

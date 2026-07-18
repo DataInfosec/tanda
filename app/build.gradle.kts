@@ -36,10 +36,13 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.data)
             implementation(projects.feature.biometrics.device)
+            implementation(projects.feature.biometrics.ui)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

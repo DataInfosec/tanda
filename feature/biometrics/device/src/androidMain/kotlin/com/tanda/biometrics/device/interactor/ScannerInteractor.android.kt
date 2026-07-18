@@ -3,6 +3,9 @@ package com.tanda.biometrics.device.interactor
 import android.content.Context
 import android.content.Intent
 import com.integratedbiometrics.ibscanultimate.IBScanDevice
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.OPTION_AUTO_CAPTURE
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.OPTION_AUTO_CONTRAST
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.OPTION_IGNORE_FINGER_COUNT
 import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener
 import com.integratedbiometrics.ibscanultimate.IBScanException
 import com.integratedbiometrics.ibscanultimate.IBScanListener
@@ -44,12 +47,12 @@ actual class ScannerInteractor(
         scanner.setScanListener(this)
     }
 
+    actual fun hasPermission(id: Int): Boolean {
+        return scanner.hasPermission(id)
+    }
+
     override fun scanDeviceAttached(deviceId: Int) {
-        if (!scanner.hasPermission(deviceId)) {
-            _status.tryEmit(Status.Error(PermissionException(deviceId)))
-        } else {
-            _status.tryEmit(Status.Attached(deviceId))
-        }
+        _status.tryEmit(Status.Attached(deviceId))
     }
 
     override fun scanDeviceDetached(deviceId: Int) {
@@ -98,7 +101,10 @@ actual class ScannerInteractor(
             opened.beginCaptureImage(
                 posture.toImageType(),
                 IBScanDevice.ImageResolution.RESOLUTION_500,
-                option.toCaptureOption()
+                option.toCaptureOption() or
+                        OPTION_AUTO_CONTRAST or
+                        OPTION_AUTO_CAPTURE or
+                        OPTION_IGNORE_FINGER_COUNT
             )
         } catch (exception: IBScanException) {
             _status.tryEmit(Status.Error(DeviceException(exception)))

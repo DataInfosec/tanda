@@ -1,7 +1,7 @@
 package com.tanda.biometrics.data.repository
 
 import com.tanda.biometrics.data.device.ScannerDevice
-import com.tanda.biometrics.domain.model.Event
+import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Posture
 import com.tanda.biometrics.domain.model.State
@@ -18,10 +18,14 @@ class ScannerRepositoryDelegate(
 
     override val status: Flow<Status> get() = device.status
 
-    override val event: Flow<Event> get() = device.event
+    override val mode: Flow<Mode> get() = device.mode
 
     override fun start() {
         device.start()
+    }
+
+    override fun hasPermission(id: Int): Boolean {
+        return device.hasPermission(id)
     }
 
     override fun requestPermission(id: Int) {

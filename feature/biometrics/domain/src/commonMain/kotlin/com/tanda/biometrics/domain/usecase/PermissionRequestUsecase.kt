@@ -5,10 +5,10 @@ import com.tanda.core.common.usecase.BlockingWithArgsUseCase
 import org.koin.core.annotation.Factory
 
 @Factory
-class PermissionUsecase(
+class PermissionRequestUsecase(
     private val repository: ScannerRepository
-) : BlockingWithArgsUseCase<Int, Boolean> {
-    override fun invoke(args: Int): Boolean {
-        return repository.hasPermission(args)
+) : BlockingWithArgsUseCase<Int, Unit> {
+    override fun invoke(args: Int) {
+        return repository.requestPermission(args)
     }
 }

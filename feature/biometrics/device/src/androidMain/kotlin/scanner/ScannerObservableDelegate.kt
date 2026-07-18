@@ -5,7 +5,7 @@ import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener
 import com.integratedbiometrics.ibscanultimate.IBScanException
 import com.tanda.biometrics.device.exception.DeviceLostException
 import com.tanda.biometrics.domain.model.Image
-import com.tanda.biometrics.domain.model.Event
+import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,20 +13,20 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
     private val _state = MutableSharedFlow<State>(replay = REPLAY)
 
-    private val _event = MutableSharedFlow<Event>(replay = REPLAY)
+    private val _mode = MutableSharedFlow<Mode>(replay = REPLAY)
 
     override val state: Flow<State> get() = _state
 
-    override val event: Flow<Event> get() = _event
+    override val mode: Flow<Mode> get() = _mode
 
     init {
         _state.tryEmit(State.Default)
-        _event.tryEmit(Event.Default)
+        _mode.tryEmit(Mode.Default)
     }
 
     override fun deviceCommunicationBroken(device: IBScanDevice?) {
         closeWithRetry(device)
-        _event.tryEmit(Event.Error(DeviceLostException()))
+        _mode.tryEmit(Mode.Error(DeviceLostException()))
     }
 
     private fun closeWithRetry(device: IBScanDevice?, attempts: Int = 3) {
@@ -68,14 +68,14 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         device: IBScanDevice?,
         imageType: IBScanDevice.ImageType
     ) {
-        _event.tryEmit(Event.Process(imageType.name))
+        _mode.tryEmit(Mode.Process(imageType.name))
     }
 
     override fun deviceAcquisitionCompleted(
         device: IBScanDevice?,
         imageType: IBScanDevice.ImageType
     ) {
-        _event.tryEmit(Event.Complete(imageType.name))
+        _mode.tryEmit(Mode.Complete(imageType.name))
     }
 
     override fun deviceImageResultAvailable(
@@ -99,7 +99,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         device: IBScanDevice?,
         platenState: IBScanDevice.PlatenState
     ) {
-        _event.tryEmit(Event.Ready(platenState.name))
+        _mode.tryEmit(Mode.Ready(platenState.name))
     }
 
     override fun deviceWarningReceived(
