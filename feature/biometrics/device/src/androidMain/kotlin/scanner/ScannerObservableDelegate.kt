@@ -3,7 +3,7 @@ package scanner
 import com.integratedbiometrics.ibscanultimate.IBScanDevice
 import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener
 import com.integratedbiometrics.ibscanultimate.IBScanException
-import com.tanda.biometrics.device.exception.DeviceLostException
+import com.tanda.biometrics.domain.exception.DeviceLostException
 import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.State

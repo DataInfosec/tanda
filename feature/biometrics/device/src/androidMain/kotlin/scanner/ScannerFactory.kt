@@ -2,7 +2,7 @@ package scanner
 
 import android.content.Context
 import com.integratedbiometrics.ibscanultimate.IBScan
-import com.tanda.biometrics.device.exception.ScannerNotFoundException
+import com.tanda.biometrics.domain.exception.ScannerNotFoundException
 
 interface ScannerFactory {
     fun create(context: Context): IBScan

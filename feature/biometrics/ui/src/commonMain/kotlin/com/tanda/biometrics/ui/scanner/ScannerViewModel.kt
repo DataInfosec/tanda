@@ -11,6 +11,7 @@ import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
 import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
 import com.tanda.biometrics.domain.usecase.PermissionRequestUsecase
 import com.tanda.biometrics.domain.usecase.PermissionUsecase
+import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ScannerViewModel(
+    private val dispatcher: Dispatcher,
     private val stateUsecase: ObserveStateUsecase,
     private val modeUsecase: ObserveModeUsecase,
     private val permissionUsecase: PermissionUsecase,
@@ -46,19 +48,20 @@ class ScannerViewModel(
     }
 
     operator fun invoke(id: Int, index: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             _state.tryEmit(State.Loading)
             if (!permissionUsecase(id)) {
                 permissionRequestUsecase(id)
-            }
-            captureUsecase(
-                CaptureUsecase.Argument(
-                    posture = Posture.FLAT_SINGLE_FINGER,
-                    index = index,
-                    option = Option.AUTO_CAPTURE
+            } else {
+                captureUsecase(
+                    CaptureUsecase.Argument(
+                        posture = Posture.FLAT_SINGLE_FINGER,
+                        index = index,
+                        option = Option.IGNORE_FINGER_COUNT
+                    )
                 )
-            )
-            _state.tryEmit(State.Captured)
+                _state.tryEmit(State.Captured)
+            }
         }
     }
 

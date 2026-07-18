@@ -5,6 +5,7 @@ import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
 import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
 import com.tanda.biometrics.domain.usecase.PermissionRequestUsecase
 import com.tanda.biometrics.domain.usecase.PermissionUsecase
+import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
@@ -16,6 +17,7 @@ import org.koin.ksp.generated.*
 object Scanner {
     @org.koin.core.annotation.Scope(Scanner::class)
     fun provideViewModel(
+        dispatcher: Dispatcher,
         stateUsecase: ObserveStateUsecase,
         modeUsecase: ObserveModeUsecase,
         permissionUsecase: PermissionUsecase,
@@ -23,6 +25,7 @@ object Scanner {
         captureUsecase: CaptureUsecase
     ): ScannerViewModel {
         return ScannerViewModel(
+            dispatcher = dispatcher,
             stateUsecase = stateUsecase,
             modeUsecase = modeUsecase,
             permissionUsecase = permissionUsecase,

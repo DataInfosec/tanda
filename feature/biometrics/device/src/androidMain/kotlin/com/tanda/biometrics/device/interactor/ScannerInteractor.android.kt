@@ -9,9 +9,9 @@ import com.integratedbiometrics.ibscanultimate.IBScanDevice.OPTION_IGNORE_FINGER
 import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener
 import com.integratedbiometrics.ibscanultimate.IBScanException
 import com.integratedbiometrics.ibscanultimate.IBScanListener
-import com.tanda.biometrics.device.exception.DeviceException
-import com.tanda.biometrics.device.exception.DeviceNotFoundException
-import com.tanda.biometrics.device.exception.PermissionException
+import com.tanda.biometrics.domain.exception.DeviceException
+import com.tanda.biometrics.domain.exception.DeviceNotFoundException
+import com.tanda.biometrics.domain.exception.PermissionException
 import com.tanda.biometrics.device.mapper.toCaptureOption
 import com.tanda.biometrics.device.mapper.toImageType
 import com.tanda.biometrics.domain.model.Option
@@ -29,6 +29,8 @@ actual class ScannerInteractor(
     private val observable: ScannerObservable = ScannerObservableDelegate(),
     private val listener: IBScanDeviceListener = observable as IBScanDeviceListener
 ) : IBScanListener, ScannerObservable by observable {
+    private var id: Int? = null
+
     private var device: IBScanDevice? = null
 
     private val _status = MutableSharedFlow<Status>(replay = REPLAY)
@@ -52,18 +54,18 @@ actual class ScannerInteractor(
     }
 
     override fun scanDeviceAttached(deviceId: Int) {
+        this.id = deviceId
         _status.tryEmit(Status.Attached(deviceId))
     }
 
     override fun scanDeviceDetached(deviceId: Int) {
+        this.id = null
         _status.tryEmit(Status.Detached(deviceId))
     }
 
     override fun scanDevicePermissionGranted(deviceId: Int, granted: Boolean) {
         if (!granted) {
             _status.tryEmit(Status.Error(PermissionException(deviceId)))
-        } else {
-            _status.tryEmit(Status.Attached(deviceId))
         }
     }
 
@@ -74,7 +76,13 @@ actual class ScannerInteractor(
     }
 
     override fun scanDeviceInitProgress(deviceIndex: Int, progressValue: Int) {
-        _status.tryEmit(Status.Initialize(deviceIndex, progressValue))
+        id?.let {
+            _status.tryEmit(Status.Initialize(
+                id = it,
+                index = deviceIndex,
+                progress = progressValue
+            ))
+        } ?: _status.tryEmit(Status.Error(DeviceNotFoundException()))
     }
 
     override fun scanDeviceOpenComplete(
@@ -85,7 +93,12 @@ actual class ScannerInteractor(
         if (exception != null) {
             _status.tryEmit(Status.Error(DeviceException(exception)))
         } else {
-            _status.tryEmit(Status.Ready(deviceIndex))
+            id?.let {
+                _status.tryEmit(Status.Ready(
+                    id = it,
+                    index = deviceIndex
+                ))
+            } ?: _status.tryEmit(Status.Error(DeviceNotFoundException()))
         }
     }
 
@@ -93,12 +106,15 @@ actual class ScannerInteractor(
         scanner.requestPermission(id)
     }
 
-    actual fun capture(posture: Posture, index: Int, option: Option) {
+    actual suspend fun capture(posture: Posture, index: Int, option: Option) {
         try {
-            val opened = scanner.openDevice(index)
-            opened.setScanDeviceListener(listener)
-            device = opened
-            opened.beginCaptureImage(
+            if (device != null) {
+                device?.captureImageManually()
+                return
+            }
+            device = scanner.openDevice(index)
+            device?.setScanDeviceListener(listener)
+            device?.beginCaptureImage(
                 posture.toImageType(),
                 IBScanDevice.ImageResolution.RESOLUTION_500,
                 option.toCaptureOption() or
@@ -106,8 +122,12 @@ actual class ScannerInteractor(
                         OPTION_AUTO_CAPTURE or
                         OPTION_IGNORE_FINGER_COUNT
             )
-        } catch (exception: IBScanException) {
-            _status.tryEmit(Status.Error(DeviceException(exception)))
+        } catch (exception: Throwable) {
+            if (exception is IBScanException) {
+                _status.tryEmit(Status.Error(DeviceException(exception)))
+            } else {
+                _status.tryEmit(Status.Error(exception))
+            }
         }
     }
 
@@ -120,6 +140,7 @@ actual class ScannerInteractor(
         )
         scanner.setScanListener(null)
         device?.let { runCatching { it.close() } }
+        id = null
         device = null
         _status.tryEmit(Status.Default)
     }

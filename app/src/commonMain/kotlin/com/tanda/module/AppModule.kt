@@ -5,6 +5,7 @@ import org.koin.core.annotation.Module
 
 @Module(
     includes = [
+        CoreModule::class,
         ScannerModule::class,
     ]
 )

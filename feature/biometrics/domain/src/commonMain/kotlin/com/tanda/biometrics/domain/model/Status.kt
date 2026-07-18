@@ -5,9 +5,13 @@ sealed interface Status {
     data class Attached(val id: Int) : Status
     data class Detached(val id: Int) : Status
     data class Initialize(
+        val id: Int,
         val index: Int,
         val progress: Int
     ) : Status
-    data class Ready(val index: Int) : Status
+    data class Ready(
+        val id: Int,
+        val index: Int,
+    ) : Status
     data class Error(val error: Throwable) : Status
 }

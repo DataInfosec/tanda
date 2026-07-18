@@ -20,7 +20,7 @@ actual class ScannerInteractor {
 
     actual fun requestPermission(id: Int) {}
 
-    actual fun capture(posture: Posture, index: Int, option: Option) {}
+    actual suspend fun capture(posture: Posture, index: Int, option: Option) {}
 
     actual fun stop() {}
 }

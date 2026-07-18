@@ -1,3 +1,3 @@
-package com.tanda.biometrics.device.exception
+package com.tanda.biometrics.domain.exception
 
 class ScannerNotFoundException(cause: Throwable) : Throwable(cause)

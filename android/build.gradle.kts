@@ -27,6 +27,7 @@ dependencies {
 
     implementation(libs.koin.core)
     implementation(libs.koin.annotation)
+    implementation(libs.koin.compose)
 
     implementation(projects.feature.biometrics.domain)
     implementation(projects.feature.biometrics.data)

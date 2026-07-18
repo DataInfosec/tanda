@@ -23,14 +23,14 @@ class ScannerDeviceDelegate(private val interactor: ScannerInteractor) : Scanner
     }
 
     override fun hasPermission(id: Int): Boolean {
-        TODO("Not yet implemented")
+        return interactor.hasPermission(id)
     }
 
     override fun requestPermission(id: Int) {
         interactor.requestPermission(id)
     }
 
-    override fun capture(
+    override suspend fun capture(
         posture: Posture,
         index: Int,
         option: Option

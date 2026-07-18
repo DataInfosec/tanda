@@ -20,7 +20,7 @@ expect class ScannerInteractor {
 
     fun requestPermission(id: Int)
 
-    fun capture(posture: Posture, index: Int, option: Option)
+    suspend fun capture(posture: Posture, index: Int, option: Option)
 
     fun stop()
 }

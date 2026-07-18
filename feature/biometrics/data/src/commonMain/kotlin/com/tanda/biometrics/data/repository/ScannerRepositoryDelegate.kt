@@ -32,7 +32,7 @@ class ScannerRepositoryDelegate(
         device.requestPermission(id)
     }
 
-    override fun capture(
+    override suspend fun capture(
         posture: Posture,
         index: Int,
         option: Option
