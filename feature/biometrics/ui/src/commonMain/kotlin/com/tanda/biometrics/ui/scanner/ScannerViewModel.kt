@@ -47,6 +47,7 @@ class ScannerViewModel(
 
     operator fun invoke(id: Int, index: Int) {
         viewModelScope.launch {
+            _state.tryEmit(State.Loading)
             if (!permissionUsecase(id)) {
                 permissionRequestUsecase(id)
             }
@@ -57,6 +58,7 @@ class ScannerViewModel(
                     option = Option.AUTO_CAPTURE
                 )
             )
+            _state.tryEmit(State.Captured)
         }
     }
 
@@ -71,5 +73,6 @@ class ScannerViewModel(
     sealed interface State {
         data object Default : State
         data object Loading : State
+        data object Captured : State
     }
 }

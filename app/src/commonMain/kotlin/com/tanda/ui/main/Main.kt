@@ -33,8 +33,9 @@ object Main {
         override fun build(): Scope {
             val scope = scope(named<Main>())
             scope.getKoin().loadModules(listOf(
-                    module { scope<Main> {
-                        scoped<UiComponentProvider.Factory> {
+                module {
+                    scope<Main> {
+                        factory<UiComponentProvider.Factory> {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
@@ -42,7 +43,8 @@ object Main {
                                 )
                             )
                         }
-                    } },
+                    }
+                },
                 AppModule.module,
                 Main.module
             ))
