@@ -47,21 +47,25 @@ class ScannerViewModel(
         }
     }
 
+    operator fun invoke(id: Int) {
+        viewModelScope.launch {
+            if (!permissionUsecase(id)) {
+                permissionRequestUsecase(id)
+            }
+        }
+    }
+
     operator fun invoke(id: Int, index: Int) {
         viewModelScope.launch(dispatcher.io) {
             _state.tryEmit(State.Loading)
-            if (!permissionUsecase(id)) {
-                permissionRequestUsecase(id)
-            } else {
-                captureUsecase(
-                    CaptureUsecase.Argument(
-                        posture = Posture.FLAT_SINGLE_FINGER,
-                        index = index,
-                        option = Option.IGNORE_FINGER_COUNT
-                    )
+            captureUsecase(
+                CaptureUsecase.Argument(
+                    posture = Posture.FLAT_SINGLE_FINGER,
+                    index = index,
+                    option = Option.IGNORE_FINGER_COUNT
                 )
-                _state.tryEmit(State.Captured)
-            }
+            )
+            _state.tryEmit(State.Initialized)
         }
     }
 
@@ -69,13 +73,13 @@ class ScannerViewModel(
         data class Default(private val _mode: Mode) : Status(_mode)
         data class Capture(
             private val _mode: Mode,
-            private val image: Image
+            val image: Image
         ) : Status(_mode)
     }
 
     sealed interface State {
         data object Default : State
         data object Loading : State
-        data object Captured : State
+        data object Initialized : State
     }
 }

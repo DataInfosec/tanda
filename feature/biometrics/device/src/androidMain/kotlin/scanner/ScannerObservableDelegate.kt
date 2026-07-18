@@ -43,16 +43,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
     override fun deviceImagePreviewAvailable(
         device: IBScanDevice?,
         image: IBScanDevice.ImageData
-    ) {
-        _state.tryEmit(
-            State.Capture(
-            Image(
-                width = image.width,
-                height = image.height,
-                data = image.buffer
-            )
-        ))
-    }
+    ) {}
 
     override fun deviceFingerCountChanged(
         device: IBScanDevice?,
@@ -75,15 +66,24 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         device: IBScanDevice?,
         imageType: IBScanDevice.ImageType
     ) {
-        _mode.tryEmit(Mode.Complete(imageType.name))
+        _mode.tryEmit(Mode.Acquired(imageType.name))
     }
 
     override fun deviceImageResultAvailable(
         device: IBScanDevice?,
-        image: IBScanDevice.ImageData?,
+        image: IBScanDevice.ImageData,
         imageType: IBScanDevice.ImageType?,
         splitImageArray: Array<out IBScanDevice.ImageData?>?
-    ) {}
+    ) {
+        _state.tryEmit(
+            State.Capture(
+                Image(
+                    width = image.width,
+                    height = image.height,
+                    data = image.buffer
+                )
+            ))
+    }
 
     override fun deviceImageResultExtendedAvailable(
         device: IBScanDevice?,
@@ -99,7 +99,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         device: IBScanDevice?,
         platenState: IBScanDevice.PlatenState
     ) {
-        _mode.tryEmit(Mode.Ready(platenState.name))
+        _mode.tryEmit(Mode.Platen(platenState.name))
     }
 
     override fun deviceWarningReceived(
@@ -111,6 +111,10 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         device: IBScanDevice?,
         pressedKeyButtons: Int
     ) {}
+
+    override fun reset() {
+        _state.tryEmit(State.Default)
+    }
 
     private companion object {
         const val REPLAY = 1

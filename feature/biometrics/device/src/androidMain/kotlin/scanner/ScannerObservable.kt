@@ -8,4 +8,6 @@ interface ScannerObservable {
     val state: Flow<State>
 
     val mode: Flow<Mode>
+
+    fun reset()
 }

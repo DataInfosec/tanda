@@ -108,20 +108,23 @@ actual class ScannerInteractor(
 
     actual suspend fun capture(posture: Posture, index: Int, option: Option) {
         try {
-            if (device != null) {
-                device?.captureImageManually()
-                return
+            observable.reset()
+            if (device == null) {
+                device = scanner.openDevice(index)
+                device?.setScanDeviceListener(listener)
             }
-            device = scanner.openDevice(index)
-            device?.setScanDeviceListener(listener)
-            device?.beginCaptureImage(
-                posture.toImageType(),
-                IBScanDevice.ImageResolution.RESOLUTION_500,
-                option.toCaptureOption() or
-                        OPTION_AUTO_CONTRAST or
-                        OPTION_AUTO_CAPTURE or
-                        OPTION_IGNORE_FINGER_COUNT
-            )
+            if (device?.isCaptureActive == true) {
+                device?.captureImageManually()
+            } else {
+                device?.beginCaptureImage(
+                    posture.toImageType(),
+                    IBScanDevice.ImageResolution.RESOLUTION_500,
+                    option.toCaptureOption() or
+                            OPTION_AUTO_CONTRAST or
+                            OPTION_AUTO_CAPTURE or
+                            OPTION_IGNORE_FINGER_COUNT
+                )
+            }
         } catch (exception: Throwable) {
             if (exception is IBScanException) {
                 _status.tryEmit(Status.Error(DeviceException(exception)))
