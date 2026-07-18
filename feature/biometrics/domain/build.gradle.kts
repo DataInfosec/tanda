@@ -8,4 +8,12 @@ kotlin {
             isStatic = true
         }
     }
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.core.common)
+
+            implementation(libs.koin.core)
+            implementation(libs.koin.annotation)
+        }
+    }
 }

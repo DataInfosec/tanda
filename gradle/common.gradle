@@ -43,3 +43,13 @@ afterEvaluate {
         }
     }
 }
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(
+                    "build/generated/ksp/metadata/commonMain/kotlin"
+            )
+        }
+    }
+}

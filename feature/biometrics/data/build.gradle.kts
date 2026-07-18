@@ -8,4 +8,12 @@ kotlin {
             isStatic = true
         }
     }
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.feature.biometrics.domain)
+
+            implementation(libs.koin.core)
+            implementation(libs.koin.annotation)
+        }
+    }
 }

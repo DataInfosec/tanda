@@ -18,6 +18,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.common)
 
+            implementation(projects.feature.biometrics.domain)
+            implementation(projects.feature.biometrics.data)
+
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
         }
