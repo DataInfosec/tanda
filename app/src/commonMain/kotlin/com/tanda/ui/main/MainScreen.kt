@@ -17,7 +17,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ fun MainScreen(scope: ScopeID) {
         (status.value as? Status.Attached?)?.id ?:
         (status.value as? Status.Initialize?)?.id
     } }
+    val isRunning by remember { derivedStateOf { state.value == MainViewModel.State.Start } }
     Scaffold { paddingValues ->
         Surface(
             modifier = Modifier
@@ -108,7 +111,6 @@ fun MainScreen(scope: ScopeID) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Start/Stop Toggle Button
-                val isRunning = state.value == MainViewModel.State.Start
                 Button(
                     onClick = {
                         if (isRunning) {

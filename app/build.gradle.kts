@@ -22,6 +22,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.core.persistence)
             implementation(projects.core.ui)
 
             implementation(libs.compose.runtime)
@@ -39,9 +40,12 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
 
+            implementation(projects.feature.preference)
+
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.data)
             implementation(projects.feature.biometrics.device)
+            implementation(projects.feature.biometrics.verification)
             implementation(projects.feature.biometrics.ui)
         }
         commonTest.dependencies {
