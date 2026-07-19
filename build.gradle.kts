@@ -16,6 +16,7 @@ plugins {
 subprojects {
     extra["android"] = listOf(":android")
     extra["ui"] = listOf(":app", ":feature:biometrics:ui")
+    extra["extension"] = listOf(":feature:biometrics:verification")
     extra["library"] = listOf(
         ":feature:scanner:liblfd",
         ":feature:scanner:libusb",

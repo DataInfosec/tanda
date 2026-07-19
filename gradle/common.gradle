@@ -1,6 +1,7 @@
 def isAndroid = ext.has('android') && (ext.get('android') as List<String>).contains(path)
 def isLibrary = ext.has('library') && (ext.get('library') as List<String>).contains(path)
 def isComposable = ext.has('ui') && (ext.get('ui') as List<String>).contains(path)
+def isExtension = ext.has('extension') && (ext.get('extension') as List<String>).contains(path)
 
 if (isAndroid) {
     apply from: "$rootDir/gradle/android.gradle"
@@ -8,6 +9,8 @@ if (isAndroid) {
     apply from: "$rootDir/gradle/composable.gradle"
 } else if (isLibrary) {
     apply from: "$rootDir/gradle/library.gradle"
+} else if (isExtension) {
+    apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
 } else {
     apply from: "$rootDir/gradle/default.gradle"
 }
