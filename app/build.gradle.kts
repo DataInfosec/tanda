@@ -4,7 +4,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "App"
+            baseName = "TandaApp"
             isStatic = true
         }
     }

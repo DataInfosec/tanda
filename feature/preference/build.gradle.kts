@@ -14,14 +14,14 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
+            api(libs.settings)
+            api(libs.settings.coroutine)
+
             implementation(projects.core.common)
             implementation(projects.core.persistence)
 
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
-
-            implementation(libs.settings)
-            implementation(libs.settings.coroutine)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

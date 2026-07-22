@@ -1,12 +1,12 @@
 package com.tanda.biometrics.ui.scanner
 
-import com.tanda.biometrics.domain.usecase.CaptureUsecase
-import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
-import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
-import com.tanda.biometrics.domain.usecase.PermissionRequestUsecase
-import com.tanda.biometrics.domain.usecase.PermissionUsecase
-import com.tanda.core.common.concurrent.Dispatcher
+import com.tanda.biometrics.domain.usecase.ObserveStatusUsecase
+import com.tanda.biometrics.domain.usecase.StartUsecase
+import com.tanda.biometrics.domain.usecase.StopUsecase
+import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.ui.component.UiComponent
+import com.tanda.core.ui.component.UiComponentProvider
+import com.tanda.core.ui.factory.UiBuilderFactory
 import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
@@ -17,20 +17,14 @@ import org.koin.ksp.generated.*
 object Scanner {
     @org.koin.core.annotation.Scope(Scanner::class)
     fun provideViewModel(
-        dispatcher: Dispatcher,
-        stateUsecase: ObserveStateUsecase,
-        modeUsecase: ObserveModeUsecase,
-        permissionUsecase: PermissionUsecase,
-        permissionRequestUsecase: PermissionRequestUsecase,
-        captureUsecase: CaptureUsecase
+        startUsecase: StartUsecase,
+        stopUsecase: StopUsecase,
+        observeStatusUsecase: ObserveStatusUsecase,
     ): ScannerViewModel {
         return ScannerViewModel(
-            dispatcher = dispatcher,
-            stateUsecase = stateUsecase,
-            modeUsecase = modeUsecase,
-            permissionUsecase = permissionUsecase,
-            permissionRequestUsecase = permissionRequestUsecase,
-            captureUsecase = captureUsecase
+            startUsecase,
+            stopUsecase,
+            observeStatusUsecase
         )
     }
 
@@ -38,7 +32,18 @@ object Scanner {
         override fun build(): Scope {
             val scope = scope(named<Scanner>())
             scope.getKoin().loadModules(listOf(
-                    module { scope<Scanner> { } },
+                module {
+                    scope<Scanner> {
+                        factory<UiComponentProvider.Factory> {
+                            UiBuilderFactory(
+                                listOf(
+                                    this@Builder,
+                                    Fingerprint.Builder(scope),
+                                )
+                            )
+                        }
+                    }
+                },
                 Scanner.module
             ))
             return scope

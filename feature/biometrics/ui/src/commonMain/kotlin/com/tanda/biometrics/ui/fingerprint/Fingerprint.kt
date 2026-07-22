@@ -1,0 +1,47 @@
+package com.tanda.biometrics.ui.fingerprint
+
+import com.tanda.biometrics.domain.usecase.CaptureUsecase
+import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
+import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
+import com.tanda.biometrics.domain.usecase.PermissionRequestUsecase
+import com.tanda.biometrics.domain.usecase.PermissionUsecase
+import com.tanda.core.common.concurrent.Dispatcher
+import com.tanda.core.ui.component.UiComponent
+import org.koin.core.annotation.Module
+import org.koin.core.qualifier.named
+import org.koin.core.scope.Scope
+import org.koin.dsl.module
+import org.koin.ksp.generated.*
+
+@Module
+object Fingerprint {
+    @org.koin.core.annotation.Scope(Fingerprint::class)
+    fun provideViewModel(
+        dispatcher: Dispatcher,
+        stateUsecase: ObserveStateUsecase,
+        modeUsecase: ObserveModeUsecase,
+        permissionUsecase: PermissionUsecase,
+        permissionRequestUsecase: PermissionRequestUsecase,
+        captureUsecase: CaptureUsecase
+    ): FingerprintViewModel {
+        return FingerprintViewModel(
+            dispatcher = dispatcher,
+            stateUsecase = stateUsecase,
+            modeUsecase = modeUsecase,
+            permissionUsecase = permissionUsecase,
+            permissionRequestUsecase = permissionRequestUsecase,
+            captureUsecase = captureUsecase
+        )
+    }
+
+    class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
+        override fun build(): Scope {
+            val scope = scope(named<Fingerprint>())
+            scope.getKoin().loadModules(listOf(
+                    module { scope<Fingerprint> { } },
+                Fingerprint.module
+            ))
+            return scope
+        }
+    }
+}

@@ -2,32 +2,23 @@ package com.tanda.biometrics.ui.scanner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tanda.biometrics.domain.model.Image
-import com.tanda.biometrics.domain.model.Mode
-import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
-import com.tanda.biometrics.domain.usecase.CaptureUsecase
-import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
-import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
-import com.tanda.biometrics.domain.usecase.PermissionRequestUsecase
-import com.tanda.biometrics.domain.usecase.PermissionUsecase
-import com.tanda.core.common.concurrent.Dispatcher
+import com.tanda.biometrics.domain.model.Status
+import com.tanda.biometrics.domain.usecase.ObserveStatusUsecase
+import com.tanda.biometrics.domain.usecase.StartUsecase
+import com.tanda.biometrics.domain.usecase.StopUsecase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ScannerViewModel(
-    private val dispatcher: Dispatcher,
-    private val stateUsecase: ObserveStateUsecase,
-    private val modeUsecase: ObserveModeUsecase,
-    private val permissionUsecase: PermissionUsecase,
-    private val permissionRequestUsecase: PermissionRequestUsecase,
-    private val captureUsecase: CaptureUsecase
+    private val startUsecase: StartUsecase,
+    private val stopUsecase: StopUsecase,
+    private val observeStatusUsecase: ObserveStatusUsecase,
 ) : ViewModel() {
-    private val _status = MutableStateFlow<Status>(Status.Default(Mode.Default))
+
+    private val _status = MutableStateFlow<Status>(Status.Default)
 
     private val _state = MutableStateFlow<State>(State.Default)
 
@@ -37,49 +28,37 @@ class ScannerViewModel(
 
     init {
         viewModelScope.launch {
-            combine(stateUsecase(), modeUsecase()) { state, mode ->
-                if (state is com.tanda.biometrics.domain.model.State.Capture) {
-                    Status.Capture(mode, state.image)
-                } else {
-                    Status.Default(mode)
-                }
-            }.collectLatest { _status.tryEmit(it) }
-        }
-    }
-
-    operator fun invoke(id: Int) {
-        viewModelScope.launch {
-            if (!permissionUsecase(id)) {
-                permissionRequestUsecase(id)
+            observeStatusUsecase().collectLatest {
+                _status.tryEmit(it)
             }
         }
     }
 
-    operator fun invoke(id: Int, index: Int) {
-        viewModelScope.launch(dispatcher.io) {
+    fun start() {
+        try {
             _state.tryEmit(State.Loading)
-            captureUsecase(
-                CaptureUsecase.Argument(
-                    posture = Posture.FLAT_SINGLE_FINGER,
-                    index = index,
-                    option = Option.IGNORE_FINGER_COUNT
-                )
-            )
-            _state.tryEmit(State.Initialized)
+            startUsecase()
+            _state.tryEmit(State.Start)
+        } catch (error: Throwable) {
+            _state.tryEmit(State.Error(error))
         }
     }
 
-    sealed class Status(val mode: Mode) {
-        data class Default(private val _mode: Mode) : Status(_mode)
-        data class Capture(
-            private val _mode: Mode,
-            val image: Image
-        ) : Status(_mode)
+    fun stop() {
+        try {
+            _state.tryEmit(State.Loading)
+            stopUsecase()
+            _state.tryEmit(State.Stop)
+        } catch (error: Throwable) {
+            _state.tryEmit(State.Error(error))
+        }
     }
 
     sealed interface State {
-        data object Default : State
-        data object Loading : State
-        data object Initialized : State
+        object Default : State
+        object Loading : State
+        object Start : State
+        object Stop : State
+        data class Error(val error: Throwable) : State
     }
 }

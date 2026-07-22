@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import App
+import TandaApp
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Self.Context) -> UIViewController {
