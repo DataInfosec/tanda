@@ -17,6 +17,16 @@ if (isAndroid) {
 
 apply plugin: libs.plugins.ksp.get().pluginId
 
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(
+                    "build/generated/ksp/metadata/commonMain/kotlin"
+            )
+        }
+    }
+}
+
 afterEvaluate {
     // For non-KMP Android projects, use the 'ksp' configuration
     if (configurations.findByName("ksp") != null && isAndroid) {
@@ -42,16 +52,6 @@ afterEvaluate {
             group = "build"
             description = "Runs KSP on commonMain metadata"
             dependsOn(tasks.matching { it.name == "kspCommonMainKotlinMetadata" })
-        }
-    }
-}
-
-kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(
-                    "build/generated/ksp/metadata/commonMain/kotlin"
-            )
         }
     }
 }

@@ -45,7 +45,7 @@ kotlin {
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.data)
             implementation(projects.feature.biometrics.device)
-            implementation(projects.feature.biometrics.verification)
+//            implementation(projects.feature.biometrics.verification)
             implementation(projects.feature.biometrics.ui)
         }
         commonTest.dependencies {

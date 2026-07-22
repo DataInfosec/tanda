@@ -1,4 +1,5 @@
 apply plugin: libs.plugins.androidApplication.get().pluginId
+apply plugin: libs.plugins.kotlinAndroid.get().pluginId
 apply plugin: libs.plugins.composeMultiplatform.get().pluginId
 apply plugin: libs.plugins.composeCompiler.get().pluginId
 

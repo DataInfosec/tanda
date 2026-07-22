@@ -12,8 +12,6 @@
 //! Most app integrations should use the re-exported types under [`sdk`],
 //! especially `LocationIndexBundle` for one-file `.biobundle` snapshots and
 //! stream-based Android/Kotlin Multiplatform integration.
-
-#[cfg(feature = "kotlin-bindings")]
 uniffi::setup_scaffolding!();
 
 /// Raw 400x500 grayscale capture handling and image QA helpers.

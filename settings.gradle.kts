@@ -41,7 +41,7 @@ include(":feature:account:ui")
 include(":feature:biometrics:domain")
 include(":feature:biometrics:data")
 include(":feature:biometrics:device")
-include(":feature:biometrics:verification")
+//include(":feature:biometrics:verification")
 include(":feature:biometrics:ui")
 
 include(":feature:scanner:libibscancommon")

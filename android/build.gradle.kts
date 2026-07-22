@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 android {
     namespace = "com.tanda"
@@ -11,12 +10,6 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
     }
 }
 

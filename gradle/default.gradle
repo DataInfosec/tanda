@@ -9,10 +9,6 @@ kotlin {
         namespace = "com.tanda" + project.path.replace(':', '.')
         compileSdk = libs.versions.android.compileSdk.get().toInteger()
         minSdk = libs.versions.android.minSdk.get().toInteger()
-
-        compilerOptions {
-            jvmTarget = jvm11
-        }
     }
     compilerOptions {
         freeCompilerArgs = ["-Xexpect-actual-classes"]
