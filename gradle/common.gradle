@@ -11,6 +11,15 @@ if (isAndroid) {
     apply from: "$rootDir/gradle/library.gradle"
 } else if (isExtension) {
     apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
+    apply plugin: libs.plugins.androidLibrary.get().pluginId   // classic com.android.library, not androidMultiplatformLibrary
+
+    android {
+        namespace = "com.tanda" + project.path.replace(':', '.')
+        compileSdk = libs.versions.android.compileSdk.get().toInteger()
+        defaultConfig {
+            minSdk = libs.versions.android.minSdk.get().toInteger()
+        }
+    }
 } else {
     apply from: "$rootDir/gradle/default.gradle"
 }
