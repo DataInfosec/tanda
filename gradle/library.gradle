@@ -1,8 +1,5 @@
 apply plugin: libs.plugins.androidLibrary.get().pluginId
 
-def agpPlugin = project.plugins.getPlugin(libs.plugins.androidLibrary.get().pluginId)
-def jvm17 = agpPlugin.class.classLoader.loadClass('org.jetbrains.kotlin.gradle.dsl.JvmTarget').JVM_17
-
 android {
     namespace = "com.tanda" + project.path.replace(':', '.')
     compileSdk = libs.versions.android.compileSdk.get().toInteger()
@@ -23,9 +20,7 @@ android {
 }
 
 kotlin {
-    jvmToolchain(17)
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-        jvmTarget = jvm17
     }
 }
