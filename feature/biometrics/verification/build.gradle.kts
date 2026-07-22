@@ -31,10 +31,6 @@ configurations {
         isCanBeResolved = true
         isCanBeConsumed = false
     }
-    matching { it.name.contains("RustRuntime") || it.name.contains("minGWX64") }
-        .all {
-            exclude(group = "Tenda.feature.biometrics", module = "domain")
-        }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

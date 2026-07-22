@@ -38,15 +38,10 @@ afterEvaluate {
         dependencies {
             add("kspCommonMainMetadata", libs.koin.compiler)
         }
-
-        // Only register the generateDepencencyMain task for modules that have hierarchical KSP metadata tasks.
-        // Extension modules don't have this task since they only use the Kotlin Multiplatform plugin.
-        if (!isExtension) {
         tasks.register("generateDepencencyMain") {
             group = "build"
             description = "Runs KSP on commonMain metadata"
-            dependsOn("kspCommonMainKotlinMetadata")
-        }
+            dependsOn(tasks.matching { it.name == "kspCommonMainKotlinMetadata" })
         }
     }
 }

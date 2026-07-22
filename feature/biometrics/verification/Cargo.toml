@@ -14,8 +14,3 @@ serde_json = "1.0.140"
 sha2 = "0.10.9"
 uniffi = "0.32.0"
 uuid = { version = "1.23.4", features = ["v4"] }
-
-[[bin]]
-name = "uniffi-bindgen"
-path = "src/commonMain/rust/bin/uniffi_bindgen.rs"
-required-features = ["binding-generator"]
