@@ -1,16 +1,12 @@
 [package]
-name = "biometric-sdk"
+name = "tanda-biometric-verification"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
+name = "biometric_sdk"
 crate-type = ["cdylib", "staticlib"]
 path = "src/commonMain/rust/lib.rs"
 
 [dependencies]
-fs2 = "0.4.3"
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-sha2 = "0.10.9"
-uniffi = "0.32.0"
-uuid = { version = "1.23.4", features = ["v4"] }
+biometric-sdk-core = { package = "biometric-sdk", git = "https://github.com/DataInfosec/biometric-sdk", rev = "50cabd814ecef86285651e45b670e64b98f4d670", default-features = false, features = ["uniffi-bindings"] }
