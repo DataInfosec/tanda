@@ -1,4 +1,7 @@
+import gobley.gradle.rust.targets.RustAndroidTarget
+
 plugins {
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.cargo)
     alias(libs.plugins.uniffi)
     kotlin("plugin.atomicfu") version libs.versions.kotlin.get()
@@ -27,14 +30,25 @@ kotlin {
                 implementation(libs.koin.annotation)
             }
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
 
-configurations {
-    findByName("uniFfiConfiguration")?.let { remove(it) }
-    create("uniFfiConfiguration") {
-        isCanBeResolved = true
-        isCanBeConsumed = false
+android {
+    namespace = "com.tanda.biometrics.verification"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+uniffi {
+    generateFromLibrary {
+        namespace = "biometric_sdk"
+        packageName = "com.datainfosec.biometric"
+        build = RustAndroidTarget.Arm64
     }
 }
 
