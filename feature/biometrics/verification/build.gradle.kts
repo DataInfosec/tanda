@@ -52,11 +52,9 @@ uniffi {
     }
 }
 
-// Gobley 0.3.4 copies every common project dependency into this bucket, even
-// when that project does not publish UniFFI metadata. This module generates
-// bindings only for its own Rust crate, so keep the bucket empty.
-configurations.named("uniFfiImplementation") {
-    dependencies.clear()
+configurations.matching { it.name.contains("uniFfiConfiguration") }.configureEach {
+    exclude(group = "Tanda.feature.biometrics", module = "domain")
+    exclude(group = "Tanda.feature.biometrics", module = "data")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
