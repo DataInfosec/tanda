@@ -9,4 +9,4 @@ crate-type = ["cdylib", "staticlib"]
 path = "src/commonMain/rust/src/lib.rs"
 
 [dependencies]
-biometric-sdk-core = { package = "biometric-sdk", git = "https://github.com/DataInfosec/biometric-sdk", rev = "929a082bfb8e17ae85e349b126a1a2dd117e2105", default-features = false, features = ["uniffi-bindings"] }
+biometric-sdk-core = { package = "biometric-sdk", git = "https://github.com/DataInfosec/biometric-sdk", rev = "546cd1d683cfeae78aea522988707fda60231cd0", default-features = false, features = ["uniffi-bindings"] }
