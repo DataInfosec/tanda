@@ -12,4 +12,4 @@ import org.koin.core.annotation.Module
         DomainModule::class
     ]
 )
-object ScannerModule
+class ScannerModule

@@ -12,6 +12,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -25,6 +26,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -41,7 +43,7 @@ include(":feature:account:ui")
 include(":feature:biometrics:domain")
 include(":feature:biometrics:data")
 include(":feature:biometrics:device")
-//include(":feature:biometrics:verification")
+include(":feature:biometrics:verification")
 include(":feature:biometrics:ui")
 
 include(":feature:scanner:libibscancommon")
@@ -49,5 +51,4 @@ include(":feature:scanner:libibscanuitimate")
 include(":feature:scanner:liblfd")
 include(":feature:scanner:libusb")
 
-include(":android")
 include(":app")

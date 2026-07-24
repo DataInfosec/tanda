@@ -4,12 +4,12 @@ import com.tanda.biometrics.ui.scanner.Scanner
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
-import com.tanda.module.AppModule
+import com.tanda.module.TandaModule
 import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.koin.ksp.generated.*
+import org.koin.ksp.generated.module
 
 @Module
 object Main {
@@ -29,7 +29,7 @@ object Main {
                         }
                     }
                 },
-                AppModule.module,
+                TandaModule.module,
                 Main.module
             ))
             return scope

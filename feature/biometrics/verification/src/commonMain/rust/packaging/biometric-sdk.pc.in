@@ -1,0 +1,9 @@
+prefix=@PREFIX@
+libdir=@LIBDIR@
+includedir=${prefix}/include
+
+Name: biometric-sdk
+Description: Tanda fingerprint artifact validator
+Version: 0.1.0
+Libs: -L${libdir} -lbiometric_sdk
+Cflags: -I${includedir}

@@ -3,10 +3,8 @@ plugins {
     // in each subproject's classloader
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
-    alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
-    alias(libs.plugins.kotlinAndroid) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.cargo) apply false
@@ -14,9 +12,12 @@ plugins {
 }
 
 subprojects {
-    extra["android"] = listOf(":android")
-    extra["ui"] = listOf(":app", ":feature:biometrics:ui")
-    extra["extension"] = listOf(":feature:biometrics:verification")
+    extra["android"] = listOf(":app")
+    extra["composable"] = listOf(
+        ":core:ui",
+        ":feature:account:ui",
+        ":feature:biometrics:ui",
+    )
     extra["library"] = listOf(
         ":feature:scanner:liblfd",
         ":feature:scanner:libusb",

@@ -1,0 +1,5 @@
+[bindings.kotlin]
+package_name = "com.datainfosec.biometric"
+cdylib_name = "biometric_sdk"
+android = true
+generate_immutable_records = true

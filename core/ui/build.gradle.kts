@@ -1,4 +1,5 @@
 kotlin {
+    androidTarget()
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -10,7 +11,6 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.navigation3.ui)
             implementation(libs.lifecycle.viewmodelNavigation3)
             implementation(libs.kotlinx.serialization.json)
 

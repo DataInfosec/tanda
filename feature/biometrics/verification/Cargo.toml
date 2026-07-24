@@ -5,7 +5,7 @@ edition = "2024"
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
-path = "src/commonMain/rust/lib.rs"
+path = "src/commonMain/rust/src/lib.rs"
 
 [dependencies]
 fs2 = "0.4.3"

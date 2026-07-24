@@ -1,16 +1,3 @@
+apply plugin: libs.plugins.androidLibrary.get().pluginId
 apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
-apply plugin: libs.plugins.androidMultiplatformLibrary.get().pluginId
 
-def kmpPlugin = project.plugins.getPlugin(libs.plugins.kotlinMultiplatform.get().pluginId)
-def jvm11 = kmpPlugin.class.classLoader.loadClass('org.jetbrains.kotlin.gradle.dsl.JvmTarget').JVM_11
-
-kotlin {
-    androidLibrary {
-        namespace = "com.tanda" + project.path.replace(':', '.')
-        compileSdk = libs.versions.android.compileSdk.get().toInteger()
-        minSdk = libs.versions.android.minSdk.get().toInteger()
-    }
-    compilerOptions {
-        freeCompilerArgs = ["-Xexpect-actual-classes"]
-    }
-}

@@ -1,34 +1,20 @@
 apply plugin: libs.plugins.androidApplication.get().pluginId
-apply plugin: libs.plugins.kotlinAndroid.get().pluginId
+apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
 apply plugin: libs.plugins.composeMultiplatform.get().pluginId
 apply plugin: libs.plugins.composeCompiler.get().pluginId
 
-dependencies {
-    implementation(libs.androidx.activity.compose)
-
-    implementation(libs.compose.uiToolingPreview)
-    debugImplementation(libs.compose.uiTooling)
-}
-
 android {
-    compileSdk = libs.versions.android.compileSdk.get().toInteger()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInteger()
-        targetSdk = libs.versions.android.targetSdk.get().toInteger()
+        applicationId = "com.tanda" + project.path.replace(':', '.')
     }
     buildTypes {
         release {
             minifyEnabled = false
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs = ["-Xexpect-actual-classes"]
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }

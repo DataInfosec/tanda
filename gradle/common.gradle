@@ -1,57 +1,54 @@
 def isAndroid = ext.has('android') && (ext.get('android') as List<String>).contains(path)
 def isLibrary = ext.has('library') && (ext.get('library') as List<String>).contains(path)
-def isComposable = ext.has('ui') && (ext.get('ui') as List<String>).contains(path)
-def isExtension = ext.has('extension') && (ext.get('extension') as List<String>).contains(path)
+def isComposable = ext.has('composable') && (ext.get('composable') as List<String>).contains(path)
+
+apply plugin: libs.plugins.ksp.get().pluginId
 
 if (isAndroid) {
     apply from: "$rootDir/gradle/android.gradle"
 } else if (isComposable) {
     apply from: "$rootDir/gradle/composable.gradle"
 } else if (isLibrary) {
-    apply from: "$rootDir/gradle/library.gradle"
-} else if (isExtension) {
-    apply plugin: libs.plugins.kotlinMultiplatform.get().pluginId
+    apply from: "$rootDir/gradle/lib.gradle"
 } else {
     apply from: "$rootDir/gradle/default.gradle"
 }
 
-apply plugin: libs.plugins.ksp.get().pluginId
+android {
+    namespace = "com.tanda" + project.path.replace(':', '.')
+    compileSdk = libs.versions.android.compileSdk.get().toInteger()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInteger()
+        targetSdk = libs.versions.android.targetSdk.get().toInteger()
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+if (!isLibrary) {
+    dependencies {
+        add("ksp", libs.koin.compiler)
+        add("kspCommonMainMetadata", libs.koin.compiler)
+    }
+
+    tasks.register("generateDepencencyMain") {
+        group = "build"
+        description = "Runs KSP on commonMain metadata"
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs = ["-Xexpect-actual-classes"]
+    }
     sourceSets {
         commonMain.dependencies {
             kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(
                     "build/generated/ksp/metadata/commonMain/kotlin"
             )
-        }
-    }
-}
-
-afterEvaluate {
-    // For non-KMP Android projects, use the 'ksp' configuration
-    if (configurations.findByName("ksp") != null && isAndroid) {
-        dependencies {
-            add("ksp", libs.koin.compiler)
-        }
-    }
-
-    // For KMP projects, use target-specific configurations
-    ['kspAndroid', 'kspIosArm64', 'kspIosSimulatorArm64'].each { configName ->
-        if (configurations.findByName(configName) != null) {
-            dependencies {
-                add(configName, libs.koin.compiler)
-            }
-        }
-    }
-
-    if (configurations.findByName("kspCommonMainMetadata") != null) {
-        dependencies {
-            add("kspCommonMainMetadata", libs.koin.compiler)
-        }
-        tasks.register("generateDepencencyMain") {
-            group = "build"
-            description = "Runs KSP on commonMain metadata"
-            dependsOn(tasks.matching { it.name == "kspCommonMainKotlinMetadata" })
         }
     }
 }
