@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 /**
- * Borrowed fields for one one-student fingerprint template artifact.
+ * Borrowed fields for one one-subject fingerprint template artifact.
  *
  * Every pointer remains owned by the caller. A non-zero length requires a
  * readable pointer for the duration of biometric_sdk_validate_submission().
@@ -18,8 +18,8 @@ extern "C" {
 typedef struct BiometricArtifactView {
     const uint8_t *payload;
     size_t payload_len;
-    const uint8_t *student_id;
-    size_t student_id_len;
+    const uint8_t *subject_id;
+    size_t subject_id_len;
     const uint8_t *format_version;
     size_t format_version_len;
     const uint8_t *extractor_profile;
@@ -40,16 +40,17 @@ enum BiometricValidationCode {
     BIOMETRIC_VALIDATION_INTERNAL_ERROR = -1,
     BIOMETRIC_VALIDATION_ACCEPTED = 0,
     BIOMETRIC_VALIDATION_INVALID_ARTIFACT = 1,
-    BIOMETRIC_VALIDATION_SCHOOL_DUPLICATE = 2
+    BIOMETRIC_VALIDATION_DUPLICATE = 2
 };
 
 /**
- * Validate a candidate artifact and run the school-wide duplicate policy.
+ * Validate a candidate artifact against the caller-selected uniqueness set.
  *
- * Existing artifacts are canonical templates for the same school and
- * modality. Expected enrollment rejections are returned as positive result
- * codes. Adapter failures return BIOMETRIC_VALIDATION_INTERNAL_ERROR and may
- * allocate diagnostic bytes when diagnostic is non-NULL.
+ * Existing artifacts are canonical templates for the same modality. The
+ * caller owns the comparison scope. Expected enrollment rejections are
+ * returned as positive result codes. Adapter failures return
+ * BIOMETRIC_VALIDATION_INTERNAL_ERROR and may allocate diagnostic bytes when
+ * diagnostic is non-NULL.
  */
 int32_t biometric_sdk_validate_submission(
     const BiometricArtifactView *candidate,

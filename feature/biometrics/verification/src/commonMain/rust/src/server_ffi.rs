@@ -7,15 +7,15 @@ use std::str;
 
 use crate::sdk::{
     EnrollmentConfig, ExtractorConfig, SdkLimits, TemplateArtifactRef, TemplateStore,
-    decode_student_template_artifact, find_school_duplicate,
+    decode_subject_template_artifact, find_cross_subject_duplicate,
 };
 
-/// Validation succeeded and the candidate is not a school duplicate.
+/// Validation succeeded and the candidate does not duplicate the comparison set.
 pub const VALIDATION_ACCEPTED: i32 = 0;
 /// Candidate bytes or metadata are invalid and should be rejected.
 pub const VALIDATION_INVALID_ARTIFACT: i32 = 1;
-/// Candidate matches another student's current canonical template.
-pub const VALIDATION_SCHOOL_DUPLICATE: i32 = 2;
+/// Candidate matches another subject in the canonical comparison set.
+pub const VALIDATION_DUPLICATE: i32 = 2;
 /// Adapter input, canonical data, or an internal operation failed.
 pub const VALIDATION_INTERNAL_ERROR: i32 = -1;
 
@@ -27,10 +27,10 @@ pub struct BiometricArtifactView {
     pub payload: *const u8,
     /// Opaque SDK payload length.
     pub payload_len: usize,
-    /// UTF-8 student identifier pointer.
-    pub student_id: *const u8,
-    /// UTF-8 student identifier length.
-    pub student_id_len: usize,
+    /// UTF-8 subject identifier pointer.
+    pub subject_id: *const u8,
+    /// UTF-8 subject identifier length.
+    pub subject_id_len: usize,
     /// UTF-8 format version pointer.
     pub format_version: *const u8,
     /// UTF-8 format version length.
@@ -67,7 +67,7 @@ impl Default for BiometricOwnedBytes {
     }
 }
 
-/// Validate one candidate and compare it with current school artifacts.
+/// Validate one candidate against the caller-selected canonical comparison set.
 ///
 /// The caller retains every input allocation for the duration of this call.
 /// A non-empty diagnostic written to `diagnostic` must be released exactly once
@@ -136,7 +136,7 @@ fn validate_submission(
         .map_err(|error| format!("default enrollment policy is invalid: {error}"))?;
     let candidate_view = unsafe { &*candidate };
     let candidate_ref = unsafe { decode_view(candidate_view) }?;
-    let candidate_store = match decode_student_template_artifact(candidate_ref, extractor, limits) {
+    let candidate_store = match decode_subject_template_artifact(candidate_ref, extractor, limits) {
         Ok(store) => store,
         Err(error) => return Ok(invalid_artifact(error.to_string())),
     };
@@ -149,27 +149,27 @@ fn validate_submission(
         }
         unsafe { slice::from_raw_parts(existing, existing_len) }
     };
-    let mut school = TemplateStore::new();
+    let mut comparison_set = TemplateStore::new();
     for view in existing_views {
         let artifact = unsafe { decode_view(view) }?;
-        let decoded = decode_student_template_artifact(artifact, extractor, limits)
-            .map_err(|error| format!("canonical school artifact is invalid: {error}"))?;
+        let decoded = decode_subject_template_artifact(artifact, extractor, limits)
+            .map_err(|error| format!("canonical comparison artifact is invalid: {error}"))?;
         for template in decoded.templates() {
-            school
+            comparison_set
                 .upsert(template)
-                .map_err(|error| format!("canonical school artifact conflicts: {error}"))?;
+                .map_err(|error| format!("canonical comparison artifact conflicts: {error}"))?;
         }
     }
-    let duplicate = find_school_duplicate(
+    let duplicate = find_cross_subject_duplicate(
         &candidate_store,
-        &school,
+        &comparison_set,
         enrollment.duplicate,
         extractor,
         limits,
     )
-    .map_err(|error| format!("school duplicate check failed: {error}"))?;
+    .map_err(|error| format!("duplicate check failed: {error}"))?;
     if duplicate.is_some() {
-        return Ok(VALIDATION_SCHOOL_DUPLICATE);
+        return Ok(VALIDATION_DUPLICATE);
     }
 
     Ok(VALIDATION_ACCEPTED)
@@ -181,7 +181,7 @@ fn invalid_artifact(_message: String) -> i32 {
 
 unsafe fn decode_view(view: &BiometricArtifactView) -> Result<TemplateArtifactRef<'_>, String> {
     Ok(TemplateArtifactRef {
-        student_id: unsafe { text_field(view.student_id, view.student_id_len, "student_id")? },
+        subject_id: unsafe { text_field(view.subject_id, view.subject_id_len, "subject_id")? },
         format_version: unsafe {
             text_field(
                 view.format_version,
@@ -244,11 +244,11 @@ mod tests {
         TemplateFeature, template_payload_checksum,
     };
 
-    fn artifact(student_id: &str) -> (Vec<u8>, String) {
+    fn artifact(subject_id: &str) -> (Vec<u8>, String) {
         let store = TemplateStore::from_templates(vec![ExtractedTemplate {
             record: FingerRecord {
                 record_id: "record-1".to_owned(),
-                user_id: student_id.to_owned(),
+                user_id: subject_id.to_owned(),
             },
             quality: 80,
             token_count: 1,
@@ -269,15 +269,15 @@ mod tests {
     }
 
     fn view<'a>(
-        student_id: &'a str,
+        subject_id: &'a str,
         payload: &'a [u8],
         checksum: &'a str,
     ) -> BiometricArtifactView {
         BiometricArtifactView {
             payload: payload.as_ptr(),
             payload_len: payload.len(),
-            student_id: student_id.as_ptr(),
-            student_id_len: student_id.len(),
+            subject_id: subject_id.as_ptr(),
+            subject_id_len: subject_id.len(),
             format_version: TEMPLATE_FORMAT_VERSION.as_ptr(),
             format_version_len: TEMPLATE_FORMAT_VERSION.len(),
             extractor_profile: DEFAULT_EXTRACTOR_PROFILE.as_ptr(),
@@ -288,9 +288,9 @@ mod tests {
     }
 
     #[test]
-    fn ffi_accepts_a_valid_one_student_artifact() {
-        let (payload, checksum) = artifact("student-1");
-        let candidate = view("student-1", &payload, &checksum);
+    fn ffi_accepts_a_valid_one_subject_artifact() {
+        let (payload, checksum) = artifact("subject-1");
+        let candidate = view("subject-1", &payload, &checksum);
         let mut diagnostic = BiometricOwnedBytes::default();
         let code = unsafe {
             biometric_sdk_validate_submission(&candidate, ptr::null(), 0, &mut diagnostic)
@@ -301,8 +301,8 @@ mod tests {
 
     #[test]
     fn ffi_classifies_a_candidate_checksum_failure_as_rejection() {
-        let (payload, _) = artifact("student-1");
-        let candidate = view("student-1", &payload, "sha256:wrong");
+        let (payload, _) = artifact("subject-1");
+        let candidate = view("subject-1", &payload, "sha256:wrong");
         let code = unsafe {
             biometric_sdk_validate_submission(&candidate, ptr::null(), 0, ptr::null_mut())
         };

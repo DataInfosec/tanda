@@ -82,13 +82,13 @@ impl SdkError {
     }
 
     /// Missing persisted object.
-    #[cfg(feature = "campus-libsql")]
+    #[cfg(feature = "attendance-libsql")]
     pub(crate) fn not_found(message: impl Into<String>) -> Self {
         Self::new(SdkErrorCode::NotFound, message)
     }
 
     /// Another owner holds the enrollment lease.
-    #[cfg(feature = "campus-libsql")]
+    #[cfg(feature = "attendance-libsql")]
     pub(crate) fn session_active(message: impl Into<String>) -> Self {
         Self::new(SdkErrorCode::SessionActive, message)
     }
@@ -103,19 +103,19 @@ impl SdkError {
     }
 
     /// Embedded database failure.
-    #[cfg(feature = "campus-libsql")]
+    #[cfg(feature = "attendance-libsql")]
     pub(crate) fn database(message: impl Into<String>) -> Self {
         Self::new(SdkErrorCode::Database, message)
     }
 
     /// Remote synchronization failure.
-    #[cfg(feature = "campus-libsql")]
+    #[cfg(feature = "attendance-libsql")]
     pub(crate) fn sync(message: impl Into<String>) -> Self {
         Self::new(SdkErrorCode::Sync, message)
     }
 
     /// Unsupported local schema.
-    #[cfg(feature = "campus-libsql")]
+    #[cfg(feature = "attendance-libsql")]
     pub(crate) fn schema_unsupported(message: impl Into<String>) -> Self {
         Self::new(SdkErrorCode::SchemaUnsupported, message)
     }

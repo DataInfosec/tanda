@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 
-//! Pure Rust biometric SDK for synchronized class enrollment and offline 1:N
+//! Pure Rust biometric SDK for synchronized subject enrollment and offline 1:N
 //! fingerprint matching.
 //!
 //! The crate is split into two layers:
@@ -11,7 +11,9 @@
 //!
 //! Foreign-language integrations generate bindings from the UniFFI metadata
 //! exposed by [`kotlin::MobileBiometricSdk`]. Rust applications use
-//! [`sdk::CampusBiometricSdk`] when the `campus-libsql` feature is enabled.
+//! [`sdk::AttendanceBiometricSdk`] when the `attendance-libsql` feature is enabled.
+
+#[cfg(feature = "uniffi-bindings")]
 uniffi::setup_scaffolding!();
 
 /// Raw 400x500 grayscale capture handling and image QA helpers.

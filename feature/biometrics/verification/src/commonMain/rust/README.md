@@ -1,7 +1,8 @@
 # Biometric SDK
 
 Pure Rust fingerprint enrollment and offline 1:N identification for Tanda
-Campus devices. The SDK owns a synchronized libSQL class gallery, exposes a
+attendance devices. The SDK owns a synchronized fixed-population libSQL
+gallery, exposes a
 small Kotlin API through UniFFI, and provides the same artifact validator to the
 Go server through a panic-contained C ABI.
 
@@ -10,22 +11,22 @@ libSQL, PostgreSQL, template artifacts, or the in-memory matcher. Extracted
 templates remain sensitive biometric data and require encrypted device storage,
 TLS, scoped credentials, and restricted server access.
 
-## Campus Model
+## Gallery Model
 
-One class gallery represents one `(school, academic session, class section)`.
-Every device assigned to that class receives the same roster and canonical
-templates. One switchable enrollment writer may also create local enrollment
-submissions; reader devices only pull.
+One gallery represents one fixed population. Every physical device instance
+assigned to that gallery receives the same active membership and canonical
+templates. One switchable enrollment writer may also create locally durable,
+online-authorized enrollment submissions; reader devices only pull.
 
 ```mermaid
 flowchart LR
-    admin["Admin roster changes"] --> server["Tanda Campus and PostgreSQL"]
-    writer["Class enrollment device"] <-->|"libSQL WAL sync"| server
-    readers["Class attendance devices"] <-->|"libSQL WAL pull"| server
-    writer --> local["SDK-owned class-gallery.db"]
-    readers --> localReaders["SDK-owned class-gallery.db"]
-    local --> matcher["Immutable class matcher"]
-    localReaders --> matcherReaders["Immutable class matcher"]
+    admin["Admin membership changes"] --> server["Tanda platform and PostgreSQL"]
+    writer["Enrollment writer"] <-->|"libSQL WAL sync"| server
+    readers["Attendance readers"] <-->|"libSQL WAL pull"| server
+    writer --> local["SDK-owned gallery.db"]
+    readers --> localReaders["SDK-owned gallery.db"]
+    local --> matcher["Immutable gallery matcher"]
+    localReaders --> matcherReaders["Immutable gallery matcher"]
 ```
 
 The Android application supplies only provisioning and commands. It does not
@@ -38,18 +39,18 @@ The SDK:
 
 - validates `400x500` grayscale fingerprint captures;
 - extracts quality-scored minutiae and invariant descriptors;
-- persists one SDK-owned `class-gallery.db` replica;
+- persists one SDK-owned `gallery.db` replica;
 - pushes and pulls through the official libSQL sync client;
-- keeps enrollment submissions durable while offline;
+- keeps an authorized enrollment submission durable if connectivity drops;
 - enforces one active, resumable group-enrollment batch per writer;
-- performs local duplicate checks against the current class;
+- performs local duplicate checks against the current population;
 - rebuilds and atomically publishes an immutable 1:N matcher;
-- returns `Match(student_id)` or a stable `Retry` reason;
-- validates opaque one-student artifacts on the Go server.
+- returns atomic match evidence or a stable `Retry` reason;
+- validates opaque one-subject artifacts on the Go server.
 
-Tanda Campus remains authoritative for class membership, writer assignment,
-school-wide duplicate checks, canonical template revisions, and enrollment
-decisions.
+The application platform remains authoritative for gallery membership, writer
+assignment, administrator authorization, site-wide duplicate checks,
+canonical template revisions, and enrollment decisions.
 
 ## Device Flow
 
@@ -57,16 +58,16 @@ decisions.
 sequenceDiagram
     participant App as Android app
     participant SDK as Biometric SDK
-    participant DB as class-gallery.db
+    participant DB as gallery.db
     participant Gateway as Tanda sync gateway
 
-    App->>SDK: open(storage root, device id, sync URL, token)
+    App->>SDK: open(storage root, device instance id, sync URL, token)
     SDK->>Gateway: libSQL bootstrap or refresh
-    Gateway-->>SDK: class roster and templates
+    Gateway-->>SDK: gallery membership and templates
     SDK->>DB: validate synchronized rows
     SDK->>SDK: build and publish matcher
-    App->>SDK: enrollStudent(student id, captures)
-    SDK->>SDK: extract and run class duplicate policy
+    App->>SDK: enrollSubject(server authorization, captures)
+    SDK->>SDK: validate binding, extract, run population duplicate policy
     SDK->>DB: commit enrollment submission
     Note over App,DB: The submission survives loss of network or process restart
     App->>SDK: sync()
@@ -80,26 +81,27 @@ the previous verified matcher available.
 
 ## Rust API
 
-Enable `campus-libsql` when embedding the campus facade without Kotlin:
+Enable `attendance-libsql` when embedding the attendance facade without Kotlin:
 
 ```rust
 use biometric_sdk::sdk::{
-    CampusBiometricSdk, CampusConfig, CampusProvisioning, IdentifyResult,
+    AttendanceBiometricSdk, AttendanceConfig, AttendanceIdentifyResult,
+    AttendanceProvisioning,
 };
 
-let provisioning = CampusProvisioning::new(
-    "device-42",
-    "https://campus.example/v1/libsql/class-gallery",
+let provisioning = AttendanceProvisioning::new(
+    "device-instance-42",
+    "https://attendance.example/v1/libsql/gallery",
     device_token,
 );
-let sdk = CampusBiometricSdk::open(CampusConfig::new(
+let sdk = AttendanceBiometricSdk::open(AttendanceConfig::new(
     "/app/files/biometric",
     provisioning,
 ))?;
 
 match sdk.identify_raw_bytes(&capture)? {
-    IdentifyResult::Match(hit) => record_clock_event(&hit.user_id),
-    IdentifyResult::Retry(retry) => request_another_scan(retry.reason),
+    AttendanceIdentifyResult::Match(evidence) => record_clock_event(evidence),
+    AttendanceIdentifyResult::Retry(retry) => request_another_scan(retry.reason),
 }
 ```
 
@@ -107,16 +109,15 @@ The first synchronized open requires connectivity. Later opens may use an
 existing verified replica in `Offline` state. Network access occurs only during
 `open`, `sync`, and `rotate_auth_token`.
 
-Enrollment is a local transaction and therefore works offline:
+Enrollment must be authorized online by the application platform. Once capture
+begins, its transaction is locally durable through a connection loss:
 
 ```rust
-let batch = sdk.start_enrollment_batch()?;
-let result = sdk.enroll_student(
-    "STUDENT-001",
+let authorization = authorize_subject_enrollment_online()?;
+let result = sdk.enroll_subject(
+    authorization,
     [&left_thumb[..], &right_thumb[..]],
-    Some(&batch.id),
 )?;
-sdk.close_enrollment_batch(&batch.id)?;
 
 if result.submission_id.is_some() {
     schedule_sync();
@@ -137,7 +138,7 @@ raw capture
   -> quality and minutiae extraction
   -> invariant descriptor candidate lookup
   -> geometric minutiae verification
-  -> best template per student
+  -> best template per subject
   -> Match or Retry
 ```
 
@@ -160,17 +161,17 @@ production FAR/FRR certification.
 ## Artifact Contract
 
 The synchronized tables and PostgreSQL store carry one opaque template artifact
-per student and modality:
+per subject and modality:
 
 | Field | Meaning |
 | --- | --- |
-| `student_id` | Expected owner of every encoded record |
+| `subject_id` | Expected owner of every encoded record |
 | `sdk_format_version` | Binary format contract |
 | `extractor_profile` | Extraction and matching profile |
 | `template_payload` | Bounded SDK-owned bytes |
 | `payload_sha256` | `sha256:<lowercase hex>` integrity digest |
 
-The artifact contains extracted templates only. It has no roster, gallery,
+The artifact contains extracted templates only. It has no membership, gallery,
 database, synchronization cursor, raw capture, or derived search index. Go and
 Kotlin treat the payload as opaque.
 
@@ -215,4 +216,8 @@ RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps --document-private-items
 
 Architecture, schema, synchronization states, and failure handling are covered
 in [SDK architecture](docs/sdk-architecture.md) and
-[campus libSQL integration](docs/campus-libsql.md).
+[attendance libSQL integration](docs/attendance-libsql.md).
+
+The coordinated changes required for the generic fixed-population attendance
+model are tracked in the
+[Tanda attendance support plan](docs/tanda-attendance-support-plan.md).

@@ -1,23 +1,23 @@
-# Campus libSQL Integration
+# Attendance libSQL Integration
 
 ## Scope
 
-The campus integration makes the SDK the sole owner of the local biometric
+The attendance integration makes the SDK the sole owner of the local biometric
 gallery database. A mobile application provides a sync URL and device
 credential, then uses enrollment and identification methods without accessing
 SQLite or the libSQL protocol.
 
 The synchronized database is the only durable gallery representation. A
-versioned one-student template artifact lets extracted templates cross the
+versioned one-subject template artifact lets extracted templates cross the
 device/server boundary without exposing matcher internals or raw captures.
 
 ## Runtime Boundary
 
 ```mermaid
 flowchart LR
-    app["Kotlin application"] --> mobile["UniFFI campus facade"]
+    app["Kotlin application"] --> mobile["UniFFI attendance facade"]
     mobile --> gallery["SDK gallery service"]
-    gallery --> db["SDK-owned class-gallery.db"]
+    gallery --> db["SDK-owned gallery.db"]
     gallery --> matcher["immutable in-memory matcher"]
     gallery --> sync["official libSQL synced database"]
     sync <-->|"export, push, pull"| gateway["Tanda Campus gateway"]
@@ -32,8 +32,8 @@ published atomically so clock-in matching does not wait for network I/O.
 
 The database distinguishes three forms of durable state:
 
-1. Canonical roster and template rows projected by the server.
-2. Pending enrollment submissions committed by the active writer.
+1. Canonical gallery-membership and template rows projected by the server.
+2. Pending online-authorized enrollment submissions committed by the active writer.
 3. Immutable server decisions projected back to the originating gallery.
 
 The matcher is an in-memory derivative, not another persisted representation.
@@ -45,13 +45,13 @@ provisional entry. A rejected result removes it. Readers never infer acceptance
 from a submission row.
 
 The application-level `gallery_revision` is not a libSQL checkpoint generation
-or WAL frame number. It identifies the canonical class state used for matching
+or WAL frame number. It identifies the canonical gallery state used for matching
 and is recorded with biometric attendance evidence.
 
 ## Provisioning And Recovery
 
 A new synchronized instance must bootstrap successfully before its first
-offline operation. Later starts may continue with a verified local replica when
+offline identification. Later starts may continue with a verified local replica when
 the network is unavailable. The SDK rejects an unsupported schema before
 decoding biometric payloads.
 
@@ -71,7 +71,9 @@ libSQL re-encodes those frames into each replica's local WAL representation.
 
 Raw fingerprint images never enter libSQL. Candidate and canonical template
 artifacts are length-bounded and checksum-verified before decode. Production
-provisioning must use HTTPS, scoped expiring credentials, and encrypted
-application storage. Logs may contain approved identifiers and state
+provisioning must use HTTPS, scoped revocable device credentials, and encrypted
+application storage. Administrator-authorized enrollment contexts are
+short-lived and bound to the physical device instance, gallery, subject, and
+optional batch. Logs may contain approved identifiers and state
 transitions but never template payloads, raw captures, credentials, or
 identity-linked match scores.

@@ -1,18 +1,18 @@
 //! Android entry point for clock-in, enrollment, and gallery synchronization.
 //!
-//! A class gallery is the active roster and accepted fingerprint-template
-//! dataset for one school, academic session, and class section. Each instance
-//! owns a local copy of one gallery. Its gallery revision is the server-assigned
+//! A gallery is the active membership and accepted fingerprint-template dataset
+//! for one fixed population. Each instance owns a local copy of one gallery.
+//! Its gallery revision is the server-assigned
 //! application revision of the canonical data represented by its matcher; it is
 //! not a database frame count or an app-managed counter.
 //!
 //! An instance can operate as an attendance reader, which only identifies
-//! students, or as the class's single enrollment writer, which may also create
+//! subjects, or as the gallery's single enrollment writer, which may also create
 //! durable enrollment submissions. The server decides which device is the
 //! writer; the application reflects that assignment in its UI. This separation
 //! allows many least-privilege clock-in devices while keeping unsynchronized
-//! biometric changes on one recoverable device and avoiding competing offline
-//! enrollments for the same class.
+//! biometric changes on one recoverable device and avoiding competing
+//! enrollments for the same gallery.
 //!
 //! # Why the SDK keeps local state
 //!
@@ -23,7 +23,7 @@
 //! server  ◄──── explicit sync ────►  MobileBiometricSdk
 //!                                        │
 //! scanner ───── identify ────────────────┤
-//!                                        ├── private class-gallery.db
+//!                                        ├── private gallery.db
 //!                                        └── in-memory matcher
 //! ```
 //!
@@ -37,7 +37,7 @@
 //! Android schedules
 //! [`MobileBiometricSdk::sync`](crate::kotlin::MobileBiometricSdk::sync); the SDK
 //! does not run a background scheduler. A sync pushes local enrollment, pulls
-//! the canonical roster, templates, and decisions, validates the complete
+//! the canonical membership, templates, and decisions, validates the complete
 //! result, builds a replacement matcher, and publishes it atomically. A network
 //! or validation failure leaves the previous verified matcher available for
 //! identification.
@@ -65,34 +65,37 @@
 
 use std::sync::Arc;
 
-use crate::sdk::{CampusBiometricSdk, CampusConfig, CampusProvisioning, EnrollmentConfig};
+use crate::sdk::{
+    AttendanceBiometricSdk, AttendanceConfig, AttendanceProvisioning, EnrollmentConfig,
+};
 
 mod types;
 
 pub use types::{
     MobileDuplicateMatch, MobileEnrollmentAttempt, MobileEnrollmentBatch,
-    MobileEnrollmentBatchStatus, MobileEnrollmentRejection, MobileEnrollmentReport,
-    MobileEnrollmentResult, MobileGallerySummary, MobileIdentifyOutcome, MobileRetryReason,
-    MobileSdkError, MobileSyncReport, MobileSyncState,
+    MobileEnrollmentBatchAuthorization, MobileEnrollmentBatchStatus, MobileEnrollmentReadiness,
+    MobileEnrollmentRejection, MobileEnrollmentReport, MobileEnrollmentResult,
+    MobileGallerySummary, MobileIdentifyOutcome, MobileRetryReason, MobileSdkError,
+    MobileSubjectEnrollmentAuthorization, MobileSyncReport, MobileSyncState,
 };
 
-/// Provisioned class-gallery SDK entry point exported through UniFFI.
+/// Provisioned fixed-population gallery SDK entry point exported through UniFFI.
 ///
-/// The object owns the Rust campus SDK and therefore the local replica,
+/// The object owns the Rust attendance SDK and therefore the local replica,
 /// synchronization client, enrollment state, and currently published matcher.
 /// All methods preserve Rust's stable domain behavior while accepting and
 /// returning types that UniFFI can represent consistently in Kotlin.
 #[derive(Debug, uniffi::Object)]
 pub struct MobileBiometricSdk {
-    core: CampusBiometricSdk,
+    core: AttendanceBiometricSdk,
 }
 
 #[uniffi::export]
 impl MobileBiometricSdk {
-    /// Open or bootstrap the SDK-owned class gallery.
+    /// Open or bootstrap the SDK-owned gallery.
     ///
     /// `storage_root` must be a private writable directory dedicated to this
-    /// provisioned gallery. `device_id`, `sync_url`, and `auth_token` are issued
+    /// provisioned gallery. `device_instance_id`, `sync_url`, and `auth_token` are issued
     /// together by the server. Supplying `enrollment_min_quality` overrides the
     /// Rust default for captures enrolled by this instance.
     ///
@@ -102,19 +105,19 @@ impl MobileBiometricSdk {
     #[uniffi::constructor]
     pub fn open(
         storage_root: String,
-        device_id: String,
+        device_instance_id: String,
         sync_url: String,
         auth_token: String,
         enrollment_min_quality: Option<u8>,
     ) -> Result<Arc<Self>, MobileSdkError> {
-        let provisioning = CampusProvisioning::new(device_id, sync_url, auth_token);
-        let mut config = CampusConfig::new(storage_root, provisioning);
+        let provisioning = AttendanceProvisioning::new(device_instance_id, sync_url, auth_token);
+        let mut config = AttendanceConfig::new(storage_root, provisioning);
         if let Some(min_quality) = enrollment_min_quality {
             config = config
                 .with_enrollment_config(EnrollmentConfig::default().with_min_quality(min_quality));
         }
         Ok(Arc::new(Self {
-            core: CampusBiometricSdk::open(config)?,
+            core: AttendanceBiometricSdk::open(config)?,
         }))
     }
 
@@ -127,7 +130,7 @@ impl MobileBiometricSdk {
         Ok(self.core.sync_state()?.into())
     }
 
-    /// Push pending local WAL and pull canonical class-gallery changes.
+    /// Push pending local WAL and pull canonical gallery changes.
     ///
     /// A successful call validates synchronized rows, builds a replacement
     /// matcher, and publishes it atomically. A failed replacement never
@@ -164,7 +167,7 @@ impl MobileBiometricSdk {
         Ok(self.core.pending_enrollment_count()? as u64)
     }
 
-    /// Identify one student against the current in-memory class matcher.
+    /// Identify one subject against the current in-memory gallery matcher.
     ///
     /// `raw` must contain exactly one `400x500` grayscale capture. A non-match
     /// is represented as a typed retry outcome rather than an exception.
@@ -173,12 +176,25 @@ impl MobileBiometricSdk {
         Ok(self.core.identify_raw_bytes(&raw)?.into())
     }
 
-    /// Start the only active, resumable group-enrollment batch on this writer.
+    /// Check writer and synchronized subject readiness before requesting capture.
+    pub fn enrollment_readiness(
+        &self,
+        subject_id: String,
+    ) -> Result<MobileEnrollmentReadiness, MobileSdkError> {
+        Ok(self.core.enrollment_readiness(&subject_id)?.into())
+    }
+
+    /// Start the only active, online-authorized group organizer on this writer.
     ///
     /// The batch is persisted before return and can be recovered with
     /// [`Self::active_group_enrollment`] after process restart.
-    pub fn start_group_enrollment(&self) -> Result<MobileEnrollmentBatch, MobileSdkError> {
-        self.core.start_enrollment_batch()?.try_into()
+    pub fn start_group_enrollment(
+        &self,
+        authorization: MobileEnrollmentBatchAuthorization,
+    ) -> Result<MobileEnrollmentBatch, MobileSdkError> {
+        self.core
+            .start_enrollment_batch(authorization.into())?
+            .try_into()
     }
 
     /// Return the active resumable group-enrollment batch, if one exists.
@@ -207,22 +223,20 @@ impl MobileBiometricSdk {
         self.core.cancel_enrollment_batch(&batch_id)?.try_into()
     }
 
-    /// Extract and durably enroll captures for one rostered student.
+    /// Extract and durably enroll captures for one authorized gallery subject.
     ///
     /// `captures` contains one or more raw `400x500` grayscale images.
-    /// `batch_id` associates the submission with an active group operation;
-    /// pass `None` for single-student enrollment. The local transaction commits
-    /// before return, so accepted enrollment works offline and survives process
-    /// restart. The report contains an outcome for every supplied capture.
-    pub fn enroll_student(
+    /// The subject-specific authorization is issued online by the application
+    /// server. Once capture begins, the local transaction can preserve the
+    /// submission through a connection loss or process restart.
+    pub fn enroll_subject(
         &self,
-        student_id: String,
+        authorization: MobileSubjectEnrollmentAuthorization,
         captures: Vec<Vec<u8>>,
-        batch_id: Option<String>,
     ) -> Result<MobileEnrollmentResult, MobileSdkError> {
         Ok(self
             .core
-            .enroll_student(student_id, captures, batch_id.as_deref())?
+            .enroll_subject(authorization.into(), captures)?
             .into())
     }
 }

@@ -12,7 +12,7 @@ Measurements were taken on 2026-07-11 with:
 | Build | `--release` |
 | Capture format | `400x500`, 8-bit grayscale |
 | Canonical corpus | 1,269 unique templates, 1,097 inferred users |
-| Class-size benchmark | First 1,000 templates |
+| Population-size benchmark | First 1,000 templates |
 
 The corpus is `data/root/raw`. Filename suffixes `_1` and `_2` represent
 different thumbs from the same person, not repeated impressions of one finger.
@@ -42,7 +42,7 @@ lookups, adaptive transform hypotheses, and a supporting-edge consistency gate.
 | Index build | 124-134 ms |
 
 The encoded index figure measures the lower-level `BiometricIndex` codec. The
-campus facade does not persist that encoding; it derives and publishes the
+attendance facade does not persist that encoding; it derives and publishes the
 matcher from validated libSQL rows.
 
 ## Decision Regression
@@ -84,7 +84,7 @@ The earlier 1,000-template implementation produced:
 `Match` is candidate generation plus geometric reranking. `End-to-end` also
 includes raw-image extraction and final decision policy. The current verifier
 does more work than this baseline, while remaining within a low host latency at
-class-sized galleries.
+fixed-population galleries.
 
 ## Enrollment Quality
 
@@ -104,13 +104,13 @@ impressions, which is why 70 is unnecessarily strict for this corpus.
 ## Capacity Interpretation
 
 The default hard limit is 4,096 finger records. It is an input-safety bound, not
-a deployment recommendation. A 1,000-template index approximates 500 students
-when two fingers are enrolled per student and is the current planning target for
-one class gallery.
+a deployment recommendation. A 1,000-template index approximates 500 subjects
+when two fingers are enrolled per subject and is the current planning target for
+one fixed-population gallery.
 
 Index build cost is paid after open, accepted local enrollment, or a sync that
 changes effective templates. Clock-in uses the already published immutable
-index. A production capacity test should measure the complete class distribution
+index. A production capacity test should measure the complete population distribution
 instead of repeating templates under synthetic identifiers, because posting
 frequency and duplicate structure affect index memory and candidate cost.
 

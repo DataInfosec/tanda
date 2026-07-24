@@ -40,7 +40,8 @@ verify-uniffi-bindings: uniffi-lib
 	test -s "$$generated_file"; \
 	grep -Fq 'open class MobileBiometricSdk' "$$generated_file"; \
 	grep -Fq 'fun `sync`(): MobileSyncReport' "$$generated_file"; \
-	grep -Fq 'fun `enrollStudent`' "$$generated_file"
+	grep -Fq 'fun `enrollSubject`' "$$generated_file"; \
+	grep -Fq 'fun `enrollmentReadiness`' "$$generated_file"
 
 android-libs:
 	$(CARGO) ndk \

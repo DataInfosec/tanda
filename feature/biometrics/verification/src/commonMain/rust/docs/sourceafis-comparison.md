@@ -7,7 +7,7 @@ evidence because winning one category does not imply winning the others.
 
 ## Summary
 
-For the intended offline school-location workload, the custom SDK is decisively
+For the intended offline attendance workload, the custom SDK is decisively
 faster:
 
 - At 1,000 templates, prepared-template top-1 search was **27.0x faster at p50**
@@ -161,7 +161,7 @@ scan.
 | Candidate scan at 1,000, p50 | Bounded inside search | 64.91 ms |
 
 The custom index build is paid after local enrollment or a synchronization that
-changes effective class templates. SourceAFIS avoids a location-level build,
+changes effective gallery templates. SourceAFIS avoids a gallery-level build,
 but pays for every candidate comparison on each identification.
 
 ## Storage And Memory
@@ -171,12 +171,12 @@ SourceAFIS CBOR template set is 0.52 MiB, while its resident templates and probe
 matcher used 12.52 MiB and 2.92 MiB respectively in the benchmark process.
 
 These are different structures. The custom bytes are a candidate index with
-student mapping and verifier features. The SourceAFIS bytes are serialized
+subject mapping and verifier features. The SourceAFIS bytes are serialized
 biometric templates; application ownership, database rows, integrity metadata,
 and synchronization remain outside that figure.
 
 The SDK-owned libSQL architecture was introduced after this benchmark harness.
-Current class database size, WAL transfer size, matcher-publication peak RSS,
+Current gallery database size, WAL transfer size, matcher-publication peak RSS,
 and Android bootstrap cost have not yet been measured and are therefore omitted
 instead of reusing numbers from a retired persistence design.
 
@@ -238,8 +238,8 @@ mapping, candidate storage, search-loop orchestration, and persistence to the
 application. Serialized templates are not guaranteed backward compatible, and
 SourceAFIS recommends retaining original images for re-extraction on upgrade.
 
-This SDK owns the class workflow: internal finger records, user collapsing,
-quality policy, resumable group enrollment, duplicate-student checks, a
+This SDK owns the gallery workflow: internal finger records, user collapsing,
+quality policy, resumable group enrollment, duplicate-subject checks, a
 synchronized libSQL replica, immutable matcher publication, and Kotlin bindings.
 It intentionally does not retain raw captures. These features should be
 evaluated separately from matcher latency.
@@ -259,7 +259,7 @@ Before treating it as production-ready biometric evidence:
 3. Measure rank-1 recall, FNMR at selected FMR, retry rate, and duplicate-user
    detection, not only exact top-1 speed.
 4. Run both benchmarks on a low-end and typical Android device.
-5. Measure current libSQL database and WAL cost before setting class sync limits
+5. Measure current libSQL database and WAL cost before setting gallery sync limits
    or deciding whether template compaction is necessary.
 
 A useful next accuracy experiment is a hybrid benchmark: use the custom inverted

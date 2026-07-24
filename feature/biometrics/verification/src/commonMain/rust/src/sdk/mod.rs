@@ -1,15 +1,15 @@
-//! Biometric matching, artifact validation, and SDK-owned campus persistence.
+//! Biometric matching, artifact validation, and SDK-owned attendance persistence.
 //!
-//! [`CampusBiometricSdk`](crate::sdk::CampusBiometricSdk) is the application entry point when the
-//! `campus-libsql` feature is enabled. The app supplies device provisioning and
-//! raw captures; Rust owns the class gallery, enrollment queue, synchronization,
+//! [`AttendanceBiometricSdk`](crate::sdk::AttendanceBiometricSdk) is the application entry point when the
+//! `attendance-libsql` feature is enabled. The app supplies device provisioning and
+//! raw captures; Rust owns the fixed-population gallery, enrollment queue, synchronization,
 //! and immutable in-memory matcher. [`BiometricIndex`](crate::sdk::BiometricIndex)
 //! and [`TemplateStore`](crate::sdk::TemplateStore)
 //! remain available for server adapters and specialized Rust integrations.
 
 mod artifact;
-#[cfg(feature = "campus-libsql")]
-mod campus;
+#[cfg(feature = "attendance-libsql")]
+mod attendance;
 mod enrollment;
 mod error;
 mod extractor;
@@ -21,13 +21,15 @@ mod storage;
 mod template;
 
 pub use artifact::{
-    TemplateArtifactRef, decode_student_template_artifact, find_school_duplicate,
+    TemplateArtifactRef, decode_subject_template_artifact, find_cross_subject_duplicate,
     template_payload_checksum,
 };
-#[cfg(feature = "campus-libsql")]
-pub use campus::{
-    CampusBiometricSdk, CampusConfig, CampusEnrollmentResult, CampusProvisioning, CampusSyncReport,
-    CampusSyncState, EnrollmentBatch,
+#[cfg(feature = "attendance-libsql")]
+pub use attendance::{
+    AttendanceBiometricSdk, AttendanceConfig, AttendanceEnrollmentResult, AttendanceIdentifyResult,
+    AttendanceProvisioning, AttendanceSyncReport, AttendanceSyncState, EnrollmentBatch,
+    EnrollmentBatchAuthorization, EnrollmentReadiness, IdentificationEvidence,
+    SubjectEnrollmentAuthorization,
 };
 pub use enrollment::{
     DEFAULT_ENROLLMENT_MIN_QUALITY, DuplicateCheckConfig, DuplicateEnrollmentMatch,

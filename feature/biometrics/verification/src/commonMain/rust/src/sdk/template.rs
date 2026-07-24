@@ -1,7 +1,7 @@
 //! Versioned, bounded fingerprint template storage.
 //!
 //! A [`TemplateStore`] is matcher input, not a synchronized gallery snapshot.
-//! The binary representation is suitable for one-student enrollment artifacts
+//! The binary representation is suitable for one-subject enrollment artifacts
 //! stored in libSQL and PostgreSQL. It contains extracted templates only: raw
 //! sensor captures, gallery identity, synchronization cursors, and derived
 //! indexes are deliberately absent.
@@ -111,7 +111,7 @@ impl TemplateStore {
             .len()
     }
 
-    /// Return the sole user identifier in a one-student artifact.
+    /// Return the sole internal user identifier in a one-subject artifact.
     pub fn single_user_id(&self) -> SdkResult<&str> {
         let mut users = self
             .templates
@@ -385,22 +385,22 @@ mod tests {
     }
 
     #[test]
-    fn one_student_artifact_round_trips() {
+    fn one_subject_artifact_round_trips() {
         let store = TemplateStore::from_templates(vec![
-            template("record-1", "student-1"),
-            template("record-2", "student-1"),
+            template("record-1", "subject-1"),
+            template("record-2", "subject-1"),
         ])
         .unwrap();
         let decoded = TemplateStore::from_bytes(&store.to_bytes().unwrap()).unwrap();
         assert_eq!(decoded, store);
-        assert_eq!(decoded.single_user_id().unwrap(), "student-1");
+        assert_eq!(decoded.single_user_id().unwrap(), "subject-1");
     }
 
     #[test]
-    fn one_student_artifact_rejects_mixed_ownership() {
+    fn one_subject_artifact_rejects_mixed_ownership() {
         let store = TemplateStore::from_templates(vec![
-            template("record-1", "student-1"),
-            template("record-2", "student-2"),
+            template("record-1", "subject-1"),
+            template("record-2", "subject-2"),
         ])
         .unwrap();
         assert_eq!(

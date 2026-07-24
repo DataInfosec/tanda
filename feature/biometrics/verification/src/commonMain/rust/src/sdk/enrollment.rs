@@ -1,29 +1,29 @@
 //! Enrollment policy and capture-level outcomes.
 //!
-//! Durable enrollment state belongs to the SDK-owned class-gallery database in
-//! `campus`. This module contains only policy and result values shared by the
+//! Durable enrollment state belongs to the SDK-owned gallery database in
+//! `attendance`. This module contains only policy and result values shared by the
 //! Rust API, UniFFI facade, and server artifact validator.
 
 use serde::{Deserialize, Serialize};
 
-#[cfg(any(test, feature = "campus-libsql", feature = "server-ffi"))]
+#[cfg(any(test, feature = "attendance-libsql", feature = "server-ffi"))]
 use super::error::{SdkError, SdkResult};
 use super::index::{RerankConfig, SearchConfig};
-#[cfg(any(test, feature = "campus-libsql", feature = "server-ffi"))]
+#[cfg(any(test, feature = "attendance-libsql", feature = "server-ffi"))]
 use super::limits::SdkLimits;
 
 /// Balanced default minimum enrollment quality.
 pub const DEFAULT_ENROLLMENT_MIN_QUALITY: u8 = 65;
 
-/// Enrollment acceptance and cross-student duplicate policy.
+/// Enrollment acceptance and cross-subject duplicate policy.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EnrollmentConfig {
     /// Minimum quality accepted for a template.
     pub min_quality: u8,
-    /// Maximum templates retained for one student artifact.
-    pub max_templates_per_student: usize,
-    /// Cross-student duplicate prevention settings.
+    /// Maximum templates retained for one subject artifact.
+    pub max_templates_per_subject: usize,
+    /// Cross-subject duplicate prevention settings.
     pub duplicate: DuplicateCheckConfig,
 }
 
@@ -38,7 +38,7 @@ impl Default for EnrollmentConfig {
         };
         Self {
             min_quality: DEFAULT_ENROLLMENT_MIN_QUALITY,
-            max_templates_per_student: 2,
+            max_templates_per_subject: 2,
             duplicate: DuplicateCheckConfig {
                 enabled: true,
                 min_score: 0.30,
@@ -56,22 +56,22 @@ impl EnrollmentConfig {
         self
     }
 
-    /// Set the maximum number of templates retained for one student.
-    pub fn with_max_templates_per_student(mut self, maximum: usize) -> Self {
-        self.max_templates_per_student = maximum;
+    /// Set the maximum number of templates retained for one subject.
+    pub fn with_max_templates_per_subject(mut self, maximum: usize) -> Self {
+        self.max_templates_per_subject = maximum;
         self
     }
 
-    #[cfg(any(test, feature = "campus-libsql", feature = "server-ffi"))]
+    #[cfg(any(test, feature = "attendance-libsql", feature = "server-ffi"))]
     pub(crate) fn validate(self, limits: SdkLimits) -> SdkResult<Self> {
         if self.min_quality > 100 {
             return Err(SdkError::invalid_input("min_quality must be in 0..=100"));
         }
-        if self.max_templates_per_student == 0
-            || self.max_templates_per_student > limits.max_records.min(16)
+        if self.max_templates_per_subject == 0
+            || self.max_templates_per_subject > limits.max_records.min(16)
         {
             return Err(SdkError::invalid_input(
-                "max_templates_per_student must be in 1..=16",
+                "max_templates_per_subject must be in 1..=16",
             ));
         }
         for (label, value) in [
@@ -92,7 +92,7 @@ impl EnrollmentConfig {
     }
 }
 
-/// Cross-student duplicate prevention settings.
+/// Cross-subject duplicate prevention settings.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DuplicateCheckConfig {
@@ -110,8 +110,8 @@ pub struct DuplicateCheckConfig {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EnrollmentAttempt {
-    /// Student identifier supplied by the caller.
-    pub student_id: String,
+    /// Subject identifier supplied by the caller.
+    pub subject_id: String,
     /// SDK-generated UUIDv7 template record identifier when committed.
     pub record_id: Option<String>,
     /// Extracted quality when extraction succeeded.
@@ -138,14 +138,14 @@ pub enum EnrollmentRejectionReason {
         /// Minimum configured enrollment quality.
         min_quality: u8,
     },
-    /// The student already reached the configured template count.
-    MaxTemplatesForStudent {
-        /// Maximum templates retained for one student.
+    /// The subject already reached the configured template count.
+    MaxTemplatesForSubject {
+        /// Maximum templates retained for one subject.
         max_templates: usize,
     },
-    /// The capture matched another enrolled student.
-    DuplicateOfOtherStudent {
-        /// Existing student template that matched this capture.
+    /// The capture matched another enrolled subject.
+    DuplicateOfOtherSubject {
+        /// Existing subject template that matched this capture.
         duplicate: DuplicateEnrollmentMatch,
     },
     /// An operation-level failure rolled back a previously accepted capture.
@@ -159,8 +159,8 @@ pub enum EnrollmentRejectionReason {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DuplicateEnrollmentMatch {
-    /// Existing student identifier.
-    pub student_id: String,
+    /// Existing subject identifier.
+    pub subject_id: String,
     /// Existing SDK template record identifier.
     pub record_id: String,
     /// Final blended match score.
@@ -169,16 +169,16 @@ pub struct DuplicateEnrollmentMatch {
     pub verification_score: f32,
 }
 
-/// Capture-level outcome of one student enrollment operation.
+/// Capture-level outcome of one subject enrollment operation.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EnrollmentReport {
-    /// Class gallery that owns the submission.
+    /// Gallery that owns the submission.
     pub gallery_id: String,
     /// Templates accepted into the durable submission.
     pub accepted_records: usize,
-    /// Distinct students represented by committed templates.
-    pub accepted_students: usize,
+    /// Distinct subjects represented by committed templates.
+    pub accepted_subjects: usize,
     /// Rejected or rolled-back captures.
     pub rejected_captures: usize,
     /// Individual capture outcomes in input order.
@@ -195,14 +195,14 @@ mod tests {
             .validate(SdkLimits::default())
             .unwrap();
         assert_eq!(policy.min_quality, DEFAULT_ENROLLMENT_MIN_QUALITY);
-        assert_eq!(policy.max_templates_per_student, 2);
+        assert_eq!(policy.max_templates_per_subject, 2);
         assert!(policy.duplicate.enabled);
     }
 
     #[test]
     fn invalid_policy_is_rejected_at_initialization() {
         let error = EnrollmentConfig::default()
-            .with_max_templates_per_student(0)
+            .with_max_templates_per_subject(0)
             .validate(SdkLimits::default())
             .unwrap_err();
         assert_eq!(

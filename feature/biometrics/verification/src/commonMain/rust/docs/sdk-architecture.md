@@ -3,27 +3,28 @@
 ## Purpose
 
 The biometric SDK is the device-side owner of fingerprint extraction, local
-class-gallery persistence, libSQL synchronization, and offline 1:N matching.
+fixed-population gallery persistence, libSQL synchronization, and offline 1:N
+matching.
 The surrounding Android application passes provisioning and user actions. It
 does not own a gallery schema or biometric persistence implementation.
 
 The architecture is designed around five constraints:
 
 1. Clock-in must continue without a network connection.
-2. A device should search only the students assigned to its class gallery.
-3. Enrollment must survive process death and delayed synchronization.
-4. The server must enforce roster authority and school-wide uniqueness.
+2. A device should search only the subjects assigned to its gallery.
+3. An online-authorized enrollment must survive process death and delayed synchronization.
+4. The server must enforce membership authority and population-wide uniqueness.
 5. Matching must not block on SQL, synchronization, or index construction.
 
 ## Codebase Map
 
 ```mermaid
 flowchart TB
-    kotlin["kotlin.rs\nUniFFI application boundary"] --> campus["sdk/campus.rs\ngallery lifecycle and sync"]
-    campus --> libsql["libSQL synced database\nclass-gallery.db"]
-    campus --> gallery["sdk/gallery.rs\nimmutable matcher generation"]
-    campus --> artifact["sdk/artifact.rs\nartifact validation"]
-    campus --> enrollment["sdk/enrollment.rs\nenrollment policy and reports"]
+    kotlin["kotlin.rs\nUniFFI application boundary"] --> attendance["sdk/attendance.rs\ngallery lifecycle and sync"]
+    attendance --> libsql["libSQL synced database\ngallery.db"]
+    attendance --> gallery["sdk/gallery.rs\nimmutable matcher generation"]
+    attendance --> artifact["sdk/artifact.rs\nartifact validation"]
+    attendance --> enrollment["sdk/enrollment.rs\nenrollment policy and reports"]
     gallery --> index["sdk/index.rs\ncandidate index and verifier"]
     gallery --> extractor["sdk/extractor.rs\nquality and minutiae extraction"]
     artifact --> template["sdk/template.rs\nbounded template codec"]
@@ -42,8 +43,8 @@ flowchart TB
 | `sdk/artifact.rs` | Verify metadata, checksum, ownership, and duplicates |
 | `sdk/gallery.rs` | Pair validated template state with a derived search index |
 | `sdk/enrollment.rs` | Define capture acceptance and rejection contracts |
-| `sdk/campus.rs` | Own the replica, synchronization, batches, and publication |
-| `kotlin.rs` | Expose the campus workflow to Android through UniFFI |
+| `sdk/attendance.rs` | Own the replica, synchronization, authorization records, batches, and publication |
+| `kotlin.rs` | Expose the attendance workflow to Android through UniFFI |
 | `server_ffi.rs` | Reuse artifact validation from the Go server |
 
 ## Ownership Boundaries
@@ -63,25 +64,26 @@ flowchart LR
 
 The application owns UI state, sensor acquisition, provisioning delivery, and
 clock-event creation. The SDK owns all biometric bytes after a capture is
-submitted. Tanda Campus owns class membership, writer authority, canonical
-template revisions, and enrollment decisions.
+submitted. The application platform owns gallery membership, writer authority,
+administrator authorization, canonical template revisions, and enrollment
+decisions.
 
 Raw captures are discarded after extraction. The durable payload is a
-one-student `TemplateStore` containing extracted features only. Neither Go nor
+one-subject `TemplateStore` containing extracted features only. Neither Go nor
 Kotlin interprets that binary representation.
 
-## Class Gallery Schema
+## Gallery Schema
 
-The synchronized database uses schema identifier `tanda-class-gallery` and
-schema version `2`.
+The synchronized database uses schema identifier `tanda-gallery` and schema
+version `3`.
 
 | Table | Direction | Purpose |
 | --- | --- | --- |
 | `sync_metadata` | Server to device | Schema, stream, gallery, and domain revision |
-| `roster_members` | Server to device | Effective class membership and profile revision |
-| `gallery_templates` | Server to device | Canonical template per student and modality |
-| `enrollment_batches` | Writer to server | Resumable group-enrollment lifecycle |
-| `enrollment_submissions` | Writer to server | Durable candidate artifact and capture metadata |
+| `gallery_members` | Server to device | Effective subject membership and profile revision |
+| `gallery_templates` | Server to device | Canonical template per subject and modality |
+| `enrollment_batches` | Writer to server | Authorized, attributable group organizer lifecycle |
+| `enrollment_submissions` | Writer to server | Authorized subject candidate and capture metadata |
 | `enrollment_results` | Server to device | Immutable accepted or rejected decision |
 
 The database deliberately stores current projection rows. Domain ordering is
@@ -89,17 +91,20 @@ represented by `gallery_revision`; physical replication ordering is represented
 by libSQL WAL frames. These values are independent and must never be converted
 into one another.
 
-An enrollment submission records the gallery revision observed by the device.
-This is evidence for audit and conflict analysis, not permission for the device
-to assign a canonical revision.
+An enrollment submission records its physical device instance, canonical
+subject, operation authorization, administrator attribution, authorization
+expiry, and gallery revision observed by the device. This is evidence for audit
+and conflict analysis, not permission for the device to assign a canonical
+revision.
 
 ## Initialization
 
-`CampusBiometricSdk::open` performs the following sequence:
+`AttendanceBiometricSdk::open` performs the following sequence:
 
-1. Validate device ID, endpoint, credential, extraction policy, and limits.
+1. Validate device-instance ID, endpoint, credential, extraction policy, and limits.
 2. Create the SDK storage directory.
-3. Acquire an exclusive file lease for the class replica.
+3. Acquire an exclusive file lease and verify the storage root's persisted
+   physical device-instance binding.
 4. Create a two-worker Tokio runtime owned by the SDK.
 5. Open libSQL's synced database with remote SQL writes disabled.
 6. Attempt an initial synchronization.
@@ -114,6 +119,7 @@ install from appearing usable.
 
 Only one SDK process may own a replica directory. The file lease fails fast
 instead of allowing two local libSQL clients to write the same file.
+The same storage root cannot later be opened as another physical instance.
 
 ## Synchronization Algorithm
 
@@ -123,7 +129,7 @@ Synchronization is explicit. The SDK does not run a hidden network loop.
 sequenceDiagram
     participant App
     participant SDK
-    participant Replica as class-gallery.db
+    participant Replica as gallery.db
     participant Gateway
     participant Matcher as ArcSwap matcher
 
@@ -131,7 +137,7 @@ sequenceDiagram
     SDK->>SDK: acquire operation mutex
     SDK->>Gateway: libSQL push and pull
     Gateway-->>Replica: merged committed WAL
-    SDK->>Replica: read metadata, roster, templates, pending rows
+    SDK->>Replica: read metadata, membership, templates, pending rows
     SDK->>SDK: validate all artifacts and build replacement index
     alt replacement is valid
         SDK->>Matcher: atomic store(new index)
@@ -162,43 +168,53 @@ flowchart LR
     scan["Raw scan"] --> extract["Extract query template"]
     extract --> retrieve["Descriptor candidate retrieval"]
     retrieve --> verify["Geometric verification"]
-    verify --> collapse["Best finger per student"]
+    verify --> collapse["Best finger per subject"]
     collapse --> decision{"Acceptance and margin policy"}
-    decision -->|"passes"| match["Match(student_id)"]
+    decision -->|"passes"| match["Match(subject + record + gallery evidence)"]
     decision -->|"fails"| retry["Retry(reason)"]
 ```
 
-The matcher never selects a student solely because one candidate ranked first.
+The matcher never selects a subject solely because one candidate ranked first.
 Low quality, no shared descriptors, weak verification, or an ambiguous top-two
 margin produces `Retry`.
+
+An accepted result includes `subject_id`, `record_id`, `gallery_id`,
+`gallery_revision`, `modality=fingerprint`, `score`, and
+`verification_score`. Gallery identity and revision come from the same
+immutable `Arc<GalleryIndex>` generation that produced the match.
 
 ## Enrollment Algorithm
 
 Single and group enrollment use the same durable submission path. A group batch
-adds operator lifecycle metadata; it does not change artifact semantics.
+is an online-authorized organizer; it does not grant blanket capture authority
+or change artifact semantics. Every subject requires a separate server-issued
+authorization.
 
-For one student, the SDK:
+For one subject, the SDK:
 
-1. Requires current active roster membership in the local projection.
-2. Extracts every supplied capture and assigns a UUIDv7 finger-record ID.
-3. Rejects invalid, low-quality, or excess captures individually.
-4. Searches accepted captures against other students in the current class.
-5. Rolls back all accepted captures if any cross-student duplicate is found.
-6. Encodes accepted captures as one bounded one-student artifact.
-7. Computes the canonical `sha256:<hex>` payload checksum.
-8. Commits a UUIDv7 submission row in one immediate SQLite transaction.
-9. Rebuilds the local matcher so the writer can identify the student offline.
+1. Validates authorization expiry and its device-instance, gallery, subject,
+   optional batch, and administrator bindings.
+2. Requires current active gallery membership in the local projection.
+3. Rejects a locally reused enrollment operation ID.
+4. Extracts every supplied capture and assigns a UUIDv7 finger-record ID.
+5. Rejects invalid, low-quality, or excess captures individually.
+6. Searches accepted captures against other subjects in the current population.
+7. Rolls back all accepted captures if any cross-subject duplicate is found.
+8. Encodes accepted captures as one bounded one-subject artifact.
+9. Computes the canonical `sha256:<hex>` payload checksum.
+10. Commits attribution and the UUIDv7 submission row in one immediate transaction.
+11. Rebuilds the local matcher so the writer can identify the subject offline.
 
 The local duplicate check is a fast operator safeguard. It is not the final
-authority because the same finger can be enrolled concurrently in another
-class while both writers are offline. The server repeats duplicate matching
-against current canonical templates for the entire school while holding a
-school-scoped serialization lock.
+authority because the same finger can be enrolled concurrently through another
+gallery. The server repeats duplicate matching against the canonical comparison
+population while holding the application-defined serialization lock.
 
 ### Provisional State
 
-Pending rows are included only when `submission.device_id` matches this SDK's
-provisioned device ID. Reader devices therefore never treat another device's
+Pending rows are included only when `submission.device_instance_id` matches
+this SDK's provisioned physical instance ID. Reader devices therefore never
+treat another device's
 unreviewed submission as canonical.
 
 After synchronization:
@@ -209,13 +225,14 @@ After synchronization:
 
 ## Group Enrollment
 
-At most one `active` batch exists per device ID. Its owner, ID, and timestamps
-are stored in libSQL, so Android can resume the workflow after process death.
-Closing or cancelling a batch does not delete submissions that were already
-committed.
+At most one `active` batch exists per physical device-instance ID. Its
+administrator, authorization ID and expiry, ID, and timestamps are stored in
+libSQL, so Android can resume the organizer after process death. Every capture
+still needs a subject-specific authorization bound to that batch. Closing or
+cancelling a batch does not delete submissions already committed.
 
 An unfinished old-writer batch remains available for audit but does not block a
-replacement writer from starting its own batch. Different class galleries also
+replacement writer from starting its own batch. Different galleries also
 use independent replicas and may run group enrollment simultaneously.
 
 ## Writer Switching
@@ -224,9 +241,9 @@ Writer authority is enforced by the sync gateway, not by a mutable app flag.
 When an administrator assigns a replacement writer:
 
 1. The server closes the old writer assignment and increments its epoch.
-2. The old credential can no longer push class-gallery WAL.
+2. The old credential can no longer push gallery WAL.
 3. The replacement device receives a credential for the current epoch.
-4. The replacement bootstraps or refreshes the canonical class replica.
+4. The replacement bootstraps or refreshes the canonical gallery replica.
 5. Enrollment resumes after the replacement reaches `Ready`.
 
 A gateway writer-forbidden response moves the SDK to `WriterRevoked`. Existing
@@ -249,7 +266,7 @@ different assignment should use a separately provisioned storage directory.
 | State | Matching | Enrollment | Recovery |
 | --- | --- | --- | --- |
 | `Ready` | Available | Available to active writer | Normal operation |
-| `Offline` | Last verified matcher | Durable local enrollment allowed | Retry explicit sync |
+| `Offline` | Last verified matcher | No new capture without a valid online-issued authorization | Retry explicit sync |
 | `WriterRevoked` | Last verified matcher | Blocked | Resolve or replace writer assignment |
 | `Quarantined` | Last verified matcher | Blocked | Repair server projection and sync valid state |
 
@@ -264,19 +281,19 @@ descriptor tokens, and verifier features. Decoding validates lengths before
 allocation, rejects trailing bytes, and validates every extracted template.
 
 The SQL row carries format version, extractor profile, and SHA-256 checksum
-outside the payload. `decode_student_template_artifact` verifies all three plus
-single-student ownership before the record can enter an index.
+outside the payload. `decode_subject_template_artifact` verifies all three plus
+single-subject ownership before the record can enter an index.
 
 The format does not contain:
 
 - raw fingerprint pixels;
-- a class or school identifier;
-- roster membership;
+- a gallery or institution identifier;
+- gallery membership;
 - a WAL position or remote endpoint;
 - a derived candidate index.
 
-This separation lets the same canonical student artifact be projected into a
-new class after an administrative move without re-enrollment.
+This separation lets the same canonical subject artifact be projected into
+another gallery without biometric re-enrollment.
 
 ## Server Reuse
 
@@ -297,7 +314,7 @@ The repository tests:
 - bounded template encode/decode and corruption rejection;
 - extraction, candidate retrieval, geometric verification, and retry policy;
 - artifact checksum and ownership validation;
-- local roster authorization and durable provisional enrollment;
+- local membership checks, authorization binding, and durable provisional enrollment;
 - per-writer group batch singleton, restart recovery, and writer handoff;
 - quarantine behavior with preservation of the previous matcher;
 - Kotlin error and state conversion;

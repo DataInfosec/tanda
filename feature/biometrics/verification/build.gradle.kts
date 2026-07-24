@@ -17,10 +17,15 @@ kotlin {
         }
     }
     sourceSets {
-        commonMain.dependencies {
-            implementation(projects.feature.biometrics.domain)
+        val commonMain by getting {
+            dependencies {
+                kotlin.srcDir("build/generated/uniffi/commonMain/kotlin")
 
-            implementation(libs.koin.core)
+                implementation(projects.feature.biometrics.domain)
+
+                implementation(libs.koin.core)
+                implementation(libs.koin.annotation)
+            }
         }
     }
 }

@@ -21,8 +21,8 @@ pub struct GalleryStats {
     pub gallery_revision: u64,
     /// Number of indexed finger records.
     pub records: usize,
-    /// Number of distinct students.
-    pub users: usize,
+    /// Number of distinct gallery subjects.
+    pub subjects: usize,
 }
 
 /// Validated current gallery and its derived search index.
@@ -110,7 +110,7 @@ impl GalleryIndex {
             gallery_id: self.gallery_id.clone(),
             gallery_revision: self.gallery_revision,
             records: self.store.len(),
-            users: self.store.user_count(),
+            subjects: self.store.user_count(),
         }
     }
 
@@ -120,7 +120,7 @@ impl GalleryIndex {
         self.index.search_users(&query, config)
     }
 
-    /// Identify a user using the configured class policy.
+    /// Identify a subject using the configured gallery policy.
     pub fn identify_raw_bytes(&self, raw: &[u8]) -> SdkResult<IdentifyResult> {
         self.identify_raw_bytes_with_config(raw, self.identify)
     }
@@ -207,16 +207,16 @@ mod tests {
     #[test]
     fn replacement_builds_new_state_without_mutating_current_gallery() {
         let original = GalleryIndex::build(
-            "class:school:session:a",
+            "population:site:period:a",
             1,
-            TemplateStore::from_templates(vec![template("r1", "student-1", 10)]).unwrap(),
+            TemplateStore::from_templates(vec![template("r1", "subject-1", 10)]).unwrap(),
         )
         .unwrap();
         let replacement =
-            TemplateStore::from_templates(vec![template("r2", "student-1", 20)]).unwrap();
+            TemplateStore::from_templates(vec![template("r2", "subject-1", 20)]).unwrap();
 
         let updated = original
-            .replacing_user(2, "student-1", replacement)
+            .replacing_user(2, "subject-1", replacement)
             .unwrap();
 
         assert_eq!(original.gallery_revision(), 1);

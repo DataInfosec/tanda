@@ -1,4 +1,4 @@
-//! Validation and duplicate policy for one-student template artifacts.
+//! Validation and duplicate policy for one-subject template artifacts.
 //!
 //! Both the SDK-owned libSQL repository and the server FFI adapter use this
 //! module. Keeping artifact interpretation here prevents Go, Kotlin, and SQL
@@ -14,11 +14,11 @@ use super::limits::SdkLimits;
 use super::storage::{hex, validate_identifier};
 use super::template::{DEFAULT_EXTRACTOR_PROFILE, TEMPLATE_FORMAT_VERSION, TemplateStore};
 
-/// Metadata stored beside an opaque one-student template payload.
+/// Metadata stored beside an opaque one-subject template payload.
 #[derive(Debug, Clone, Copy)]
 pub struct TemplateArtifactRef<'a> {
-    /// Student expected to own every encoded template.
-    pub student_id: &'a str,
+    /// Subject expected to own every encoded template.
+    pub subject_id: &'a str,
     /// Binary schema identifier.
     pub format_version: &'a str,
     /// Extraction profile identifier.
@@ -29,13 +29,13 @@ pub struct TemplateArtifactRef<'a> {
     pub checksum: &'a str,
 }
 
-/// Validate and decode one bounded student artifact.
-pub fn decode_student_template_artifact(
+/// Validate and decode one bounded subject artifact.
+pub fn decode_subject_template_artifact(
     artifact: TemplateArtifactRef<'_>,
     extractor: ExtractorConfig,
     limits: SdkLimits,
 ) -> SdkResult<TemplateStore> {
-    validate_identifier("student_id", artifact.student_id)?;
+    validate_identifier("subject_id", artifact.subject_id)?;
     if artifact.format_version != TEMPLATE_FORMAT_VERSION {
         return Err(SdkError::invalid_format(format!(
             "unsupported template format {}",
@@ -50,27 +50,27 @@ pub fn decode_student_template_artifact(
     }
     if template_payload_checksum(artifact.payload) != artifact.checksum {
         return Err(SdkError::integrity(format!(
-            "template checksum mismatch for student {}",
-            artifact.student_id
+            "template checksum mismatch for subject {}",
+            artifact.subject_id
         )));
     }
     let decoded = TemplateStore::from_bytes_with_config(artifact.payload, extractor, limits)?;
-    if decoded.single_user_id()? != artifact.student_id {
+    if decoded.single_user_id()? != artifact.subject_id {
         return Err(SdkError::integrity(format!(
-            "template ownership mismatch for student {}",
-            artifact.student_id
+            "template ownership mismatch for subject {}",
+            artifact.subject_id
         )));
     }
 
     Ok(decoded)
 }
 
-/// Find the strongest cross-student duplicate for a candidate artifact.
+/// Find the strongest cross-subject duplicate for a candidate artifact.
 ///
 /// Existing templates are indexed once. Every candidate finger is queried
-/// against that index, same-student hits are excluded, and the strongest hit
+/// against that index, same-subject hits are excluded, and the strongest hit
 /// passing both candidate and geometric thresholds is returned.
-pub fn find_school_duplicate(
+pub fn find_cross_subject_duplicate(
     candidate: &TemplateStore,
     existing: &TemplateStore,
     config: DuplicateCheckConfig,
@@ -80,11 +80,11 @@ pub fn find_school_duplicate(
     if !config.enabled || existing.is_empty() {
         return Ok(None);
     }
-    let candidate_student = candidate.single_user_id()?;
+    let candidate_subject = candidate.single_user_id()?;
     let existing_templates = existing
         .templates()
         .into_iter()
-        .filter(|template| template.record.user_id != candidate_student)
+        .filter(|template| template.record.user_id != candidate_subject)
         .collect::<Vec<_>>();
     if existing_templates.is_empty() {
         return Ok(None);
@@ -103,7 +103,7 @@ pub fn find_school_duplicate(
                 .is_none_or(|current: &DuplicateEnrollmentMatch| hit.score > current.score);
             if replace {
                 strongest = Some(DuplicateEnrollmentMatch {
-                    student_id: hit.user_id,
+                    subject_id: hit.user_id,
                     record_id: hit.record_id,
                     score: hit.score,
                     verification_score: hit.verification_score,
@@ -125,11 +125,11 @@ mod tests {
     use super::*;
     use crate::sdk::extractor::{ExtractedTemplate, FingerRecord, TemplateFeature};
 
-    fn template(student_id: &str) -> ExtractedTemplate {
+    fn template(subject_id: &str) -> ExtractedTemplate {
         ExtractedTemplate {
             record: FingerRecord {
                 record_id: "record-1".to_owned(),
-                user_id: student_id.to_owned(),
+                user_id: subject_id.to_owned(),
             },
             quality: 80,
             token_count: 1,
@@ -147,17 +147,17 @@ mod tests {
 
     #[test]
     fn artifact_validation_checks_checksum_and_ownership() {
-        let store = TemplateStore::from_templates(vec![template("student-1")]).unwrap();
+        let store = TemplateStore::from_templates(vec![template("subject-1")]).unwrap();
         let payload = store.to_bytes().unwrap();
         let artifact = TemplateArtifactRef {
-            student_id: "student-1",
+            subject_id: "subject-1",
             format_version: TEMPLATE_FORMAT_VERSION,
             extractor_profile: DEFAULT_EXTRACTOR_PROFILE,
             payload: &payload,
             checksum: &template_payload_checksum(&payload),
         };
         assert_eq!(
-            decode_student_template_artifact(
+            decode_subject_template_artifact(
                 artifact,
                 ExtractorConfig::default(),
                 SdkLimits::default()
@@ -165,15 +165,15 @@ mod tests {
             .unwrap()
             .single_user_id()
             .unwrap(),
-            "student-1"
+            "subject-1"
         );
 
         let wrong_owner = TemplateArtifactRef {
-            student_id: "student-2",
+            subject_id: "subject-2",
             ..artifact
         };
         assert_eq!(
-            decode_student_template_artifact(
+            decode_subject_template_artifact(
                 wrong_owner,
                 ExtractorConfig::default(),
                 SdkLimits::default()

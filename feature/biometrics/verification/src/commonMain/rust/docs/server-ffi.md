@@ -13,9 +13,9 @@ flowchart LR
     go["Go enrollment projector"] --> cgo["cgo adapter"]
     cgo --> ffi["libbiometric_sdk.so"]
     ffi --> decode["bounded artifact decoder"]
-    ffi --> duplicate["school-wide duplicate matcher"]
-    postgres["Canonical school artifacts"] --> cgo
-    candidate["Pending class submission"] --> cgo
+    ffi --> duplicate["cross-subject duplicate matcher"]
+    postgres["Server-selected canonical artifacts"] --> cgo
+    candidate["Pending gallery submission"] --> cgo
 ```
 
 ## Build And Install
@@ -57,7 +57,7 @@ sequenceDiagram
     participant FFI as Rust C ABI
     participant Core as SDK core
 
-    Go->>FFI: candidate + school artifacts
+    Go->>FFI: candidate + canonical comparison set
     FFI->>FFI: validate pointers and UTF-8
     FFI->>Core: decode checksum, format, ownership
     FFI->>Core: run duplicate search
@@ -70,7 +70,7 @@ sequenceDiagram
 | ---: | --- | --- |
 | `0` | Candidate accepted | Persist canonical template revision |
 | `1` | Invalid or altered candidate artifact | Persist expected rejection |
-| `2` | Candidate matches another student | Persist school-duplicate rejection |
+| `2` | Candidate matches another subject | Persist population-duplicate rejection |
 | `-1` | Bad adapter input, invalid canonical state, panic, or internal failure | Roll back and retry or alert |
 
 Expected biometric rejection is data, not an infrastructure error. Internal
@@ -81,12 +81,12 @@ non-empty diagnostic exactly once with `biometric_sdk_free_bytes`.
 
 The exported entry point catches unwinding panics before they cross the C ABI.
 It validates null pointers, non-zero lengths, UTF-8 text fields, payload bounds,
-format version, extraction profile, checksum, and single-student ownership.
+format version, extraction profile, checksum, and single-subject ownership.
 
 The C boundary does not authenticate a caller or establish tenant scope. The Go
-service derives the school from the server-owned gallery stream, loads only
-that school's canonical templates, and serializes decisions before invoking
-the validator.
+service resolves the server-owned gallery stream to a site, loads that site's
+canonical templates, and serializes decisions before invoking the validator.
+The SDK validates only the comparison set supplied by Go.
 
 ## Versioning
 

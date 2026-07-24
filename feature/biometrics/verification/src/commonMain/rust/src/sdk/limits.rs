@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 
 use super::error::{SdkError, SdkResult};
 
-/// Limits for template artifacts and in-memory class indexes.
+/// Limits for template artifacts and in-memory gallery indexes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SdkLimits {
-    /// Maximum encoded one-student template artifact size.
+    /// Maximum encoded one-subject template artifact size.
     pub max_template_bytes: usize,
     /// Maximum encoded derived-index size.
     pub max_index_bytes: usize,
-    /// Maximum finger records in one class gallery.
+    /// Maximum finger records in one fixed-population gallery.
     pub max_records: usize,
     /// Maximum selected descriptors in one template.
     pub max_tokens_per_template: usize,
