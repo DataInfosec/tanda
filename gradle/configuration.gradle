@@ -1,0 +1,35 @@
+import java.util.Properties
+
+task("generateBuildConstants") {
+    // Inputs/Outputs for configuration cache and incremental build
+    inputs.files(rootProject.file("local.properties"))
+    def outputDir = layout.buildDirectory.dir("generated/source/buildConfig").get().asFile
+    outputs.dir(outputDir)
+    doLast {
+        Properties props = new Properties()
+        def propsFiles = inputs.files.files
+        if (!propsFiles.isEmpty()) {
+            def propsFile = propsFiles.iterator().next()
+            if (propsFile.exists()) {
+                propsFile.withInputStream { props.load(it) }
+            }
+        }
+        def url = props.getProperty("tanda.fingerprint.url") ?: ""
+        def secret = props.getProperty("tanda.fingerprint.secret") ?: ""
+        File outputFile = new File(outputDir, "com/tanda/BuildConstants.kt")
+        outputFile.parentFile.mkdirs()
+        outputFile.text = """
+            package com.tanda
+
+            import kotlin.experimental.ExperimentalObjCName
+            import kotlin.native.ObjCName
+            
+            @OptIn(ExperimentalObjCName::class)
+            @ObjCName(name = "BuildConstants", exact = true)
+            object BuildConstants {
+                const val URL = \"$url\"
+                const val SECRET = \"$secret\"
+            }
+        """.stripIndent().trim()
+    }
+}

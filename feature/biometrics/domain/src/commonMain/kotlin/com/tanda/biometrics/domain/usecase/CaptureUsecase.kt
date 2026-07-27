@@ -1,7 +1,7 @@
 package com.tanda.biometrics.domain.usecase
 
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.repository.ScannerRepository
 import com.tanda.core.common.usecase.SuspendWithArgsUseCase
 import org.koin.core.annotation.Factory
@@ -12,14 +12,14 @@ class CaptureUsecase(
 ) : SuspendWithArgsUseCase<CaptureUsecase.Argument, Unit> {
     override suspend fun invoke(args: Argument) {
         return repository.capture(
-            posture = args.posture,
+            finger = args.finger,
             index = args.index,
             option = args.option
         )
     }
 
     data class Argument(
-        val posture: Posture,
+        val finger: Finger,
         val index: Int,
         val option: Option
     )

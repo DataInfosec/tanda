@@ -2,6 +2,8 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.serialization.get()
 }
 
+apply("$rootDir/gradle/locale.gradle")
+
 kotlin {
     androidTarget()
     listOf(
@@ -14,6 +16,9 @@ kotlin {
         }
     }
     sourceSets {
+        val commonMain by getting {
+            kotlin.srcDir("$buildDir/generated/source/languages")
+        }
         commonMain.dependencies {
             api(libs.settings)
             api(libs.settings.coroutine)
@@ -30,4 +35,7 @@ kotlin {
             implementation(libs.settings.test)
         }
     }
+}
+tasks.named("preBuild") {
+    dependsOn("generateSupportedLocale")
 }

@@ -4,7 +4,7 @@ import com.tanda.biometrics.data.device.ScannerDevice
 import com.tanda.biometrics.device.interactor.ScannerInteractor
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.State
 import com.tanda.biometrics.domain.model.Status
 import kotlinx.coroutines.flow.Flow
@@ -31,12 +31,12 @@ class ScannerDeviceDelegate(private val interactor: ScannerInteractor) : Scanner
     }
 
     override suspend fun capture(
-        posture: Posture,
+        finger: Finger,
         index: Int,
         option: Option
     ) {
         interactor.capture(
-            posture = posture,
+            finger = finger,
             index = index,
             option = option
         )

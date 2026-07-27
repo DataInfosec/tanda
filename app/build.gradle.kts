@@ -1,6 +1,8 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+apply("$rootDir/gradle/configuration.gradle")
+
 android {
     defaultConfig {
         versionCode = 1
@@ -41,6 +43,7 @@ kotlin {
             implementation(projects.feature.scanner.libibscancommon)
             implementation(projects.feature.scanner.libibscanuitimate)
         }
+        val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.persistence)
@@ -56,6 +59,7 @@ kotlin {
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.data)
             implementation(projects.feature.biometrics.device)
+            implementation(projects.feature.biometrics.verification)
             implementation(projects.feature.biometrics.ui)
         }
         commonTest.dependencies {
@@ -63,7 +67,5 @@ kotlin {
         }
     }
 }
-dependencies {
-    debugImplementation(compose.uiTooling)
-}
-
+dependencies { debugImplementation(compose.uiTooling) }
+tasks.named("preBuild") { dependsOn("generateBuildConstants") }

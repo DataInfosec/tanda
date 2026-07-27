@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.usecase.CaptureUsecase
 import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
 import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
@@ -60,7 +60,7 @@ class FingerprintViewModel(
             _state.tryEmit(State.Loading)
             captureUsecase(
                 CaptureUsecase.Argument(
-                    posture = Posture.FLAT_SINGLE_FINGER,
+                    finger = Finger.FLAT_SINGLE_FINGER,
                     index = index,
                     option = Option.IGNORE_FINGER_COUNT
                 )

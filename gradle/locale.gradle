@@ -1,0 +1,56 @@
+import java.io.File
+import java.util.Locale
+
+tasks.register("generateSupportedLocale") {
+    def pDir = project.projectDir
+    def outputDir = new File(project.buildDir, "generated/source/languages")
+    outputs.dir(outputDir)
+    doLast {
+        def resDir = new File(pDir, "src/commonMain/composeResources")
+        def languages = resDir.listFiles()
+                ?.findAll { it.isDirectory() && it.name.startsWith("values") }
+                ?.collect { dir ->
+                    if (dir.name == "values") {
+                        return "en"
+                    } else {
+                        return dir.name
+                                .replaceFirst("values-", "")
+                                .replace("-r", "-")
+                    }
+                }
+                ?.unique()
+                ?.sort()
+                ?: []
+        def displayName = { String code ->
+            def locale = Locale.forLanguageTag(code)
+            def name = locale.getDisplayLanguage(locale)
+            return name.capitalize()
+        }
+        def flagEmoji = { String code ->
+            def parts = code.split("-")
+            if (parts.length < 2) return "🌐"
+
+            def country = parts[1].toUpperCase()
+            return country.collect { char c ->
+                new String(Character.toChars(((int) c) + 127397))
+            }.join("")
+        }
+        def file = new File(outputDir, "SupportedLocale.kt")
+        file.parentFile.mkdirs()
+        file.text = """
+            data class SupportedLanguage(
+                val code: String,
+                val displayName: String,
+                val flag: String
+            )
+
+            object SupportedLocale {
+                val all = listOf<SupportedLanguage>(
+                    ${languages.collect { code ->
+            """SupportedLanguage("${code}", "${displayName(code)}", "${flagEmoji(code)}")"""
+        }.join(",\n")}
+                )
+            }
+        """.stripIndent()
+    }
+}

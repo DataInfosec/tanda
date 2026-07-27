@@ -15,7 +15,7 @@ import com.tanda.biometrics.domain.exception.PermissionException
 import com.tanda.biometrics.device.mapper.toCaptureOption
 import com.tanda.biometrics.device.mapper.toImageType
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.Status
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -106,7 +106,7 @@ actual class ScannerInteractor(
         scanner.requestPermission(id)
     }
 
-    actual suspend fun capture(posture: Posture, index: Int, option: Option) {
+    actual suspend fun capture(finger: Finger, index: Int, option: Option) {
         try {
             observable.reset()
             if (device == null) {
@@ -117,7 +117,7 @@ actual class ScannerInteractor(
                 device?.captureImageManually()
             } else {
                 device?.beginCaptureImage(
-                    posture.toImageType(),
+                    finger.toImageType(),
                     IBScanDevice.ImageResolution.RESOLUTION_500,
                     option.toCaptureOption() or
                             OPTION_AUTO_CONTRAST or

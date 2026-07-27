@@ -10,10 +10,10 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Single
 import kotlin.reflect.KType
 
-@Factory
+@Single
 @Suppress("UNCHECKED_CAST")
 class PersistenceRepositoryDelegate(
     private val json: Json,

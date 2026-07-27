@@ -1,7 +1,7 @@
 package com.tanda.biometrics.device.interactor
 
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.State
 import com.tanda.biometrics.domain.model.Status
@@ -33,7 +33,7 @@ actual class ScannerInteractor {
 
     actual fun requestPermission(id: Int) {}
 
-    actual suspend fun capture(posture: Posture, index: Int, option: Option) {}
+    actual suspend fun capture(finger: Finger, index: Int, option: Option) {}
 
     actual fun stop() {}
 

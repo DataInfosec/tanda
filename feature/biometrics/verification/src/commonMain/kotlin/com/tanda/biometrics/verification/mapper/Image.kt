@@ -1,4 +1,4 @@
-package com.tanda.biometrics.verification
+package com.tanda.biometrics.verification.mapper
 
 import com.tanda.biometrics.domain.model.Image
 
@@ -13,7 +13,7 @@ private const val CAPTURE_BYTES = CAPTURE_WIDTH * CAPTURE_HEIGHT
  * biometric SDK accepts only the raw pixels from one 400x500, 8-bit grayscale
  * image.
  */
-fun Image.biometricSdkBytes(): ByteArray {
+fun Image.mapToByte(): ByteArray {
     require(width == CAPTURE_WIDTH && height == CAPTURE_HEIGHT) {
         "Fingerprint capture must be ${CAPTURE_WIDTH}x$CAPTURE_HEIGHT, got ${width}x$height"
     }

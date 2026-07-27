@@ -1,6 +1,6 @@
 package com.tanda.biometrics.domain.model
 
-enum class Posture {
+enum class Finger {
     TYPE_NONE,
     ROLL_SINGLE_FINGER,
     FLAT_SINGLE_FINGER,

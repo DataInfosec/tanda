@@ -1,5 +1,7 @@
 package com.tanda.module
 
+import com.tanda.BuildConstants
+import com.tanda.biometrics.verification.model.Credential
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +13,16 @@ import org.koin.core.annotation.Single
 @Module
 class CoreModule {
     @Single
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
+    fun provideJson(): Json = Json { ignoreUnknownKeys = true }
+
+    @Single
+    fun provideCredential(): Credential {
+        return Credential(
+            id = "",
+            url = BuildConstants.URL,
+            path = "",
+            secret = BuildConstants.SECRET
+        )
     }
 
     @Single

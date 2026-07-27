@@ -3,7 +3,7 @@ package com.tanda.biometrics.data.repository
 import com.tanda.biometrics.data.device.ScannerDevice
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
-import com.tanda.biometrics.domain.model.Posture
+import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.State
 import com.tanda.biometrics.domain.model.Status
 import com.tanda.biometrics.domain.repository.ScannerRepository
@@ -33,11 +33,11 @@ class ScannerRepositoryDelegate(
     }
 
     override suspend fun capture(
-        posture: Posture,
+        finger: Finger,
         index: Int,
         option: Option
     ) {
-        device.capture(posture, index, option)
+        device.capture(finger, index, option)
     }
 
     override fun stop() {
