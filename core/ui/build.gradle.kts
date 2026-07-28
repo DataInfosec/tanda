@@ -10,18 +10,15 @@ kotlin {
         }
     }
     sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.compose.uiTooling)
-        }
+        androidMain.dependencies { implementation(compose.preview) }
         commonMain.dependencies {
             implementation(projects.core.common)
 
             implementation(libs.lifecycle.viewmodelNavigation3)
             implementation(libs.kotlinx.serialization.json)
 
-            implementation(libs.compose.material3)
-            implementation(libs.compose.uiToolingPreview)
+            implementation(compose.material3)
+            implementation(compose.components.uiToolingPreview)
 
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
@@ -29,3 +26,4 @@ kotlin {
         }
     }
 }
+dependencies { debugImplementation(compose.uiTooling) }

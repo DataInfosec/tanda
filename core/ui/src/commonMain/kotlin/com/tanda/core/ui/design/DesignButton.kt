@@ -39,10 +39,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tanda.core.ui.theme.DesignTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 data class DesignButtonColors(
     val containerColor: Color,

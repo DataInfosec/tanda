@@ -1,6 +1,5 @@
 package com.tanda.core.ui.design
 
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +26,6 @@ fun DesignText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
-    autoSize: TextAutoSize? = null,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -49,7 +47,6 @@ fun DesignText(
             text = text,
             color = color,
             modifier = modifier,
-            autoSize = autoSize,
             fontSize = fontSize,
             fontStyle = fontStyle,
             fontWeight = fontWeight,
