@@ -27,12 +27,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tanda.biometrics.domain.model.Status
 import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
 import com.tanda.core.ui.component.UiComponentProvider
+import org.koin.compose.getKoin
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.scope.ScopeID
 
 @Composable
 fun ScannerScreen(scope: ScopeID) {
-    val factory = org.koin.compose.getKoin().getScope(scope).get<UiComponentProvider.Factory>()
+    val factory = getKoin().getScope(scope).get<UiComponentProvider.Factory>()
     val component = remember { factory.builder(Scanner.Builder::class).build() }
     val viewModel: ScannerViewModel = koinViewModel(scope = component)
     val status = viewModel.status.collectAsStateWithLifecycle()

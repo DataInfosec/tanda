@@ -1,5 +1,6 @@
 package com.tanda.module
 
+import com.tanda.attendance.module.AttendanceModule
 import com.tanda.preference.PreferenceModule
 import org.koin.core.annotation.Module
 
@@ -7,7 +8,7 @@ import org.koin.core.annotation.Module
     includes = [
         CoreModule::class,
         PreferenceModule::class,
-        ScannerModule::class,
+        AttendanceModule::class,
     ]
 )
 object TandaModule

@@ -10,7 +10,6 @@ androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.1"
 androidx-lifecycle-viewmodel = "2.10.0"
 splash = "1.0.1"
-preference = "1.3.0"
 androidx-testExt = "1.2.1"
 composeMultiplatform = "1.8.2"
 junit = "4.13.2"
@@ -64,13 +63,16 @@ koin-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "ko
 koin-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin-compose" }
 html = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "html" }
 settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "settings" }
-settings-coroutine = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "preference" }
+settings-coroutine = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "settings" }
 settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "settings" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3" }
 navigation3-runtime = { module = "org.jetbrains.androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
 lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle-viewmodel" }
 material3-adaptiveNavigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
+compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

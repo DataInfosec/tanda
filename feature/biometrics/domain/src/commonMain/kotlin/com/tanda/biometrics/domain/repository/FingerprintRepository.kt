@@ -6,7 +6,7 @@ import com.tanda.biometrics.domain.model.Capture
 interface FingerprintRepository {
     suspend fun identify(image: Image): Capture
 
-    suspend fun enroll(id: String, images: List<Image>)
+    suspend fun enroll(id: String, images: List<Image>, session: String? = null): String
 
     suspend fun synchronize()
 }

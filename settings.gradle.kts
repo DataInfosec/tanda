@@ -51,4 +51,6 @@ include(":feature:scanner:libibscanuitimate")
 include(":feature:scanner:liblfd")
 include(":feature:scanner:libusb")
 
+include(":feature:attendance")
+
 include(":app")

@@ -36,11 +36,17 @@ class FingerprintRepositoryDelegate(credential: Credential) : FingerprintReposit
 
     override suspend fun enroll(
         id: String,
-        images: List<Image>
-    ) {
+        images: List<Image>,
+        session: String?
+    ): String {
         require(images.isNotEmpty()) { EnrollmentException() }
         val captures = images.map { it.mapToByte() }
-        sdk.enrollStudent(id, captures, null)
+        val batchId = session ?: sdk.startGroupEnrollment().id
+        val result = sdk.enrollStudent(id, captures, session)
+        if (result.submissionId == null) {
+            throw EnrollmentException()
+        }
+        return batchId
     }
 
     override suspend fun synchronize() {
