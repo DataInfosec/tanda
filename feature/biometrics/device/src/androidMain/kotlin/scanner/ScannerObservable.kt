@@ -1,11 +1,11 @@
 package scanner
 
 import com.tanda.biometrics.domain.model.Mode
-import com.tanda.biometrics.domain.model.State
+import com.tanda.biometrics.domain.model.Snapshot
 import kotlinx.coroutines.flow.Flow
 
 interface ScannerObservable {
-    val state: Flow<State>
+    val state: Flow<Snapshot>
 
     val mode: Flow<Mode>
 

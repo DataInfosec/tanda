@@ -38,7 +38,7 @@ class ScannerViewModel(
         try {
             _state.tryEmit(State.Loading)
             startUsecase()
-            _state.tryEmit(State.Start)
+            _state.tryEmit(State.Success(true))
         } catch (error: Throwable) {
             _state.tryEmit(State.Error(error))
         }
@@ -48,7 +48,7 @@ class ScannerViewModel(
         try {
             _state.tryEmit(State.Loading)
             stopUsecase()
-            _state.tryEmit(State.Stop)
+            _state.tryEmit(State.Success(false))
         } catch (error: Throwable) {
             _state.tryEmit(State.Error(error))
         }
@@ -57,8 +57,7 @@ class ScannerViewModel(
     sealed interface State {
         object Default : State
         object Loading : State
-        object Start : State
-        object Stop : State
+        data class Success(val active: Boolean) : State
         data class Error(val error: Throwable) : State
     }
 }

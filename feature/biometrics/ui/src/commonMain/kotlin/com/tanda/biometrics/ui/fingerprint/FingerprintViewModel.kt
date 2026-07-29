@@ -6,6 +6,7 @@ import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
+import com.tanda.biometrics.domain.model.Snapshot
 import com.tanda.biometrics.domain.usecase.CaptureUsecase
 import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
 import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class FingerprintViewModel(
@@ -27,59 +27,73 @@ class FingerprintViewModel(
     private val permissionRequestUsecase: PermissionRequestUsecase,
     private val captureUsecase: CaptureUsecase
 ) : ViewModel() {
-    private val _status = MutableStateFlow<Status>(Status.Default(Mode.Default))
+    private val _mode = MutableStateFlow<Mode>(Mode.Default)
+
+    private val _status = MutableStateFlow<Status>(Status.Default)
 
     private val _state = MutableStateFlow<State>(State.Default)
 
+    val mode: StateFlow<Mode> = _mode.asStateFlow()
+
     val status: StateFlow<Status> = _status.asStateFlow()
+
 
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            combine(stateUsecase(), modeUsecase()) { state, mode ->
-                if (state is com.tanda.biometrics.domain.model.State.Capture) {
-                    Status.Capture(mode, state.image)
+            stateUsecase().collectLatest {
+                if (it is Snapshot.Capture) {
+                    _status.tryEmit(Status.Capture(it.image))
                 } else {
-                    Status.Default(mode)
+                    _status.tryEmit(Status.Default)
                 }
-            }.collectLatest { _status.tryEmit(it) }
+            }
+        }
+        viewModelScope.launch {
+            modeUsecase().collectLatest { _mode.tryEmit(it) }
         }
     }
 
     operator fun invoke(id: Int) {
         viewModelScope.launch {
-            if (!permissionUsecase(id)) {
-                permissionRequestUsecase(id)
+            try {
+                if (!permissionUsecase(id)) {
+                    permissionRequestUsecase(id)
+                }
+            } catch (error: Throwable) {
+                _state.tryEmit(State.Error(error))
             }
         }
     }
 
     operator fun invoke(id: Int, index: Int) {
         viewModelScope.launch(dispatcher.io) {
-            _state.tryEmit(State.Loading)
-            captureUsecase(
-                CaptureUsecase.Argument(
-                    finger = Finger.FLAT_SINGLE_FINGER,
-                    index = index,
-                    option = Option.IGNORE_FINGER_COUNT
+            try {
+                _state.tryEmit(State.Loading)
+                captureUsecase(
+                    CaptureUsecase.Argument(
+                        finger = Finger.FLAT_SINGLE_FINGER,
+                        index = index,
+                        option = Option.IGNORE_FINGER_COUNT
+                    )
                 )
-            )
-            _state.tryEmit(State.Initialized)
+                _state.tryEmit(State.Initialized)
+            } catch (error: Throwable) {
+                _state.tryEmit(State.Error(error))
+            }
         }
     }
 
-    sealed class Status(val mode: Mode) {
-        data class Default(private val _mode: Mode) : Status(_mode)
-        data class Capture(
-            private val _mode: Mode,
-            val image: Image
-        ) : Status(_mode)
+    sealed interface Status {
+        data object Default : Status
+        data class Capture(val image: Image) : Status
     }
 
     sealed interface State {
         data object Default : State
         data object Loading : State
         data object Initialized : State
+        data class Error(val error: Throwable) : State
     }
 }

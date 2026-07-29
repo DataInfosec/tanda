@@ -7,6 +7,7 @@ import com.tanda.biometrics.domain.DomainModule
 import com.tanda.biometrics.verification.VerificationModule
 import com.tanda.biometrics.verification.model.Credential
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Module(
@@ -19,11 +20,14 @@ import org.koin.core.annotation.Single
 )
 class BiometricsModule {
     @Single
-    fun provideCredential(): Credential {
+    fun provideCredential(
+        @Named("uuid") uuid: String,
+        @Named("path") path: String
+    ): Credential {
         return Credential(
-            id = "",
+            id = uuid,
             url = BuildConstants.URL,
-            path = "",
+            path = path,
             secret = BuildConstants.SECRET
         )
     }

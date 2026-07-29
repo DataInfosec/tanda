@@ -1,6 +1,8 @@
 package com.tanda.attendance.ui.checkin
 
-import com.tanda.biometrics.ui.scanner.Scanner
+import com.tanda.biometrics.domain.usecase.IdentificationUsecase
+import com.tanda.biometrics.ui.fingerprint.Fingerprint
+import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
@@ -12,6 +14,17 @@ import org.koin.ksp.generated.module
 
 @Module
 object Checkin {
+    @org.koin.core.annotation.Scope(Checkin::class)
+    fun provideViewModel(
+        dispatcher: Dispatcher,
+        usecase: IdentificationUsecase
+    ): CheckinViewModel {
+        return CheckinViewModel(
+            dispatcher = dispatcher,
+            usecase = usecase,
+        )
+    }
+
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
             val scope = scope(named<Checkin>())
@@ -22,7 +35,7 @@ object Checkin {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
-                                    Scanner.Builder(scope),
+                                    Fingerprint.Builder(scope),
                                 )
                             )
                         }

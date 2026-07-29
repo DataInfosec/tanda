@@ -3,8 +3,10 @@ package com.tanda
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -16,6 +18,7 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import com.tanda.ui.main.Main
 import com.tanda.ui.main.MainScreen
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         val scope = (application as TandaApplication).scope
         scope.getKoin().loadModules(listOf(
             module {
@@ -31,10 +35,13 @@ class MainActivity : ComponentActivity() {
                         getPreferences(MODE_PRIVATE)
                     )
                 }
+                single<String>(qualifier = named("uuid")) { "019f8508" }
+                single<String>(qualifier = named("path")) { filesDir.absolutePath }
             }
         ))
         setContent {
             val view = LocalView.current
+            val isDarkTheme = isSystemInDarkTheme()
             val component = remember { Main.Builder(scope).build() }
             SideEffect {
                 if (view.context !is Activity) return@SideEffect
@@ -45,8 +52,8 @@ class MainActivity : ComponentActivity() {
                     window.isNavigationBarContrastEnforced = false
                 }
                 val windowsInsetsController = WindowCompat.getInsetsController(window, view)
-                windowsInsetsController.isAppearanceLightStatusBars = false
-                windowsInsetsController.isAppearanceLightNavigationBars = false
+                windowsInsetsController.isAppearanceLightStatusBars = !isDarkTheme
+                windowsInsetsController.isAppearanceLightNavigationBars = !isDarkTheme
             }
             MainScreen(component.id)
         }

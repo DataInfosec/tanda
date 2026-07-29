@@ -9,7 +9,12 @@ import com.tanda.ui.main.MainScreen
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import platform.Foundation.NSCachesDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUUID
 import platform.Foundation.NSUserDefaults
+import platform.Foundation.NSUserDomainMask
 
 interface TandaApplication
 
@@ -23,6 +28,23 @@ object IosApp {
                 single<ScannerInteractor> { ScannerInteractor() }
                 single<ObservableSettings> {
                     NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults())
+                }
+                single<String>(qualifier = named("uuid")) {
+                    get<ObservableSettings>()
+                        .getStringOrNull("device_uuid")
+                        ?: NSUUID().UUIDString.also {
+                            get<ObservableSettings>()
+                                .putString("device_uuid", it)
+                        }
+                }
+                single<String>(qualifier = named("path")) {
+                    val cachesURL = NSFileManager.defaultManager
+                        .URLsForDirectory(
+                            directory = NSCachesDirectory,
+                            inDomains = NSUserDomainMask
+                        )
+                        .firstOrNull() as? NSURL
+                    cachesURL?.path ?: error("Unable to resolve caches directory")
                 }
             }
         ))

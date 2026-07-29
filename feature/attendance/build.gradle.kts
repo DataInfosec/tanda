@@ -1,3 +1,7 @@
+plugins {
+    kotlin("plugin.serialization") version libs.versions.serialization.get()
+}
+
 apply("$rootDir/gradle/configuration.gradle")
 
 kotlin {
