@@ -1,6 +1,5 @@
 package com.tanda.attendance.ui.checkin
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
