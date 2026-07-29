@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class FingerprintViewModel(
@@ -28,23 +27,31 @@ class FingerprintViewModel(
     private val permissionRequestUsecase: PermissionRequestUsecase,
     private val captureUsecase: CaptureUsecase
 ) : ViewModel() {
-    private val _status = MutableStateFlow<Status>(Status.Default(Mode.Default))
+    private val _mode = MutableStateFlow<Mode>(Mode.Default)
+
+    private val _status = MutableStateFlow<Status>(Status.Default)
 
     private val _state = MutableStateFlow<State>(State.Default)
 
+    val mode: StateFlow<Mode> = _mode.asStateFlow()
+
     val status: StateFlow<Status> = _status.asStateFlow()
+
 
     val state: StateFlow<State> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            combine(stateUsecase(), modeUsecase()) { state, mode ->
-                if (state is Snapshot.Capture) {
-                    Status.Capture(mode, state.image)
+            stateUsecase().collectLatest {
+                if (it is Snapshot.Capture) {
+                    _status.tryEmit(Status.Capture(it.image))
                 } else {
-                    Status.Default(mode)
+                    _status.tryEmit(Status.Default)
                 }
-            }.collectLatest { _status.tryEmit(it) }
+            }
+        }
+        viewModelScope.launch {
+            modeUsecase().collectLatest { _mode.tryEmit(it) }
         }
     }
 
@@ -78,12 +85,9 @@ class FingerprintViewModel(
         }
     }
 
-    sealed class Status(val mode: Mode) {
-        data class Default(private val _mode: Mode) : Status(_mode)
-        data class Capture(
-            private val _mode: Mode,
-            val image: Image
-        ) : Status(_mode)
+    sealed interface Status {
+        data object Default : Status
+        data class Capture(val image: Image) : Status
     }
 
     sealed interface State {

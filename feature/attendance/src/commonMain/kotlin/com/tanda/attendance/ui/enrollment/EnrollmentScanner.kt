@@ -45,12 +45,17 @@ fun EnrollmentScanner(
         .imePadding()
         .padding(horizontal = 20.dp)
         .padding(vertical = 16.dp)) {
-        Column {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             when (status.value) {
-                is FingerprintViewModel.Status.Default -> {}
+                is FingerprintViewModel.Status.Default -> {
+                    DesignText("Place your finger to scan")
+                }
                 is FingerprintViewModel.Status.Capture -> {
                     val img: Image = (status.value as FingerprintViewModel.Status.Capture).image
-                    Text(text = "Captured image: ${img.width}x${img.height} (${img.data.size} bytes)")
+                    DesignText(text = "Captured image: ${img.width}x${img.height} (${img.data.size} bytes)")
                     ImagePreview(image = img)
                 }
             }

@@ -41,9 +41,9 @@ fun EnrollmentScreen(
     val controller = rememberNavController()
     FingerprintScreen(component.id, deviceId) { vm, stream ->
         val status = vm.status.collectAsStateWithLifecycle()
-        val mode = remember { derivedStateOf { status.value.mode } }
+        val mode = vm.mode.collectAsStateWithLifecycle()
         val isLoading = remember { derivedStateOf { stream.value is DesignStreamState.Loading } }
-        val snackbarHostState = remember { SnackbarHostState() }
+        val snackbar = remember { SnackbarHostState() }
         NavHost(
             navController = controller,
             startDestination = "enroll"
@@ -55,7 +55,7 @@ fun EnrollmentScreen(
                 ) { vm(deviceId, 0) }
             }
             composable<ScanRoute> { backStackEntry ->
-                Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) {
+                Scaffold(snackbarHost = { SnackbarHost(snackbar) }) {
                     EnrollmentScanner(
                         identifier = backStackEntry.toRoute<ScanRoute>().id,
                         status = status,
@@ -88,9 +88,7 @@ fun EnrollmentScreen(
                     current.error.message ?: "Something went wrong"
                 }
             }
-            message?.let {
-                snackbarHostState.showSnackbar(it)
-            }
+            message?.let { snackbar.showSnackbar(it) }
         }
     }
 }

@@ -42,7 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tanda.core.ui.theme.DesignTheme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import tanda.core.ui.generated.resources.Res
+import tanda.core.ui.generated.resources.loading
 
 data class DesignButtonColors(
     val containerColor: Color,
@@ -109,7 +112,7 @@ fun DesignButton(
     durationMillis: Int = 1000,
     easing: Easing = FastOutSlowInEasing,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    loading: @Composable () -> Unit = {},
+    loading: @Composable () -> Unit = { DesignLoader(style) },
     content: @Composable () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
@@ -176,6 +179,11 @@ fun DesignButton(
             }
         }
     }
+}
+
+@Composable
+fun DesignLoader(style: TextStyle = MaterialTheme.typography.bodyMedium) {
+    DesignText(stringResource(Res.string.loading), style = style)
 }
 
 @Preview
