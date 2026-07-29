@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         ))
         setContent {
             val view = LocalView.current
+            val isDarkTheme = isSystemInDarkTheme()
             val component = remember { Main.Builder(scope).build() }
             SideEffect {
                 if (view.context !is Activity) return@SideEffect
@@ -45,8 +47,8 @@ class MainActivity : ComponentActivity() {
                     window.isNavigationBarContrastEnforced = false
                 }
                 val windowsInsetsController = WindowCompat.getInsetsController(window, view)
-                windowsInsetsController.isAppearanceLightStatusBars = false
-                windowsInsetsController.isAppearanceLightNavigationBars = false
+                windowsInsetsController.isAppearanceLightStatusBars = !isDarkTheme
+                windowsInsetsController.isAppearanceLightNavigationBars = !isDarkTheme
             }
             MainScreen(component.id)
         }

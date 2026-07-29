@@ -1,6 +1,6 @@
 package com.tanda.attendance.ui.enrollment
 
-import com.tanda.biometrics.ui.scanner.Scanner
+import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
@@ -22,7 +22,7 @@ object Enrollment {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
-                                    Scanner.Builder(scope),
+                                    Fingerprint.Builder(scope),
                                 )
                             )
                         }
