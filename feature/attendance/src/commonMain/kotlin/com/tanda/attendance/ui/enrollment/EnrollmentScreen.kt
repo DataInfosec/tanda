@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
+import com.tanda.biometrics.ui.fingerprint.FingerprintViewModel
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignStreamState
 import kotlinx.coroutines.flow.collectLatest
@@ -41,7 +42,11 @@ fun EnrollmentScreen(
     val controller = rememberNavController()
     FingerprintScreen(component.id, deviceId) { vm, stream ->
         val status = vm.status.collectAsStateWithLifecycle()
+        val scannerState = vm.state.collectAsStateWithLifecycle()
         val mode = vm.mode.collectAsStateWithLifecycle()
+        val isInitialized = remember { derivedStateOf {
+            scannerState.value is FingerprintViewModel.State.Initialized
+        } }
         val isLoading = remember { derivedStateOf { stream.value is DesignStreamState.Loading } }
         val snackbar = remember { SnackbarHostState() }
         NavHost(
@@ -58,6 +63,7 @@ fun EnrollmentScreen(
                 Scaffold(snackbarHost = { SnackbarHost(snackbar) }) {
                     EnrollmentScanner(
                         identifier = backStackEntry.toRoute<ScanRoute>().id,
+                        mode = mode,
                         status = status,
                         processing = processing
                     ) { identifier, image ->
@@ -67,9 +73,9 @@ fun EnrollmentScreen(
             }
         }
         LaunchedEffect(Unit) {
-            snapshotFlow { mode.value }
-                .collectLatest {
-                    if (it is Mode.Platen) {
+            snapshotFlow { mode.value to isInitialized.value }
+                .collectLatest { value ->
+                    if (value.first is Mode.Platen && value.second) {
                         controller.navigate(ScanRoute(identifier.text.toString())) {
                             popUpTo("enroll") {
                                 inclusive = true

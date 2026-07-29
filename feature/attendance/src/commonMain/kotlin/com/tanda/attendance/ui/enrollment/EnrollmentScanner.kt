@@ -21,16 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tanda.biometrics.domain.model.Image
+import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.ui.fingerprint.FingerprintViewModel
 import com.tanda.core.ui.design.DesignButton
 import com.tanda.core.ui.design.DesignText
 import org.jetbrains.compose.resources.stringResource
+import org.koin.ext.getFullName
 import tanda.feature.attendance.generated.resources.Res
 import tanda.feature.attendance.generated.resources.enrol
 
 @Composable
 fun EnrollmentScanner(
     identifier: String,
+    mode: State<Mode>,
     processing: State<Boolean>,
     status: State<FingerprintViewModel.Status>,
     onScan: (String, Image) -> Unit
@@ -51,7 +54,7 @@ fun EnrollmentScanner(
         ) {
             when (status.value) {
                 is FingerprintViewModel.Status.Default -> {
-                    DesignText("Place your finger to scan")
+                    DesignText("Place your finger to scan (${mode.value::class.simpleName})")
                 }
                 is FingerprintViewModel.Status.Capture -> {
                     val img: Image = (status.value as FingerprintViewModel.Status.Capture).image
