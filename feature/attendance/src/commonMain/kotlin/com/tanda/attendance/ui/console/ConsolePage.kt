@@ -40,7 +40,7 @@ fun ConsolePage(
         DesignButton(
             onClick = onCheckin,
             modifier = Modifier.fillMaxWidth()
-                .padding(top = 12.dp),
+                .padding(top = 10.dp),
             colors = designTertiaryButtonColors(),
         ) { DesignText(stringResource(Res.string.checkin)) }
     }

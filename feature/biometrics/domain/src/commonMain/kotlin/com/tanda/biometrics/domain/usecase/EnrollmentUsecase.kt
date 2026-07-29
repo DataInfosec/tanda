@@ -20,6 +20,6 @@ class EnrollmentUsecase(
     data class Argument(
         val id: String,
         val images: List<Image>,
-        val session: String?
+        val session: String? = null
     )
 }

@@ -1,6 +1,8 @@
 package com.tanda.attendance.ui.enrollment
 
+import com.tanda.biometrics.domain.usecase.EnrollmentUsecase
 import com.tanda.biometrics.ui.fingerprint.Fingerprint
+import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
@@ -12,6 +14,17 @@ import org.koin.ksp.generated.module
 
 @Module
 object Enrollment {
+    @org.koin.core.annotation.Scope(Enrollment::class)
+    fun provideViewModel(
+        dispatcher: Dispatcher,
+        usecase: EnrollmentUsecase
+    ): EnrollmentViewModel {
+        return EnrollmentViewModel(
+            dispatcher = dispatcher,
+            usecase = usecase,
+        )
+    }
+
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
             val scope = scope(named<Enrollment>())

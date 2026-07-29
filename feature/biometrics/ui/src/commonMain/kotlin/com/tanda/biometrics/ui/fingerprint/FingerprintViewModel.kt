@@ -50,23 +50,31 @@ class FingerprintViewModel(
 
     operator fun invoke(id: Int) {
         viewModelScope.launch {
-            if (!permissionUsecase(id)) {
-                permissionRequestUsecase(id)
+            try {
+                if (!permissionUsecase(id)) {
+                    permissionRequestUsecase(id)
+                }
+            } catch (error: Throwable) {
+                _state.tryEmit(State.Error(error))
             }
         }
     }
 
     operator fun invoke(id: Int, index: Int) {
         viewModelScope.launch(dispatcher.io) {
-            _state.tryEmit(State.Loading)
-            captureUsecase(
-                CaptureUsecase.Argument(
-                    finger = Finger.FLAT_SINGLE_FINGER,
-                    index = index,
-                    option = Option.IGNORE_FINGER_COUNT
+            try {
+                _state.tryEmit(State.Loading)
+                captureUsecase(
+                    CaptureUsecase.Argument(
+                        finger = Finger.FLAT_SINGLE_FINGER,
+                        index = index,
+                        option = Option.IGNORE_FINGER_COUNT
+                    )
                 )
-            )
-            _state.tryEmit(State.Initialized)
+                _state.tryEmit(State.Initialized)
+            } catch (error: Throwable) {
+                _state.tryEmit(State.Error(error))
+            }
         }
     }
 
@@ -82,5 +90,6 @@ class FingerprintViewModel(
         data object Default : State
         data object Loading : State
         data object Initialized : State
+        data class Error(val error: Throwable) : State
     }
 }

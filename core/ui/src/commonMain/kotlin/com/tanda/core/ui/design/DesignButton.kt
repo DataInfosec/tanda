@@ -74,9 +74,9 @@ fun designSecondaryButtonColors(): DesignButtonColors {
 @Composable
 fun designTertiaryButtonColors(): DesignButtonColors {
     return DesignButtonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        disabledContainerColor = MaterialTheme.colorScheme.background,
         disabledContentColor = MaterialTheme.colorScheme.outlineVariant
     )
 }

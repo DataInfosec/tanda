@@ -28,9 +28,9 @@ fun MainScreen(scope: ScopeID) {
                 startDestination = "home"
             ) {
                 composable("home") {
-                    MainPage { controller.navigate("console") }
+                    MainPage { controller.navigate("attendance") }
                 }
-                composable("console") { ConsoleScreen(component.id) }
+                composable("attendance") { ConsoleScreen(component.id) }
             }
         }
     }
