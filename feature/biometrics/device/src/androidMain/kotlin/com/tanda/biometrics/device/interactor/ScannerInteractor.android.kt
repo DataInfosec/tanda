@@ -47,6 +47,16 @@ actual class ScannerInteractor(
             }
         )
         scanner.setScanListener(this)
+        syncAttachedDevices()
+    }
+
+    private fun syncAttachedDevices() {
+        val count = runCatching { scanner.getDeviceCount() }.getOrDefault(0)
+        for (index in 0 until count) {
+            runCatching { scanner.getDeviceDescription(index) }
+                .getOrNull()
+                ?.let { desc -> scanDeviceAttached(desc.deviceId) }
+        }
     }
 
     actual fun hasPermission(id: Int): Boolean {
@@ -59,7 +69,8 @@ actual class ScannerInteractor(
     }
 
     override fun scanDeviceDetached(deviceId: Int) {
-        this.id = null
+        id = null
+        device = null
         _status.tryEmit(Status.Detached(deviceId))
     }
 
@@ -141,10 +152,8 @@ actual class ScannerInteractor(
                 putExtra(STATUS_KEY, false)
             }
         )
-        scanner.setScanListener(null)
-        device?.let { runCatching { it.close() } }
-        id = null
-        device = null
+        device?.let { runCatching { if (it.isCaptureActive) it.cancelCaptureImage() } }
+        observable.reset()
         _status.tryEmit(Status.Default)
     }
 

@@ -113,6 +113,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
     ) {}
 
     override fun reset() {
+        _mode.tryEmit(Mode.Default)
         _state.tryEmit(Snapshot.Default)
     }
 
