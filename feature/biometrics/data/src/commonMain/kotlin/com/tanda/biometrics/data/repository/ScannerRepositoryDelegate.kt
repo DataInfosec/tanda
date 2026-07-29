@@ -4,7 +4,7 @@ import com.tanda.biometrics.data.device.ScannerDevice
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
-import com.tanda.biometrics.domain.model.State
+import com.tanda.biometrics.domain.model.Snapshot
 import com.tanda.biometrics.domain.model.Status
 import com.tanda.biometrics.domain.repository.ScannerRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ import org.koin.core.annotation.Singleton
 class ScannerRepositoryDelegate(
     private val device: ScannerDevice
 ) : ScannerRepository {
-    override val state: Flow<State> get() = device.state
+    override val state: Flow<Snapshot> get() = device.state
 
     override val status: Flow<Status> get() = device.status
 

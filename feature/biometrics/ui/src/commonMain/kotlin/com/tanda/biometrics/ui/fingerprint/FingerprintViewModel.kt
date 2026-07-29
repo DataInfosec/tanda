@@ -6,6 +6,7 @@ import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
+import com.tanda.biometrics.domain.model.Snapshot
 import com.tanda.biometrics.domain.usecase.CaptureUsecase
 import com.tanda.biometrics.domain.usecase.ObserveModeUsecase
 import com.tanda.biometrics.domain.usecase.ObserveStateUsecase
@@ -38,7 +39,7 @@ class FingerprintViewModel(
     init {
         viewModelScope.launch {
             combine(stateUsecase(), modeUsecase()) { state, mode ->
-                if (state is com.tanda.biometrics.domain.model.State.Capture) {
+                if (state is Snapshot.Capture) {
                     Status.Capture(mode, state.image)
                 } else {
                     Status.Default(mode)

@@ -5,14 +5,14 @@ import com.tanda.biometrics.device.interactor.ScannerInteractor
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
-import com.tanda.biometrics.domain.model.State
+import com.tanda.biometrics.domain.model.Snapshot
 import com.tanda.biometrics.domain.model.Status
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Singleton
 
 @Singleton
 class ScannerDeviceDelegate(private val interactor: ScannerInteractor) : ScannerDevice {
-    override val state: Flow<State> get() = interactor.state
+    override val state: Flow<Snapshot> get() = interactor.state
 
     override val status: Flow<Status> get() = interactor.status
 

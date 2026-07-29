@@ -6,21 +6,21 @@ import com.integratedbiometrics.ibscanultimate.IBScanException
 import com.tanda.biometrics.domain.exception.DeviceLostException
 import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
-import com.tanda.biometrics.domain.model.State
+import com.tanda.biometrics.domain.model.Snapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
-    private val _state = MutableSharedFlow<State>(replay = REPLAY)
+    private val _state = MutableSharedFlow<Snapshot>(replay = REPLAY)
 
     private val _mode = MutableSharedFlow<Mode>(replay = REPLAY)
 
-    override val state: Flow<State> get() = _state
+    override val state: Flow<Snapshot> get() = _state
 
     override val mode: Flow<Mode> get() = _mode
 
     init {
-        _state.tryEmit(State.Default)
+        _state.tryEmit(Snapshot.Default)
         _mode.tryEmit(Mode.Default)
     }
 
@@ -76,7 +76,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         splitImageArray: Array<out IBScanDevice.ImageData?>?
     ) {
         _state.tryEmit(
-            State.Capture(
+            Snapshot.Capture(
                 Image(
                     width = image.width,
                     height = image.height,
@@ -113,7 +113,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
     ) {}
 
     override fun reset() {
-        _state.tryEmit(State.Default)
+        _state.tryEmit(Snapshot.Default)
     }
 
     private companion object {

@@ -3,12 +3,12 @@ package com.tanda.biometrics.domain.repository
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
-import com.tanda.biometrics.domain.model.State
+import com.tanda.biometrics.domain.model.Snapshot
 import com.tanda.biometrics.domain.model.Status
 import kotlinx.coroutines.flow.Flow
 
 interface ScannerRepository {
-    val state: Flow<State>
+    val state: Flow<Snapshot>
 
     val status: Flow<Status>
 
