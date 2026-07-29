@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.tanda.attendance.ui.enrollment.EnrollmentScreen
+import com.tanda.attendance.ui.console.ConsoleScreen
 import com.tanda.core.common.interactor.LocaleInteractor
 import com.tanda.core.ui.design.DesignLocale
 import com.tanda.core.ui.theme.DesignTheme
@@ -20,7 +20,7 @@ fun MainScreen(scope: ScopeID) {
         .collectAsStateWithLifecycle(localeInteractor.current())
     CompositionLocalProvider(DesignLocale provides locale) {
         DesignTheme {
-            EnrollmentScreen(component.id)
+            ConsoleScreen(component.id)
         }
     }
 }

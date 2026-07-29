@@ -1,10 +1,10 @@
-package com.tanda.ui.main
+package com.tanda.attendance.ui.console
 
-import com.tanda.attendance.ui.console.Console
+import com.tanda.attendance.ui.checkin.Checkin
+import com.tanda.attendance.ui.enrollment.Enrollment
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
-import com.tanda.module.TandaModule
 import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
@@ -12,25 +12,25 @@ import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
 @Module
-object Main {
+object Console {
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
-            val scope = scope(named<Main>())
+            val scope = scope(named<Console>())
             scope.getKoin().loadModules(listOf(
                 module {
-                    scope<Main> {
+                    scope<Console> {
                         factory<UiComponentProvider.Factory> {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
-                                    Console.Builder(scope),
+                                    Checkin.Builder(scope),
+                                    Enrollment.Builder(scope),
                                 )
                             )
                         }
                     }
                 },
-                TandaModule.module,
-                Main.module
+                Console.module
             ))
             return scope
         }

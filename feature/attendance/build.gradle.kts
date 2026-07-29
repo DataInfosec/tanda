@@ -17,6 +17,8 @@ kotlin {
             api(projects.feature.scanner.liblfd)
             api(projects.feature.scanner.libibscancommon)
             api(projects.feature.scanner.libibscanuitimate)
+
+            implementation(compose.preview)
         }
         val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
@@ -33,12 +35,12 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.navigation)
+
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
-
-            implementation(libs.navigation)
 
             api(projects.feature.biometrics.domain)
             api(projects.feature.biometrics.data)
@@ -49,4 +51,5 @@ kotlin {
         }
     }
 }
+dependencies { debugImplementation(compose.uiTooling) }
 tasks.named("preBuild") { dependsOn("generateBuildConstants") }
