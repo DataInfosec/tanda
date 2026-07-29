@@ -14,6 +14,7 @@ import com.tanda.biometrics.domain.exception.DeviceNotFoundException
 import com.tanda.biometrics.domain.exception.PermissionException
 import com.tanda.biometrics.device.mapper.toCaptureOption
 import com.tanda.biometrics.device.mapper.toImageType
+import com.tanda.biometrics.domain.exception.ScannerException
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.Status
@@ -69,9 +70,21 @@ actual class ScannerInteractor(
     }
 
     override fun scanDeviceDetached(deviceId: Int) {
+        device?.let { closeWithRetry(it) }
         id = null
         device = null
         _status.tryEmit(Status.Detached(deviceId))
+    }
+
+    private fun closeWithRetry(device: IBScanDevice, attempts: Int = 3) {
+        repeat(attempts) {
+            try {
+                device.close()
+                return
+            } catch (exception: IBScanException) {
+                if (exception.type != IBScanException.Type.RESOURCE_LOCKED) return
+            }
+        }
     }
 
     override fun scanDevicePermissionGranted(deviceId: Int, granted: Boolean) {
@@ -138,7 +151,7 @@ actual class ScannerInteractor(
             }
         } catch (exception: Throwable) {
             if (exception is IBScanException) {
-                _status.tryEmit(Status.Error(DeviceException(exception)))
+                _status.tryEmit(Status.Error(ScannerException(exception.type.name)))
             } else {
                 _status.tryEmit(Status.Error(exception))
             }
