@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tanda.biometrics.domain.exception.ScannerException
 import com.tanda.core.ui.design.DesignText
 
 @Composable
@@ -20,5 +21,11 @@ fun ConsoleError(error: Throwable) {
             .padding(horizontal = 20.dp)
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
-    ) { DesignText("Error: ${(error.cause ?: error)::class.simpleName}") }
+    ) {
+        if (error is ScannerException) {
+            DesignText("Error: ${error.message}")
+        } else {
+            DesignText("Error: ${(error.cause ?: error)::class.simpleName}")
+        }
+    }
 }

@@ -14,6 +14,7 @@ import com.tanda.biometrics.domain.exception.DeviceNotFoundException
 import com.tanda.biometrics.domain.exception.PermissionException
 import com.tanda.biometrics.device.mapper.toCaptureOption
 import com.tanda.biometrics.device.mapper.toImageType
+import com.tanda.biometrics.domain.exception.ScannerException
 import com.tanda.biometrics.domain.model.Option
 import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.Status
@@ -47,6 +48,16 @@ actual class ScannerInteractor(
             }
         )
         scanner.setScanListener(this)
+        syncAttachedDevices()
+    }
+
+    private fun syncAttachedDevices() {
+        val count = runCatching { scanner.getDeviceCount() }.getOrDefault(0)
+        for (index in 0 until count) {
+            runCatching { scanner.getDeviceDescription(index) }
+                .getOrNull()
+                ?.let { desc -> scanDeviceAttached(desc.deviceId) }
+        }
     }
 
     actual fun hasPermission(id: Int): Boolean {
@@ -59,8 +70,21 @@ actual class ScannerInteractor(
     }
 
     override fun scanDeviceDetached(deviceId: Int) {
-        this.id = null
+        device?.let { closeWithRetry(it) }
+        id = null
+        device = null
         _status.tryEmit(Status.Detached(deviceId))
+    }
+
+    private fun closeWithRetry(device: IBScanDevice, attempts: Int = 3) {
+        repeat(attempts) {
+            try {
+                device.close()
+                return
+            } catch (exception: IBScanException) {
+                if (exception.type != IBScanException.Type.RESOURCE_LOCKED) return
+            }
+        }
     }
 
     override fun scanDevicePermissionGranted(deviceId: Int, granted: Boolean) {
@@ -127,7 +151,7 @@ actual class ScannerInteractor(
             }
         } catch (exception: Throwable) {
             if (exception is IBScanException) {
-                _status.tryEmit(Status.Error(DeviceException(exception)))
+                _status.tryEmit(Status.Error(ScannerException(exception.type.name)))
             } else {
                 _status.tryEmit(Status.Error(exception))
             }
@@ -141,10 +165,8 @@ actual class ScannerInteractor(
                 putExtra(STATUS_KEY, false)
             }
         )
-        scanner.setScanListener(null)
-        device?.let { runCatching { it.close() } }
-        id = null
-        device = null
+        device?.let { runCatching { if (it.isCaptureActive) it.cancelCaptureImage() } }
+        observable.reset()
         _status.tryEmit(Status.Default)
     }
 
