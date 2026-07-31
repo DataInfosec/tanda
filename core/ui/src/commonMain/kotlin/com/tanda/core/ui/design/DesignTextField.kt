@@ -175,11 +175,14 @@ fun DesignTextField(
             LocalTextStyle provides textStyle.copy(
                 color = contentColor,
                 fontWeight = fontWeight
-            ),
+            )
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 updatedLeading()
-                Box(contentAlignment = contentAlignment) {
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = contentAlignment
+                ) {
                     BasicTextField(
                         state = state,
                         enabled = enabled,

@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tanda.core.ui.design.DesignText
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ConsoleLoader() {
@@ -21,4 +22,10 @@ fun ConsoleLoader() {
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) { DesignText("Loading..") }
+}
+
+@Composable
+@Preview
+fun PreviewConsoleLoader() {
+    ConsoleLoader()
 }
