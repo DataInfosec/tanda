@@ -5,7 +5,7 @@
 
     <application>
         <receiver
-            android:name="scanner.ScannerReceiver"
+            android:name="com.tanda.biometrics.device.scanner.ScannerReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -13,7 +13,7 @@
             </intent-filter>
         </receiver>
         <service
-            android:name="scanner.ScannerService"
+            android:name="com.tanda.biometrics.device.scanner.ScannerService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

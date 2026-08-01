@@ -32,6 +32,7 @@ dependencyResolutionManagement {
 
 include(":core:common")
 include(":core:persistence")
+include(":core:remote")
 include(":core:ui")
 
 include(":feature:preference")

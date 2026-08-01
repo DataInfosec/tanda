@@ -1,4 +1,4 @@
-package scanner
+package com.tanda.biometrics.device.scanner
 
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.domain.model.Snapshot

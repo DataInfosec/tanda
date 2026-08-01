@@ -1,4 +1,4 @@
-package scanner
+package com.tanda.biometrics.device.scanner
 
 import android.app.Service
 import android.content.Intent
