@@ -54,6 +54,11 @@ kotlin {
             implementation(libs.koin.annotation)
 
             implementation(projects.feature.preference)
+
+            implementation(projects.feature.account.domain)
+            implementation(projects.feature.account.data)
+            implementation(projects.feature.account.remote)
+
             implementation(projects.feature.attendance)
         }
         commonTest.dependencies {
