@@ -10,6 +10,7 @@ import org.koin.core.annotation.Module
         CoreModule::class,
         PreferenceModule::class,
         PersistenceModule::class,
+        NetworkModule::class,
         AccountModule::class,
         AttendanceModule::class,
     ]

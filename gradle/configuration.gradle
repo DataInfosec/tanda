@@ -14,8 +14,8 @@ task("generateBuildConstants") {
                 propsFile.withInputStream { props.load(it) }
             }
         }
+        def baseUrl = props.getProperty("tanda.base.url") ?: ""
         def url = props.getProperty("tanda.fingerprint.url") ?: ""
-        def secret = props.getProperty("tanda.fingerprint.secret") ?: ""
         File outputFile = new File(outputDir, "com/tanda/BuildConstants.kt")
         outputFile.parentFile.mkdirs()
         outputFile.text = """
@@ -27,8 +27,8 @@ task("generateBuildConstants") {
             @OptIn(ExperimentalObjCName::class)
             @ObjCName(name = "BuildConstants", exact = true)
             object BuildConstants {
-                const val URL = \"$url\"
-                const val SECRET = \"$secret\"
+                const val BASE_URL = \"$baseUrl\"
+                const val FINGERPRINT_URL = \"$url\"
             }
         """.stripIndent().trim()
     }

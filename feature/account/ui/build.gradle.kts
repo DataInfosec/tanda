@@ -11,6 +11,7 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.common)
             implementation(projects.core.ui)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -28,7 +29,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
 
-            implementation(projects.feature.biometrics.domain)
+            implementation(projects.feature.account.domain)
         }
     }
 }
