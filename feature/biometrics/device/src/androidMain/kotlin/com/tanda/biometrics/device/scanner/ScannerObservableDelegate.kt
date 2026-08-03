@@ -1,4 +1,4 @@
-package scanner
+package com.tanda.biometrics.device.scanner
 
 import com.integratedbiometrics.ibscanultimate.IBScanDevice
 import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener

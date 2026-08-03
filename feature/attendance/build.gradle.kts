@@ -46,6 +46,8 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
 
+            implementation(projects.feature.account.domain)
+
             api(projects.feature.biometrics.domain)
             api(projects.feature.biometrics.data)
             api(projects.feature.biometrics.device)

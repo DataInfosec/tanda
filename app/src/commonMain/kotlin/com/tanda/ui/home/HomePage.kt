@@ -1,4 +1,4 @@
-package com.tanda.ui.main
+package com.tanda.ui.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +21,7 @@ import tanda.app.generated.resources.Res
 import tanda.app.generated.resources.attendance
 
 @Composable
-fun MainPage(onClick: () -> Unit) {
+fun HomePage(onClick: () -> Unit) {
     val handleClick by rememberUpdatedState(onClick)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -40,8 +40,8 @@ fun MainPage(onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun PreviewMainPage() {
+fun PreviewHomePage() {
     DesignTheme(darkTheme = false) {
-        MainPage {}
+        HomePage {}
     }
 }

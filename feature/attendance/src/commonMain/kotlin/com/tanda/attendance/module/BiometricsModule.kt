@@ -26,9 +26,8 @@ class BiometricsModule {
     ): Credential {
         return Credential(
             id = uuid,
-            url = BuildConstants.URL,
+            url = BuildConstants.FINGERPRINT_URL,
             path = path,
-            secret = BuildConstants.SECRET
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.tanda.attendance.module
 
+import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
 @Module(
@@ -7,4 +8,5 @@ import org.koin.core.annotation.Module
         BiometricsModule::class,
     ]
 )
+@ComponentScan("com.tanda.attendance.interactor")
 class AttendanceModule

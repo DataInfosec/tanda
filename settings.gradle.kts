@@ -32,12 +32,14 @@ dependencyResolutionManagement {
 
 include(":core:common")
 include(":core:persistence")
+include(":core:remote")
 include(":core:ui")
 
 include(":feature:preference")
 
 include(":feature:account:domain")
 include(":feature:account:data")
+include(":feature:account:remote")
 include(":feature:account:ui")
 
 include(":feature:biometrics:domain")

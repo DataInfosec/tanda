@@ -13,13 +13,13 @@ class EnrollmentUsecase(
         return repository.enroll(
             id = args.id,
             images = args.images,
-            session = args.session
+            batchId = args.batchId
         )
     }
 
     data class Argument(
         val id: String,
         val images: List<Image>,
-        val session: String? = null
+        val batchId: String? = null
     )
 }

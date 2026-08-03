@@ -20,9 +20,9 @@ import com.tanda.biometrics.domain.model.Finger
 import com.tanda.biometrics.domain.model.Status
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import scanner.ScannerFactory
-import scanner.ScannerObservable
-import scanner.ScannerObservableDelegate
+import com.tanda.biometrics.device.scanner.ScannerFactory
+import com.tanda.biometrics.device.scanner.ScannerObservable
+import com.tanda.biometrics.device.scanner.ScannerObservableDelegate
 
 actual class ScannerInteractor(
     private val context: Context,

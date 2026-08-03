@@ -39,6 +39,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.persistence)
+            implementation(projects.core.remote)
             implementation(projects.core.ui)
 
             implementation(compose.runtime)
@@ -52,9 +53,21 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.viewmodel)
 
             implementation(projects.feature.preference)
+
+            implementation(projects.feature.account.domain)
+            implementation(projects.feature.account.data)
+            implementation(projects.feature.account.remote)
+            implementation(projects.feature.account.ui)
+
             implementation(projects.feature.attendance)
+
+            implementation(libs.ktor.json)
+            implementation(libs.ktor.client)
+            implementation(libs.ktor.negotiation)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

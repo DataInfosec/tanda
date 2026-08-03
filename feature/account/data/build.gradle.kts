@@ -9,4 +9,15 @@ kotlin {
             isStatic = true
         }
     }
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.common)
+            implementation(projects.core.persistence)
+
+            implementation(projects.feature.account.domain)
+
+            implementation(libs.koin.core)
+            implementation(libs.koin.annotation)
+        }
+    }
 }
