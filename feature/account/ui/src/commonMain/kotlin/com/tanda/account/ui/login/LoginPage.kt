@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,10 +37,15 @@ import com.tanda.core.ui.design.DesignText
 import com.tanda.core.ui.extension.designScheme
 import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import tanda.feature.account.ui.generated.resources.Res
+import tanda.feature.account.ui.generated.resources.app_logo
+import tanda.feature.account.ui.generated.resources.continue_button
 import tanda.feature.account.ui.generated.resources.ic_lagos
 import tanda.feature.account.ui.generated.resources.ic_tanda
+import tanda.feature.account.ui.generated.resources.sign_in_subtitle
+import tanda.feature.account.ui.generated.resources.sign_in_title
 
 @Composable
 fun LoginPage(
@@ -47,6 +53,7 @@ fun LoginPage(
     password: TextFieldState,
     isLoading: State<Boolean>,
     error: State<String?>,
+    focusRequester: FocusRequester? = null,
     onContinue: () -> Unit
 ) {
     val handleContinue by rememberUpdatedState(onContinue)
@@ -65,7 +72,7 @@ fun LoginPage(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(Res.drawable.ic_tanda),
-                contentDescription = "app logo",
+                contentDescription = stringResource(Res.string.app_logo),
                 modifier = Modifier.height(36.dp)
             )
             Spacer(modifier = Modifier.padding(horizontal = 12.dp)
@@ -74,17 +81,17 @@ fun LoginPage(
                 .background(MaterialTheme.designScheme.border))
             Image(
                 painter = painterResource(Res.drawable.ic_lagos),
-                contentDescription = "app logo",
+                contentDescription = stringResource(Res.string.app_logo),
             )
         }
         Spacer(modifier = Modifier.height(42.dp))
         DesignText(
-            text = "Sign in to continue",
+            text = stringResource(Res.string.sign_in_title),
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
         DesignText(
-            text = "Enter email address and password to log in to your\naccount for attendance activities.",
+            text = stringResource(Res.string.sign_in_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.designScheme.text,
             textAlign = TextAlign.Center
@@ -93,7 +100,8 @@ fun LoginPage(
         LoginForm(
             email = email,
             password = password,
-            isLoading = isLoading
+            isLoading = isLoading,
+            focusRequester = focusRequester
         )
         DesignMotion(
             targetState = error.value,
@@ -104,12 +112,12 @@ fun LoginPage(
                     text = it,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 6.dp)
+                    modifier = Modifier.padding(top = 8.dp)
                         .padding(horizontal = 10.dp)
                 )
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         DesignButton(
             onClick = { handleContinue() },
             enabled = !isLoading.value,
@@ -119,7 +127,7 @@ fun LoginPage(
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            DesignText("Continue")
+            DesignText(stringResource(Res.string.continue_button))
         }
         Spacer(modifier = Modifier.weight(1f))
     }

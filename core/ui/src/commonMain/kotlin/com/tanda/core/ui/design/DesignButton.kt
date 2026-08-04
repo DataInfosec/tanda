@@ -41,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.tanda.core.ui.extension.designScheme
 import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -59,18 +60,18 @@ fun designPrimaryButtonColors(): DesignButtonColors {
     return DesignButtonColors(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        disabledContainerColor = MaterialTheme.designScheme.border,
+        disabledContentColor = MaterialTheme.colorScheme.outlineVariant
     )
 }
 
 @Composable
 fun designSecondaryButtonColors(): DesignButtonColors {
     return DesignButtonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceDim,
+        containerColor = MaterialTheme.designScheme.borderTint,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        disabledContainerColor = MaterialTheme.designScheme.border,
+        disabledContentColor = MaterialTheme.colorScheme.outlineVariant
     )
 }
 
@@ -89,8 +90,8 @@ fun designDangerButtonColors(): DesignButtonColors {
     return DesignButtonColors(
         containerColor = MaterialTheme.colorScheme.error,
         contentColor = MaterialTheme.colorScheme.onSecondary,
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        disabledContainerColor = MaterialTheme.designScheme.border,
+        disabledContentColor = MaterialTheme.colorScheme.outlineVariant
     )
 }
 

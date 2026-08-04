@@ -1,3 +1,11 @@
 <resources>
     <string name="app_logo">App logo</string>
+    <string name="email_hint">Email address</string>
+    <string name="password_hint">Password</string>
+    <string name="show_password">show password</string>
+    <string name="hide_password">hide password</string>
+    <string name="sign_in_title">Sign in to continue</string>
+    <string name="sign_in_subtitle">Enter email address and password to log in to your\naccount for attendance activities.</string>
+    <string name="continue_button">Continue</string>
+    <string name="error_default_message">An error occurred</string>
 </resources>
