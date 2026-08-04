@@ -1,8 +1,16 @@
 package com.tanda.core.ui.theme
 
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
+import com.tanda.core.ui.design.DesignScheme
+
+val LightDesignScheme = DesignScheme(
+    text = TextNeutral600,
+    border = Neutral100,
+    borderTint = Neutral200,
+)
+
+val DarkDesignScheme = LightDesignScheme
 
 val LightColorScheme = lightColorScheme(
     primary = Primary500,
@@ -36,34 +44,4 @@ val LightColorScheme = lightColorScheme(
     scrim = Color.Black,
 )
 
-val DarkColorScheme = darkColorScheme(
-    primary = Primary300,
-    onPrimary = Primary900,
-    primaryContainer = Primary700,
-    onPrimaryContainer = Primary100,
-    inversePrimary = Primary600,
-    secondary = Primary200,
-    onSecondary = Primary800,
-    secondaryContainer = Primary600,
-    onSecondaryContainer = Primary50,
-    tertiary = Accent300,
-    onTertiary = Accent900,
-    tertiaryContainer = Accent700,
-    onTertiaryContainer = Accent100,
-    error = ErrorDark,
-    onError = OnErrorDark,
-    errorContainer = ErrorContainerDark,
-    onErrorContainer = OnErrorContainerDark,
-    background = NeutralBackgroundDark,
-    onBackground = OnNeutralBackgroundDark,
-    surface = NeutralBackgroundDark,
-    onSurface = OnNeutralBackgroundDark,
-    surfaceVariant = SurfaceVariantDark,
-    onSurfaceVariant = OnSurfaceVariantDark,
-    surfaceTint = Primary300,
-    inverseSurface = Color(0xFFE1E3DF),
-    inverseOnSurface = Color(0xFF2D3230),
-    outline = OutlineDark,
-    outlineVariant = OutlineVariantDark,
-    scrim = Color.Black,
-)
+val DarkColorScheme = LightColorScheme

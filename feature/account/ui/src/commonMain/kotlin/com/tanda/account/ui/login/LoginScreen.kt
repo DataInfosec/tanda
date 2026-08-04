@@ -19,9 +19,15 @@ fun LoginScreen(scope: ScopeID) {
     val email = remember { TextFieldState() }
     val password = remember { TextFieldState() }
     val isLoading = remember { derivedStateOf { state.value is LoginViewModel.State.Loading } }
+    val error = remember { derivedStateOf {
+        (state.value as? LoginViewModel.State.Error)?.error?.let {
+            it.message ?: "An error occurred"
+        }
+    } }
     LoginPage(
         email = email,
         password = password,
-        isLoading = isLoading
+        isLoading = isLoading,
+        error = error
     ) { viewModel(email.text.toString(), password.text.toString()) }
 }

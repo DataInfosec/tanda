@@ -41,7 +41,8 @@ class MainActivity : ComponentActivity() {
         ))
         setContent {
             val view = LocalView.current
-            val isDarkTheme = isSystemInDarkTheme()
+//            val isDarkTheme = isSystemInDarkTheme()
+            val isDarkTheme = false
             val component = remember { Main.Builder(scope).build() }
             SideEffect {
                 if (view.context !is Activity) return@SideEffect

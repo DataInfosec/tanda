@@ -101,7 +101,7 @@ fun DesignButton(
     enabled: Boolean = true,
     isLoading: Boolean = false,
     feedbackType: HapticFeedbackType? = HapticFeedbackType.KeyboardTap,
-    shape: Shape = RoundedCornerShape(12.dp),
+    shape: Shape = RoundedCornerShape(10.dp),
     fontWeight: FontWeight = FontWeight.Bold,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     colors: DesignButtonColors = designPrimaryButtonColors(),
@@ -188,68 +188,7 @@ fun DesignLoader(style: TextStyle = MaterialTheme.typography.bodyMedium) {
 
 @Preview
 @Composable
-fun DarkPreviewDesignButton() {
-    DesignTheme(darkTheme = true) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
-        ) {
-            DesignButton(
-                onClick = {},
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                isLoading = true,
-                loading = { DesignText("Loading...") }
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                enabled = false,
-                modifier = Modifier.sizeIn(minHeight = 56.dp, minWidth = 200.dp)
-            ) { DesignText("Large Button") }
-            DesignButton(
-                onClick = {},
-                colors = designSecondaryButtonColors(),
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                isLoading = true,
-                colors = designSecondaryButtonColors(),
-                loading = { DesignText("Loading...") }
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                enabled = false,
-                colors = designSecondaryButtonColors(),
-                modifier = Modifier.sizeIn(minHeight = 56.dp, minWidth = 200.dp)
-            ) { DesignText("Large Button") }
-            DesignButton(
-                onClick = {},
-                colors = designTertiaryButtonColors(),
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                enabled = false,
-                colors = designTertiaryButtonColors(),
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                colors = designDangerButtonColors(),
-            ) { DesignText("Hello, world!") }
-            DesignButton(
-                onClick = {},
-                enabled = false,
-                colors = designDangerButtonColors(),
-            ) { DesignText("Hello, world!...") }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun LightPreviewDesignButton() {
+fun PreviewDesignButton() {
     DesignTheme(darkTheme = false) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
