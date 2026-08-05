@@ -69,8 +69,8 @@ Some build steps read secrets from `local.properties` in the project root. This 
 gitignored and must be created manually:
 
 ```properties
-tanda.fingerprint.url=<fingerprint service url>
-tanda.fingerprint.secret=<fingerprint service secret>
+tanda.base.url=<base-url>
+tanda.device.id=<device-id>
 ```
 
 These values are picked up by `generateBuildConstants` (see below) and baked into a
