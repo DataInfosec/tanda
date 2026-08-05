@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_logo">Tanda Secure logo</string>
+    <string name="menu">Menu</string>
+    <string name="welcome">Welcome,</string>
+    <string name="user_name">Isaac Kayode</string>
+    <string name="dashboard_prompt">Choose what you want to do today.</string>
+    <string name="biometric_capture">Biometric capture</string>
+    <string name="student_attendance">Student attendance</string>
+    <string name="staff_attendance">Staff attendance</string>
+    <string name="exeat_activity">Exeat activity</string>
+    <string name="powered_by">Powered by</string>
+    <string name="powered_brand">TANDA SECURE</string>
+    <string name="version">Version [version_No]</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="attendance_history">Attendance history</string>
+    <string name="device_information">Device information</string>
+    <string name="logout">Logout</string>
+</resources>

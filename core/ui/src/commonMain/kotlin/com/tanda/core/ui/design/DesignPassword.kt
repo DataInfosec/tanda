@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,16 +17,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
-import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldDecorator
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,6 +48,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -59,7 +57,7 @@ import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DesignTextField(
+fun DesignPassword(
     modifier: Modifier = Modifier,
     state: TextFieldState = remember { TextFieldState() },
     enabled: Boolean = true,
@@ -86,18 +84,20 @@ fun DesignTextField(
     fontWeight: FontWeight = FontWeight.Normal,
     textAlign: TextAlign = TextAlign.Start,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        autoCorrectEnabled = false,
+        keyboardType = KeyboardType.Password
+    ),
     onKeyboardAction: KeyboardActionHandler? = null,
-    lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
+    textObfuscationMode: TextObfuscationMode = TextObfuscationMode.RevealLastTyped,
+    textObfuscationCharacter: Char = '\u2022',
     onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
     interactionSource: MutableInteractionSource? = null,
     cursorBrush: Brush = SolidColor(MaterialTheme.colorScheme.primary),
-    outputTransformation: OutputTransformation? = null,
     decorator: TextFieldDecorator? = null,
     durationMillis: Int = 10,
     delayMillis: Int = 0,
     easing: Easing = FastOutSlowInEasing,
-    scrollState: ScrollState = rememberScrollState(),
     leading: @Composable () -> Unit = {},
     trailing: @Composable () -> Unit = {},
 ) {
@@ -166,7 +166,7 @@ fun DesignTextField(
                     modifier = Modifier.weight(1f),
                     contentAlignment = contentAlignment
                 ) {
-                    BasicTextField(
+                    BasicSecureTextField(
                         state = state,
                         enabled = enabled,
                         readOnly = readOnly,
@@ -176,13 +176,12 @@ fun DesignTextField(
                         ),
                         keyboardOptions = keyboardOptions,
                         onKeyboardAction = onKeyboardAction,
-                        lineLimits = lineLimits,
+                        textObfuscationMode = textObfuscationMode,
+                        textObfuscationCharacter = textObfuscationCharacter,
                         onTextLayout = onTextLayout,
                         interactionSource = interactionSource,
                         cursorBrush = cursorBrush,
-                        outputTransformation = outputTransformation,
                         decorator = decorator,
-                        scrollState = scrollState,
                         modifier = Modifier.fillMaxWidth()
                             .then(if (focusRequester != null) {
                                 Modifier.focusRequester(focusRequester)
@@ -214,28 +213,20 @@ fun DesignTextField(
 
 @Preview
 @Composable
-fun PreviewDesignInput() {
+fun PreviewDesignPassword() {
     DesignTheme(darkTheme = true) {
         Column(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            DesignTextField(
-                hint = "0",
-                state = remember { TextFieldState() },
-                textAlign = TextAlign.Center,
-                textStyle = MaterialTheme.typography.bodyMedium,
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.width(56.dp)
-            )
-            DesignTextField(
-                hint = "0",
+            DesignPassword(
+                hint = "Password",
                 state = remember { TextFieldState() },
                 modifier = Modifier.fillMaxWidth(),
             )
-            DesignTextField(
-                hint = "0",
+            DesignPassword(
+                hint = "Password",
                 hasError = true,
                 state = remember { TextFieldState() },
                 modifier = Modifier.fillMaxWidth(),

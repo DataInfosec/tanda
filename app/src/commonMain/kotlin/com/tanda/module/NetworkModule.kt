@@ -4,6 +4,7 @@ import com.tanda.BuildConstants
 import com.tanda.account.domain.usecase.TokenUsecase
 import com.tanda.account.remote.interceptor.createJwtInterceptor
 import com.tanda.core.remote.client.getHttpClient
+import com.tanda.core.remote.interceptor.createErrorInterceptor
 import io.ktor.client.HttpClient
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
@@ -23,6 +24,7 @@ class NetworkModule {
         return getHttpClient(
             baseUrl = baseUrl,
             interceptors = listOf(
+                createErrorInterceptor(),
                 createJwtInterceptor(usecase),
             )
         )

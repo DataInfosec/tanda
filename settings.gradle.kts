@@ -42,6 +42,8 @@ include(":feature:account:data")
 include(":feature:account:remote")
 include(":feature:account:ui")
 
+include(":feature:dashboard:ui")
+
 include(":feature:biometrics:domain")
 include(":feature:biometrics:data")
 include(":feature:biometrics:device")

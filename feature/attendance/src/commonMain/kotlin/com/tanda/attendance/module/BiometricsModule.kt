@@ -20,13 +20,10 @@ import org.koin.core.annotation.Single
 )
 class BiometricsModule {
     @Single
-    fun provideCredential(
-        @Named("uuid") uuid: String,
-        @Named("path") path: String
-    ): Credential {
+    fun provideCredential(@Named("path") path: String): Credential {
         return Credential(
-            id = uuid,
-            url = BuildConstants.FINGERPRINT_URL,
+            id = BuildConstants.DEVICE_ID,
+            url = BuildConstants.BASE_URL,
             path = path,
         )
     }
