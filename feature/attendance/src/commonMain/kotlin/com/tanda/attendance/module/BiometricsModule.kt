@@ -22,8 +22,8 @@ class BiometricsModule {
     @Single
     fun provideCredential(@Named("path") path: String): Credential {
         return Credential(
-            id = BuildConstants.FINGERPRINT_DEVICE,
-            url = BuildConstants.FINGERPRINT_URL,
+            id = BuildConstants.DEVICE_ID,
+            url = BuildConstants.BASE_URL,
             path = path,
         )
     }
