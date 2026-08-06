@@ -71,10 +71,17 @@ gitignored and must be created manually:
 ```properties
 tanda.base.url=<base-url>
 tanda.device.id=<device-id>
+tanda.device.token=<provisioned-device-bearer-token>
+tanda.gallery.sync.url=<base-url>/v1/libsql/gallery
 ```
 
 These values are picked up by `generateBuildConstants` (see below) and baked into a
 generated `BuildConstants` object used by the app at runtime.
+
+`tanda.device.id` and `tanda.device.token` must come from the same successful
+`POST /v1/device-provisioning/instances` response. The device token is separate
+from the Admin session created when an operator signs in. If
+`tanda.gallery.sync.url` is omitted, the build derives it from `tanda.base.url`.
 
 ## Generated code tasks
 
@@ -83,9 +90,9 @@ automatically as part of `preBuild`/KSP, but can also be triggered manually:
 
 - `./gradlew generateDepencencyMain` — runs KSP against the `commonMain` metadata to
   generate Koin dependency injection code for a module.
-- `./gradlew generateBuildConstants` — reads `tanda.fingerprint.url` and
-  `tanda.fingerprint.secret` from `local.properties` and generates the `BuildConstants`
-  object consumed by `app`.
+- `./gradlew generateBuildConstants` — reads the Tanda API and provisioned-device
+  values from `local.properties` and generates the `BuildConstants` object consumed
+  by `app`.
 - `./gradlew generateSupportedLocale` — scans the existing `values*` resource folders
   under `composeResources` in a module (e.g. `feature/preference`) and generates a
   `SupportedLocale` list of the languages the app currently ships translations for.

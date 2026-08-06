@@ -27,6 +27,7 @@ kotlin {
         val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.core.remote)
             implementation(projects.core.ui)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -46,7 +47,9 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
 
-            implementation(projects.feature.account.domain)
+            implementation(libs.ktor.client)
+            implementation(libs.ktor.json)
+            implementation(libs.ktor.negotiation)
 
             api(projects.feature.biometrics.domain)
             api(projects.feature.biometrics.data)
@@ -54,6 +57,11 @@ kotlin {
 
             implementation(projects.feature.biometrics.verification)
             implementation(projects.feature.biometrics.ui)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.test.coroutine)
+            implementation(libs.ktor.client.mock)
         }
     }
 }

@@ -1,3 +1,3 @@
 package com.tanda.attendance.exception
 
-class AuthorizationException : Throwable()
+class AuthorizationException : IllegalStateException("provisioned device token is required")
