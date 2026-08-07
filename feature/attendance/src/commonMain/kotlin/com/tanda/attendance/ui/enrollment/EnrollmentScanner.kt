@@ -32,11 +32,10 @@ import tanda.feature.attendance.generated.resources.enrol
 
 @Composable
 fun EnrollmentScanner(
-    identifier: String,
     mode: State<Mode>,
     processing: State<Boolean>,
     status: State<FingerprintViewModel.Status>,
-    onScan: (String, Image) -> Unit
+    onScan: (Image) -> Unit
 ) {
     val handleScan by rememberUpdatedState(onScan)
     val isValid = remember { derivedStateOf {
@@ -66,7 +65,7 @@ fun EnrollmentScanner(
         DesignButton(
             onClick = {
                 (status.value as? FingerprintViewModel.Status.Capture?)?.let {
-                    handleScan(identifier, it.image)
+                    handleScan(it.image)
                 }
             },
             isLoading = processing.value,

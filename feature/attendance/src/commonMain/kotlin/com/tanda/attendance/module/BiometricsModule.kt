@@ -23,7 +23,7 @@ class BiometricsModule {
     fun provideCredential(@Named("path") path: String): Credential {
         return Credential(
             id = BuildConstants.DEVICE_ID,
-            url = BuildConstants.BASE_URL,
+            url = BuildConstants.GALLERY_SYNC_URL,
             path = path,
         )
     }

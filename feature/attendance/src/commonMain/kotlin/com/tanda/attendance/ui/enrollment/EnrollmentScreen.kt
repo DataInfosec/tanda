@@ -13,7 +13,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
 import com.tanda.biometrics.ui.fingerprint.FingerprintViewModel
@@ -26,7 +25,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.scope.ScopeID
 
 @Serializable
-data class ScanRoute(val id: String)
+data object ScanRoute
 
 @Composable
 fun EnrollmentScreen(
@@ -37,7 +36,10 @@ fun EnrollmentScreen(
     val component = remember { factory.builder(Enrollment.Builder::class).build() }
     val viewModel: EnrollmentViewModel = koinViewModel(scope = component)
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val processing = remember { derivedStateOf { state.value is EnrollmentViewModel.State.Loading } }
+    val processing = remember { derivedStateOf {
+        state.value is EnrollmentViewModel.State.Authorizing ||
+            state.value is EnrollmentViewModel.State.Loading
+    } }
     val identifier = remember { TextFieldState() }
     val controller = rememberNavController()
     FingerprintScreen(component.id, deviceId) { vm, stream ->
@@ -47,7 +49,9 @@ fun EnrollmentScreen(
         val isInitialized = remember { derivedStateOf {
             scannerState.value is FingerprintViewModel.State.Initialized
         } }
-        val isLoading = remember { derivedStateOf { stream.value is DesignStreamState.Loading } }
+        val isLoading = remember { derivedStateOf {
+            processing.value || stream.value is DesignStreamState.Loading
+        } }
         val snackbar = remember { SnackbarHostState() }
         NavHost(
             navController = controller,
@@ -57,26 +61,26 @@ fun EnrollmentScreen(
                 EnrollmentPage(
                     identifier = identifier,
                     isLoading = isLoading
-                ) { vm(deviceId, 0) }
+                ) { viewModel.authorize(identifier.text.toString()) }
             }
-            composable<ScanRoute> { backStackEntry ->
+            composable<ScanRoute> {
                 Scaffold(snackbarHost = { SnackbarHost(snackbar) }) {
                     EnrollmentScanner(
-                        identifier = backStackEntry.toRoute<ScanRoute>().id,
                         mode = mode,
                         status = status,
                         processing = processing
-                    ) { identifier, image ->
-                        viewModel(identifier, image)
+                    ) { image ->
+                        viewModel.enroll(image)
                     }
                 }
             }
         }
         LaunchedEffect(Unit) {
-            snapshotFlow { mode.value to isInitialized.value }
+            snapshotFlow { Triple(mode.value, isInitialized.value, state.value) }
                 .collectLatest { value ->
-                    if (value.first is Mode.Platen && value.second) {
-                        controller.navigate(ScanRoute(identifier.text.toString())) {
+                    val authorization = value.third as? EnrollmentViewModel.State.Authorized
+                    if (value.first is Mode.Platen && value.second && authorization != null) {
+                        controller.navigate(ScanRoute) {
                             popUpTo("enroll") {
                                 inclusive = true
                             }
@@ -86,8 +90,15 @@ fun EnrollmentScreen(
                 }
         }
         LaunchedEffect(state.value) {
+            if (state.value is EnrollmentViewModel.State.Authorized) {
+                vm(deviceId, 0)
+            }
+        }
+        LaunchedEffect(state.value) {
             val message = when (val current = state.value) {
                 EnrollmentViewModel.State.Default -> null
+                EnrollmentViewModel.State.Authorizing -> "Authorizing enrollment..."
+                is EnrollmentViewModel.State.Authorized -> null
                 EnrollmentViewModel.State.Loading -> "Processing..."
                 is EnrollmentViewModel.State.Success -> "Enrollment successful"
                 is EnrollmentViewModel.State.Error -> {

@@ -1,5 +1,6 @@
 package com.tanda.attendance.ui.enrollment
 
+import com.tanda.attendance.interactor.StartEnrollmentUsecase
 import com.tanda.biometrics.domain.usecase.EnrollmentUsecase
 import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.common.concurrent.Dispatcher
@@ -17,10 +18,12 @@ object Enrollment {
     @org.koin.core.annotation.Scope(Enrollment::class)
     fun provideViewModel(
         dispatcher: Dispatcher,
+        startEnrollment: StartEnrollmentUsecase,
         usecase: EnrollmentUsecase
     ): EnrollmentViewModel {
         return EnrollmentViewModel(
             dispatcher = dispatcher,
+            startEnrollment = startEnrollment,
             usecase = usecase,
         )
     }
