@@ -38,7 +38,7 @@ fun EnrollmentScreen(
     val viewModel: EnrollmentViewModel = koinViewModel(scope = component)
     val state = viewModel.state.collectAsStateWithLifecycle()
     val processing = remember { derivedStateOf { state.value is EnrollmentViewModel.State.Loading } }
-    val identifier = remember { TextFieldState() }
+    val identifier = remember { TextFieldState("019fdbb5-20b1-74f0-8c9a-9b056c204b27") }
     val controller = rememberNavController()
     FingerprintScreen(component.id, deviceId) { vm, stream ->
         val status = vm.status.collectAsStateWithLifecycle()
@@ -66,9 +66,7 @@ fun EnrollmentScreen(
                         mode = mode,
                         status = status,
                         processing = processing
-                    ) { identifier, image ->
-                        viewModel(identifier, image)
-                    }
+                    ) { identifier, image -> viewModel(identifier, image) }
                 }
             }
         }

@@ -35,9 +35,7 @@ fun MainScreen(scope: ScopeID) {
             .filterIsInstance<MainViewModel.State.Success>()
             .distinctUntilChanged()
             .collectLatest { state ->
-                controller.navigate(
-                    if (state.authenticated) "home" else "login"
-                ) {
+                controller.navigate(if (state.authenticated) "home" else "login") {
                     popUpTo("splash") {
                         inclusive = true
                     }

@@ -5,7 +5,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "DashboardUi"
+            baseName = "Campus"
             isStatic = true
         }
     }

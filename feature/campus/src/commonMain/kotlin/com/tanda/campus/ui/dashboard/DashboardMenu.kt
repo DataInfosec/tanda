@@ -1,4 +1,4 @@
-package com.tanda.dashboard.ui.dashboard
+package com.tanda.campus.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -21,23 +21,22 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.dashboard.ui.generated.resources.Res
-import tanda.feature.dashboard.ui.generated.resources.attendance_history
-import tanda.feature.dashboard.ui.generated.resources.device_information
-import tanda.feature.dashboard.ui.generated.resources.ic_attendance
-import tanda.feature.dashboard.ui.generated.resources.ic_logout
-import tanda.feature.dashboard.ui.generated.resources.logout
+import tanda.feature.campus.generated.resources.Res
+import tanda.feature.campus.generated.resources.attendance_history
+import tanda.feature.campus.generated.resources.device_information
+import tanda.feature.campus.generated.resources.ic_attendance
+import tanda.feature.campus.generated.resources.ic_logout
+import tanda.feature.campus.generated.resources.logout
 
 @Composable
 fun DashboardMenu(
     expanded: Boolean,
-    onDismiss: () -> Unit ={},
     modifier: Modifier = Modifier,
-    onAttendanceHistory: () -> Unit={},
-    onDeviceInformation: () -> Unit={},
-    onLogout: () -> Unit={}
+    onDismiss: () -> Unit = {},
+    onAttendanceHistory: () -> Unit = {},
+    onDeviceInformation: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
-
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss,
@@ -81,7 +80,7 @@ fun DashboardMenu(
 }
 
 @Composable
-private fun MenuItem(
+fun MenuItem(
     icon: DrawableResource,
     text: StringResource,
     textColor: Color = Color(0xFF263238),
@@ -112,6 +111,6 @@ private fun MenuItem(
 
 @Preview
 @Composable
-private fun PreviewDashboardMenu(){
+fun PreviewDashboardMenu(){
     DashboardMenu(expanded = true)
 }

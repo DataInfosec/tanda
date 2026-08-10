@@ -1,4 +1,4 @@
-package com.tanda.attendance.ui.enrollment
+package com.tanda.attendance.ui.checkin
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,34 +13,32 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tanda.biometrics.domain.model.Capture
 import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.model.Mode
 import com.tanda.biometrics.ui.fingerprint.FingerprintViewModel
 import com.tanda.core.ui.design.DesignButton
+import com.tanda.core.ui.design.DesignMotion
 import com.tanda.core.ui.design.DesignText
 import org.jetbrains.compose.resources.stringResource
 import tanda.feature.attendance.generated.resources.Res
-import tanda.feature.attendance.generated.resources.enrol
+import tanda.feature.attendance.generated.resources.checkin
 
 @Composable
-fun EnrollmentScanner(
-    identifier: String,
+fun CheckinPage(
+    capture: State<Capture?>,
     mode: State<Mode>,
-    processing: State<Boolean>,
     status: State<FingerprintViewModel.Status>,
-    onScan: (String, Image) -> Unit
+    isLoading: State<Boolean>,
+    enabled: State<Boolean>,
+    onCheckin: () -> Unit
 ) {
-    val handleScan by rememberUpdatedState(onScan)
-    val isValid = remember { derivedStateOf {
-        status.value is FingerprintViewModel.Status.Capture && !processing.value
-    } }
+    val handleCheckin by rememberUpdatedState(onCheckin)
     Box(modifier = Modifier.fillMaxSize()
         .statusBarsPadding()
         .navigationBarsPadding()
@@ -53,7 +51,7 @@ fun EnrollmentScanner(
         ) {
             when (status.value) {
                 is FingerprintViewModel.Status.Default -> {
-                    DesignText("Place your finger to scan (${mode.value::class.simpleName})")
+                    DesignText("Mode (${mode.value::class.simpleName})")
                 }
                 is FingerprintViewModel.Status.Capture -> {
                     val img: Image = (status.value as FingerprintViewModel.Status.Capture).image
@@ -61,18 +59,19 @@ fun EnrollmentScanner(
                     ImagePreview(image = img)
                 }
             }
+            DesignMotion(targetState = capture.value) { capture ->
+                if (capture != null) {
+                    DesignText(text = "Captured details: ${capture.id}x${capture.score}")
+                }
+            }
         }
         DesignButton(
-            onClick = {
-                (status.value as? FingerprintViewModel.Status.Capture?)?.let {
-                    handleScan(identifier, it.image)
-                }
-            },
-            isLoading = processing.value,
-            enabled = isValid.value,
+            onClick = { handleCheckin() },
+            isLoading = isLoading.value,
+            enabled = !isLoading.value && enabled.value,
             modifier = Modifier.fillMaxWidth()
                 .align(Alignment.BottomCenter),
-        ) { DesignText(stringResource(Res.string.enrol)) }
+        ) { DesignText(stringResource(Res.string.checkin)) }
     }
 }
 

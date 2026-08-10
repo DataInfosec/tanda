@@ -71,6 +71,7 @@ gitignored and must be created manually:
 ```properties
 tanda.base.url=<base-url>
 tanda.device.id=<device-id>
+tanda.fingerprint.url=<fingerprint-url>
 ```
 
 These values are picked up by `generateBuildConstants` (see below) and baked into a
