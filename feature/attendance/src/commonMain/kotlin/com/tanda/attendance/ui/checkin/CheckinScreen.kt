@@ -50,9 +50,10 @@ fun CheckinScreen(
             ) {
                 (status.value as? FingerprintViewModel.Status.Capture?)?.let {
                     viewModel(it.image)
-                } ?: vm(deviceId, 0)
+                }
             }
         }
+        LaunchedEffect(Unit) { vm(deviceId, 0) }
         LaunchedEffect(state.value) {
             val message = when (val current = state.value) {
                 CheckinViewModel.State.Default -> null
@@ -64,9 +65,6 @@ fun CheckinScreen(
                 }
             }
             message?.let { snackbar.showSnackbar(it) }
-        }
-        DisposableEffect(Unit) {
-            onDispose { viewModel.reset() }
         }
     }
 }

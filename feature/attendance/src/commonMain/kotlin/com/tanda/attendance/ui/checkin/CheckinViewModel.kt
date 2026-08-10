@@ -30,10 +30,6 @@ class CheckinViewModel(
         }
     }
 
-    fun reset() {
-        _state.tryEmit(State.Default)
-    }
-
     sealed interface State {
         data object Default : State
         data object Loading : State

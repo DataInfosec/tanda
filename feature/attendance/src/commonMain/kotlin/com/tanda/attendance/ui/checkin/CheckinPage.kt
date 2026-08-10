@@ -49,10 +49,11 @@ fun CheckinPage(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            if (mode.value is Mode.Platen) {
+                DesignText("Place your finger on the platen to check in")
+            }
             when (status.value) {
-                is FingerprintViewModel.Status.Default -> {
-                    DesignText("Mode (${mode.value::class.simpleName})")
-                }
+                is FingerprintViewModel.Status.Default -> {}
                 is FingerprintViewModel.Status.Capture -> {
                     val img: Image = (status.value as FingerprintViewModel.Status.Capture).image
                     DesignText(text = "Captured image: ${img.width}x${img.height} (${img.data.size} bytes)")
