@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,7 +80,17 @@ fun designSecondaryButtonColors(): DesignButtonColors {
 fun designTertiaryButtonColors(): DesignButtonColors {
     return DesignButtonColors(
         containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
+        contentColor = MaterialTheme.colorScheme.background,
+        disabledContainerColor = MaterialTheme.colorScheme.background,
+        disabledContentColor = MaterialTheme.colorScheme.outlineVariant
+    )
+}
+
+@Composable
+fun designOutlineButtonColors(): DesignButtonColors {
+    return DesignButtonColors(
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        contentColor = MaterialTheme.colorScheme.primary,
         disabledContainerColor = MaterialTheme.colorScheme.background,
         disabledContentColor = MaterialTheme.colorScheme.outlineVariant
     )
@@ -234,6 +245,12 @@ fun PreviewDesignButton() {
                 onClick = {},
                 enabled = false,
                 colors = designTertiaryButtonColors(),
+            ) { DesignText("Hello, world!") }
+            DesignButton(
+                onClick = {},
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                modifier = Modifier.fillMaxWidth(),
+                colors = designOutlineButtonColors()
             ) { DesignText("Hello, world!") }
         }
     }

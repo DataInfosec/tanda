@@ -1,0 +1,10 @@
+<resources>
+    <string name="biometric">Biometric</string>
+    <string name="staff_biometric">Staff biometric</string>
+    <string name="student_biometric">Student biometric</string>
+    <string name="employee_id">Employee ID</string>
+    <string name="continue">Continue</string>
+    <string name="subject_id">Subject name</string>
+    <string name="capture_or_view_details">Capture or view details of the biometric of either employee or student.</string>
+
+</resources>
