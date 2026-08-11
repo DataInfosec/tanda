@@ -16,9 +16,9 @@ subprojects {
     extra["composable"] = listOf(
         ":core:ui",
         ":feature:account:ui",
-        ":feature:dashboard:ui",
         ":feature:biometrics:ui",
         ":feature:attendance",
+        ":feature:campus",
     )
     extra["library"] = listOf(
         ":feature:scanner:liblfd",

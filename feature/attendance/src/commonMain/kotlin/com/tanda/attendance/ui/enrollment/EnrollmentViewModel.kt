@@ -22,13 +22,13 @@ class EnrollmentViewModel(
         viewModelScope.launch(dispatcher.io) {
             try {
                 _state.tryEmit(State.Loading)
-                val session = usecase(
+                usecase(
                     EnrollmentUsecase.Argument(
                         id = id,
                         images = listOf(image),
                     )
                 )
-                _state.tryEmit(State.Success(session))
+                _state.tryEmit(State.Success)
             } catch (error: Throwable) {
                 _state.tryEmit(State.Error(error))
             }
@@ -38,7 +38,7 @@ class EnrollmentViewModel(
     sealed interface State {
         data object Default : State
         data object Loading : State
-        data class Success(val session: String) : State
+        data object Success : State
         data class Error(val error: Throwable) : State
     }
 }

@@ -8,18 +8,16 @@ import org.koin.core.annotation.Factory
 @Factory
 class EnrollmentUsecase(
     private val repository: FingerprintRepository
-) : SuspendWithArgsUseCase<EnrollmentUsecase.Argument, String> {
-    override suspend fun invoke(args: Argument): String {
+) : SuspendWithArgsUseCase<EnrollmentUsecase.Argument, Unit> {
+    override suspend fun invoke(args: Argument) {
         return repository.enroll(
             id = args.id,
-            images = args.images,
-            batchId = args.batchId
+            images = args.images
         )
     }
 
     data class Argument(
         val id: String,
-        val images: List<Image>,
-        val batchId: String? = null
+        val images: List<Image>
     )
 }

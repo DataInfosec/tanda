@@ -16,6 +16,7 @@ task("generateBuildConstants") {
         }
         def baseUrl = props.getProperty("tanda.base.url") ?: ""
         def device = props.getProperty("tanda.device.id") ?: ""
+        def fingerprintUrl = props.getProperty("tanda.fingerprint.url") ?: ""
         File outputFile = new File(outputDir, "com/tanda/BuildConstants.kt")
         outputFile.parentFile.mkdirs()
         outputFile.text = """
@@ -29,6 +30,7 @@ task("generateBuildConstants") {
             object BuildConstants {
                 const val BASE_URL = \"$baseUrl\"
                 const val DEVICE_ID = \"$device\"
+                const val FINGERPRINT_URL = \"$fingerprintUrl\"
             }
         """.stripIndent().trim()
     }

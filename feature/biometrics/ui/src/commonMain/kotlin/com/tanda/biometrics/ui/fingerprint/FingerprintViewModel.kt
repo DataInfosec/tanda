@@ -55,18 +55,6 @@ class FingerprintViewModel(
         }
     }
 
-    operator fun invoke(id: Int) {
-        viewModelScope.launch {
-            try {
-                if (!permissionUsecase(id)) {
-                    permissionRequestUsecase(id)
-                }
-            } catch (error: Throwable) {
-                _state.tryEmit(State.Error(error))
-            }
-        }
-    }
-
     operator fun invoke(id: Int, index: Int) {
         viewModelScope.launch(dispatcher.io) {
             try {
@@ -79,6 +67,18 @@ class FingerprintViewModel(
                     )
                 )
                 _state.tryEmit(State.Initialized)
+            } catch (error: Throwable) {
+                _state.tryEmit(State.Error(error))
+            }
+        }
+    }
+
+    fun requirePermission(id: Int) {
+        viewModelScope.launch {
+            try {
+                if (!permissionUsecase(id)) {
+                    permissionRequestUsecase(id)
+                }
             } catch (error: Throwable) {
                 _state.tryEmit(State.Error(error))
             }

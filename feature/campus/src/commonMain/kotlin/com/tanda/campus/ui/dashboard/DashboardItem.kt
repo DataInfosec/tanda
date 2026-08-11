@@ -1,13 +1,10 @@
-package com.tanda.dashboard.ui.dashboard
+package com.tanda.campus.ui.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,18 +23,13 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.dashboard.ui.generated.resources.Res
-import tanda.feature.dashboard.ui.generated.resources.biometric_capture
-import tanda.feature.dashboard.ui.generated.resources.exeat_activity
-import tanda.feature.dashboard.ui.generated.resources.ic_attendance
-import tanda.feature.dashboard.ui.generated.resources.ic_exeat
-import tanda.feature.dashboard.ui.generated.resources.ic_fingerprint
-import tanda.feature.dashboard.ui.generated.resources.ic_right_arrow
-import tanda.feature.dashboard.ui.generated.resources.staff_attendance
-import tanda.feature.dashboard.ui.generated.resources.student_attendance
+import tanda.feature.campus.generated.resources.Res
+import tanda.feature.campus.generated.resources.biometric_capture
+import tanda.feature.campus.generated.resources.ic_fingerprint
+import tanda.feature.campus.generated.resources.ic_right_arrow
 
 @Composable
-internal fun DashboardCard(
+fun DashboardCard(
     onItemClick: () -> Unit = {},
     title: StringResource,
     icon: DrawableResource,
@@ -88,7 +80,6 @@ internal fun DashboardCard(
         }
     }
 }
-
 
 @Composable
 @Preview

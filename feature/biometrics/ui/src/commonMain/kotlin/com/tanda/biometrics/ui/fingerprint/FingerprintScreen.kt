@@ -36,5 +36,5 @@ fun FingerprintScreen(
         }
     } }
     updatedContent(viewModel, derivedState)
-    LaunchedEffect(deviceId) { viewModel(deviceId) }
+    LaunchedEffect(deviceId) { viewModel.requirePermission(deviceId) }
 }

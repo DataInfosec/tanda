@@ -5,7 +5,7 @@ import com.tanda.biometrics.domain.model.Capture
 
 fun MobileIdentifyOutcome.Match.mapToDomain(): Capture {
     return Capture(
-        id = subjectId,
-        score = score
+        id = evidence.subjectId,
+        score = evidence.score
     )
 }

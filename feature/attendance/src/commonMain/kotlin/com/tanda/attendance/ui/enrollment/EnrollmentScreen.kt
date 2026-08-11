@@ -66,9 +66,7 @@ fun EnrollmentScreen(
                         mode = mode,
                         status = status,
                         processing = processing
-                    ) { identifier, image ->
-                        viewModel(identifier, image)
-                    }
+                    ) { identifier, image -> viewModel(identifier, image) }
                 }
             }
         }
