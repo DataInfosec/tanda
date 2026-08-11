@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.koin.annotation)
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
+            implementation(libs.kotlin.coil)
 
             implementation(projects.feature.biometrics.domain)
         }
