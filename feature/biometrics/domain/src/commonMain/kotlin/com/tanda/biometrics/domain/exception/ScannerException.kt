@@ -1,3 +1,3 @@
 package com.tanda.biometrics.domain.exception
 
-class ScannerException(message: String) : Throwable(message)
+class ScannerException(message: String, cause: Throwable? = null) : Throwable(message, cause)
