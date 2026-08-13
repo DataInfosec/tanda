@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.util.Log;
 
 import org.libusb.LibUsbManager;
@@ -227,8 +228,9 @@ public class IBScan
     	{  	
 	    	/* Create intent and request permission with the USB manager. */
 	    	final UsbManager    manager          = (UsbManager)this.m_context.getSystemService(Context.USB_SERVICE);
-	    	final Intent        intent           = new Intent(ACTION_USB_PERMISSION);
-	    	final PendingIntent permissionIntent = PendingIntent.getBroadcast(this.m_context, 0, intent, 0);
+            final Intent intent = new Intent(ACTION_USB_PERMISSION).setPackage(this.m_context.getPackageName());
+            final PendingIntent permissionIntent = PendingIntent.getBroadcast(this.m_context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 	    	manager.requestPermission(device, permissionIntent);
     	}
     }
@@ -461,7 +463,14 @@ public class IBScan
             filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
             filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             filter.addAction(ACTION_USB_PERMISSION);
-            this.m_context.registerReceiver(this.m_usbReceiver, filter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            {
+                this.m_context.registerReceiver(this.m_usbReceiver, filter, Context.RECEIVER_EXPORTED);
+            }
+            else
+            {
+                this.m_context.registerReceiver(this.m_usbReceiver, filter);
+            }
         }
     }
 

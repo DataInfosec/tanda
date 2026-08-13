@@ -75,6 +75,10 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         imageType: IBScanDevice.ImageType?,
         splitImageArray: Array<out IBScanDevice.ImageData?>?
     ) {
+        emitCapture(image)
+    }
+
+    private fun emitCapture(image: IBScanDevice.ImageData) {
         _state.tryEmit(
             Snapshot.Capture(
                 Image(
@@ -93,7 +97,12 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
         detectedFingerCount: Int,
         segmentImageArray: Array<out IBScanDevice.ImageData?>?,
         segmentPositionArray: Array<out IBScanDevice.SegmentPosition?>?
-    ) {}
+    ) {
+        when {
+            imageStatus != null -> _mode.tryEmit(Mode.Error(imageStatus))
+            image != null -> emitCapture(image)
+        }
+    }
 
     override fun devicePlatenStateChanged(
         device: IBScanDevice?,
