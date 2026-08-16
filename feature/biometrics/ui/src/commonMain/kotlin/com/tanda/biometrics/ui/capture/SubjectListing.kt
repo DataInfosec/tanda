@@ -51,14 +51,12 @@ import com.tanda.core.ui.design.DesignTextField
 import com.tanda.core.ui.extension.designScheme
 import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import tanda.feature.biometrics.ui.generated.resources.Res
 import tanda.feature.biometrics.ui.generated.resources.ic_close
 import tanda.feature.biometrics.ui.generated.resources.ic_person
 import tanda.feature.biometrics.ui.generated.resources.ic_right_arrow
 import tanda.feature.biometrics.ui.generated.resources.ic_search
-import tanda.feature.biometrics.ui.generated.resources.subject_id
 
 data class SubjectDetail(
     val name: String = "Atiku Abubakar",
@@ -72,6 +70,7 @@ val subjectList = List(17) { SubjectDetail() }
 fun SubjectListing(
     subjects: List<SubjectDetail> = emptyList(),
     searchQuery: TextFieldState = TextFieldState(),
+    searchHint: String = "Subject name",
     onSubjectClick: (SubjectDetail) -> Unit = {}
 ) {
     Column(
@@ -83,7 +82,10 @@ fun SubjectListing(
             .padding(horizontal = 20.dp, vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchHeader(searchQuery)
+        SearchHeader(
+            searchQuery = searchQuery,
+            hint = searchHint
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -166,7 +168,8 @@ fun SubjectBiometricItem(
 
 @Composable
 fun SearchHeader(
-    searchQuery: TextFieldState = TextFieldState()
+    searchQuery: TextFieldState = TextFieldState(),
+    hint: String = "Subject name"
 ) {
     var toggleSearch by remember { mutableStateOf(false) }
     val icon = if (toggleSearch) Res.drawable.ic_close  else Res.drawable.ic_search
@@ -184,9 +187,9 @@ fun SearchHeader(
         ) { showSearchBar ->
             if (showSearchBar) {
                 DesignTextField(
-                    hint = stringResource(Res.string.subject_id),
+                    hint = hint,
                     state = searchQuery,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     modifier = Modifier.fillMaxWidth()
                 )
