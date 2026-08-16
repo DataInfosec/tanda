@@ -43,25 +43,27 @@ import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.campus.generated.resources.Res
-import tanda.feature.campus.generated.resources.biometric_capture
-import tanda.feature.campus.generated.resources.dashboard_prompt
-import tanda.feature.campus.generated.resources.exeat_activity
-import tanda.feature.campus.generated.resources.ic_attendance
-import tanda.feature.campus.generated.resources.ic_exeat
-import tanda.feature.campus.generated.resources.ic_fingerprint
-import tanda.feature.campus.generated.resources.ic_menu
-import tanda.feature.campus.generated.resources.ic_person
-import tanda.feature.campus.generated.resources.ic_tanda
-import tanda.feature.campus.generated.resources.powered_brand
-import tanda.feature.campus.generated.resources.powered_by
-import tanda.feature.campus.generated.resources.profile_picture
-import tanda.feature.campus.generated.resources.staff_attendance
-import tanda.feature.campus.generated.resources.student_attendance
-import tanda.feature.campus.generated.resources.welcome
+import tanda.feature.campus.ui.generated.resources.Res
+import tanda.feature.campus.ui.generated.resources.biometric_capture
+import tanda.feature.campus.ui.generated.resources.dashboard_prompt
+import tanda.feature.campus.ui.generated.resources.exeat_activity
+import tanda.feature.campus.ui.generated.resources.ic_attendance
+import tanda.feature.campus.ui.generated.resources.ic_exeat
+import tanda.feature.campus.ui.generated.resources.ic_fingerprint
+import tanda.feature.campus.ui.generated.resources.ic_menu
+import tanda.feature.campus.ui.generated.resources.ic_person
+import tanda.feature.campus.ui.generated.resources.ic_tanda
+import tanda.feature.campus.ui.generated.resources.powered_brand
+import tanda.feature.campus.ui.generated.resources.powered_by
+import tanda.feature.campus.ui.generated.resources.profile_picture
+import tanda.feature.campus.ui.generated.resources.staff_attendance
+import tanda.feature.campus.ui.generated.resources.student_attendance
+import tanda.feature.campus.ui.generated.resources.welcome
 
 @Composable
 fun DashboardPage(
+    userName: String = "Bello Yakub",
+    userprofilePic: String = "",
     onBiometricCapture: () -> Unit = {},
     onStudentAttendance: () -> Unit = {},
     onStaffAttendance: () -> Unit = {},
@@ -97,8 +99,8 @@ fun DashboardPage(
         Spacer(modifier = Modifier.height(34.dp))
 
         ProfileSection(
-            userName = "Bello Yakub",
-            imageUrl = "1234rfgt"
+            userName = userName,
+            imageUrl = userprofilePic
         )
 
         Spacer(modifier = Modifier.height(38.dp))

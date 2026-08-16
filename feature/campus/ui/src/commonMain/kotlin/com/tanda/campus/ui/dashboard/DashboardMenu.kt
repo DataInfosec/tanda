@@ -21,12 +21,12 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.campus.generated.resources.Res
-import tanda.feature.campus.generated.resources.attendance_history
-import tanda.feature.campus.generated.resources.device_information
-import tanda.feature.campus.generated.resources.ic_attendance
-import tanda.feature.campus.generated.resources.ic_logout
-import tanda.feature.campus.generated.resources.logout
+import tanda.feature.campus.ui.generated.resources.Res
+import tanda.feature.campus.ui.generated.resources.attendance_history
+import tanda.feature.campus.ui.generated.resources.device_information
+import tanda.feature.campus.ui.generated.resources.ic_attendance
+import tanda.feature.campus.ui.generated.resources.ic_logout
+import tanda.feature.campus.ui.generated.resources.logout
 
 @Composable
 fun DashboardMenu(

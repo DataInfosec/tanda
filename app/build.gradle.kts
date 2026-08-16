@@ -62,6 +62,9 @@ kotlin {
             implementation(projects.feature.account.data)
             implementation(projects.feature.account.remote)
             implementation(projects.feature.account.ui)
+            implementation(projects.feature.campus.data)
+            implementation(projects.feature.campus.domain)
+            implementation(projects.feature.campus.ui)
 
             implementation(projects.feature.attendance)
 

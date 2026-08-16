@@ -23,10 +23,10 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.campus.generated.resources.Res
-import tanda.feature.campus.generated.resources.biometric_capture
-import tanda.feature.campus.generated.resources.ic_fingerprint
-import tanda.feature.campus.generated.resources.ic_right_arrow
+import tanda.feature.campus.ui.generated.resources.Res
+import tanda.feature.campus.ui.generated.resources.biometric_capture
+import tanda.feature.campus.ui.generated.resources.ic_fingerprint
+import tanda.feature.campus.ui.generated.resources.ic_right_arrow
 
 @Composable
 fun DashboardCard(
