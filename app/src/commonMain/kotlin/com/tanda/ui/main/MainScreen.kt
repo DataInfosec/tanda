@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tanda.account.ui.login.LoginScreen
+import com.tanda.campus.ui.dashboard.DashboardScreen
 import com.tanda.core.common.interactor.LocaleInteractor
 import com.tanda.core.ui.design.DesignLocale
 import com.tanda.core.ui.theme.DesignTheme
-import com.tanda.ui.home.HomeScreen
 import com.tanda.ui.splash.SplashScreen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,11 +35,15 @@ fun MainScreen(scope: ScopeID) {
             .filterIsInstance<MainViewModel.State.Success>()
             .distinctUntilChanged()
             .collectLatest { state ->
-                controller.navigate(if (state.authenticated) "home" else "login") {
-                    popUpTo("splash") {
-                        inclusive = true
+                controller.navigate(
+                    if (state.authenticated) MainRoute.Dashboard else MainRoute.Login
+                ) {
+                    popUpTo(MainRoute.Graph) {
+                        inclusive = false
+                        saveState = false
                     }
                     launchSingleTop = true
+                    restoreState = false
                 }
             }
     }
@@ -47,11 +51,12 @@ fun MainScreen(scope: ScopeID) {
         DesignTheme {
             NavHost(
                 navController = controller,
-                startDestination = "splash"
+                startDestination = MainRoute.Splash,
+                route = MainRoute.Graph
             ) {
-                composable("splash") { SplashScreen(component.id) }
-                composable("home") { HomeScreen(component.id) }
-                composable("login") { LoginScreen(component.id) }
+                composable(MainRoute.Splash) { SplashScreen(component.id) }
+                composable(MainRoute.Dashboard) { DashboardScreen(component.id) }
+                composable(MainRoute.Login) { LoginScreen(component.id) }
             }
         }
     }

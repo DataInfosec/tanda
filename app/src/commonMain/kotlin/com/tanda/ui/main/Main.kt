@@ -3,12 +3,12 @@ package com.tanda.ui.main
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
 import com.tanda.account.domain.usecase.TokenUsecase
 import com.tanda.account.ui.login.Login
+import com.tanda.campus.ui.dashboard.Dashboard
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
 import com.tanda.module.TandaModule
-import com.tanda.ui.home.Home
 import com.tanda.ui.splash.Splash
 import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
@@ -42,7 +42,7 @@ object Main {
                                 listOf(
                                     this@Builder,
                                     Splash.Builder(scope),
-                                    Home.Builder(scope),
+                                    Dashboard.Builder(scope),
                                     Login.Builder(scope),
                                 )
                             )
