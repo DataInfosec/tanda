@@ -12,4 +12,8 @@ class ObserveTokenUsecase(
     override fun invoke(): Flow<String?> {
         return repository.observe()
     }
+
+    fun expiration(): Flow<Unit> {
+        return repository.observeExpiration()
+    }
 }

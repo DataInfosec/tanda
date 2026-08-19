@@ -24,7 +24,9 @@ class NetworkModule {
         return getHttpClient(
             baseUrl = baseUrl,
             interceptors = listOf(
-                createErrorInterceptor(),
+                createErrorInterceptor(
+                    onUnauthorized = { usecase.expire() }
+                ),
                 createJwtInterceptor(usecase),
             )
         )

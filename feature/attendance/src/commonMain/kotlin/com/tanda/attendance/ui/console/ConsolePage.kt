@@ -41,7 +41,7 @@ fun ConsolePage(
             onClick = onCheckin,
             modifier = Modifier.fillMaxWidth()
                 .padding(top = 10.dp),
-            colors = designTertiaryButtonColors(),
+//            colors = designTertiaryButtonColors(),
         ) { DesignText(stringResource(Res.string.checkin)) }
     }
 }

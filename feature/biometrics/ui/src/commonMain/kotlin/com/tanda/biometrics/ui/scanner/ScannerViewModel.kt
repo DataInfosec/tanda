@@ -20,9 +20,13 @@ class ScannerViewModel(
 
     private val _status = MutableStateFlow<Status>(Status.Default)
 
+    private val _deviceId = MutableStateFlow<Int?>(null)
+
     private val _state = MutableStateFlow<State>(State.Default)
 
     val status: StateFlow<Status> = _status.asStateFlow()
+
+    val deviceId: StateFlow<Int?> = _deviceId.asStateFlow()
 
     val state: StateFlow<State> = _state.asStateFlow()
 
@@ -30,6 +34,14 @@ class ScannerViewModel(
         viewModelScope.launch {
             observeStatusUsecase().collectLatest {
                 _status.tryEmit(it)
+                _deviceId.tryEmit(
+                    when (it) {
+                        is Status.Attached -> it.id
+                        is Status.Initialize -> it.id
+                        is Status.Ready -> it.id
+                        else -> null
+                    }
+                )
             }
         }
     }

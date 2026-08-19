@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,25 +45,27 @@ import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.feature.campus.generated.resources.Res
-import tanda.feature.campus.generated.resources.biometric_capture
-import tanda.feature.campus.generated.resources.dashboard_prompt
-import tanda.feature.campus.generated.resources.exeat_activity
-import tanda.feature.campus.generated.resources.ic_attendance
-import tanda.feature.campus.generated.resources.ic_exeat
-import tanda.feature.campus.generated.resources.ic_fingerprint
-import tanda.feature.campus.generated.resources.ic_menu
-import tanda.feature.campus.generated.resources.ic_person
-import tanda.feature.campus.generated.resources.ic_tanda
-import tanda.feature.campus.generated.resources.powered_brand
-import tanda.feature.campus.generated.resources.powered_by
-import tanda.feature.campus.generated.resources.profile_picture
-import tanda.feature.campus.generated.resources.staff_attendance
-import tanda.feature.campus.generated.resources.student_attendance
-import tanda.feature.campus.generated.resources.welcome
+import tanda.feature.campus.ui.generated.resources.Res
+import tanda.feature.campus.ui.generated.resources.biometric_capture
+import tanda.feature.campus.ui.generated.resources.dashboard_prompt
+import tanda.feature.campus.ui.generated.resources.exeat_activity
+import tanda.feature.campus.ui.generated.resources.ic_attendance
+import tanda.feature.campus.ui.generated.resources.ic_exeat
+import tanda.feature.campus.ui.generated.resources.ic_fingerprint
+import tanda.feature.campus.ui.generated.resources.ic_menu
+import tanda.feature.campus.ui.generated.resources.ic_person
+import tanda.feature.campus.ui.generated.resources.ic_tanda
+import tanda.feature.campus.ui.generated.resources.powered_brand
+import tanda.feature.campus.ui.generated.resources.powered_by
+import tanda.feature.campus.ui.generated.resources.profile_picture
+import tanda.feature.campus.ui.generated.resources.staff_attendance
+import tanda.feature.campus.ui.generated.resources.student_attendance
+import tanda.feature.campus.ui.generated.resources.welcome
 
 @Composable
 fun DashboardPage(
+    userName: String = "Bello Yakub",
+    userprofilePic: String = "",
     onBiometricCapture: () -> Unit = {},
     onStudentAttendance: () -> Unit = {},
     onStaffAttendance: () -> Unit = {},
@@ -97,8 +101,8 @@ fun DashboardPage(
         Spacer(modifier = Modifier.height(34.dp))
 
         ProfileSection(
-            userName = "Bello Yakub",
-            imageUrl = "1234rfgt"
+            userName = userName,
+            imageUrl = userprofilePic
         )
 
         Spacer(modifier = Modifier.height(38.dp))
@@ -189,20 +193,26 @@ fun DashboardHeader(
     onLogout: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Box {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_tanda),
-                contentDescription = null,
-                modifier = Modifier.height(36.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_tanda),
+            contentDescription = null,
+            modifier = Modifier.height(36.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
 
+        Box(
+            modifier = Modifier
+                .background(
+                    Color.White,
+                    RoundedCornerShape(18.dp)
+                )
+        ) {
             IconButton(
                 onClick = { expanded = true }
             ) {
@@ -211,15 +221,14 @@ fun DashboardHeader(
                     contentDescription = null,
                 )
             }
+            DashboardMenu(
+                expanded = expanded,
+                onDismiss = { expanded = false },
+                onAttendanceHistory = onAttendanceHistory,
+                onDeviceInformation = onDeviceInformation,
+                onLogout = onLogout
+            )
         }
-        DashboardMenu(
-            expanded = expanded,
-            onDismiss = { expanded = false },
-            modifier = Modifier.align(alignment = Alignment.TopEnd),
-            onAttendanceHistory = onAttendanceHistory,
-            onDeviceInformation = onDeviceInformation,
-            onLogout = onLogout
-        )
     }
 }
 

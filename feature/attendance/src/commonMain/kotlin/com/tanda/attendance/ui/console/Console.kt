@@ -2,7 +2,6 @@ package com.tanda.attendance.ui.console
 
 import com.tanda.attendance.ui.checkin.Checkin
 import com.tanda.attendance.ui.enrollment.Enrollment
-import com.tanda.biometrics.ui.scanner.Scanner
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
@@ -26,7 +25,6 @@ object Console {
                                     this@Builder,
                                     Checkin.Builder(scope),
                                     Enrollment.Builder(scope),
-                                    Scanner.Builder(scope),
                                 )
                             )
                         }
