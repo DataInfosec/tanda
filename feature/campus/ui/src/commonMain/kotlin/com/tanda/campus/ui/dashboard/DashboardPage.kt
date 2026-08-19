@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -191,20 +193,26 @@ fun DashboardHeader(
     onLogout: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Box {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_tanda),
-                contentDescription = null,
-                modifier = Modifier.height(36.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_tanda),
+            contentDescription = null,
+            modifier = Modifier.height(36.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
 
+        Box(
+            modifier = Modifier
+                .background(
+                    Color.White,
+                    RoundedCornerShape(18.dp)
+                )
+        ) {
             IconButton(
                 onClick = { expanded = true }
             ) {
@@ -213,15 +221,14 @@ fun DashboardHeader(
                     contentDescription = null,
                 )
             }
+            DashboardMenu(
+                expanded = expanded,
+                onDismiss = { expanded = false },
+                onAttendanceHistory = onAttendanceHistory,
+                onDeviceInformation = onDeviceInformation,
+                onLogout = onLogout
+            )
         }
-        DashboardMenu(
-            expanded = expanded,
-            onDismiss = { expanded = false },
-            modifier = Modifier.align(alignment = Alignment.TopEnd),
-            onAttendanceHistory = onAttendanceHistory,
-            onDeviceInformation = onDeviceInformation,
-            onLogout = onLogout
-        )
     }
 }
 

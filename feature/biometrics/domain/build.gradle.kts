@@ -16,5 +16,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }

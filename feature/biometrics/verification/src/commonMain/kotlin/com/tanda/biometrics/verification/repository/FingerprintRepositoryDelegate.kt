@@ -54,6 +54,10 @@ class FingerprintRepositoryDelegate(
         sdk.sync()
     }
 
+//    private fun clockin(){
+//        sdk.queueClockEvent()
+//    }
+
     private companion object {
         const val UNDEFINED_SCORE = -1f
     }

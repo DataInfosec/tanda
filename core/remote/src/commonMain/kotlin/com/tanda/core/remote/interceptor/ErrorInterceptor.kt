@@ -1,16 +1,23 @@
 package com.tanda.core.remote.interceptor
 
 import com.tanda.core.remote.exception.BusinessException
+import com.tanda.core.remote.exception.AuthorizationException
 import io.ktor.client.plugins.HttpSendInterceptor
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-fun createErrorInterceptor(): HttpSendInterceptor = { requestBuilder ->
+fun createErrorInterceptor(
+    onUnauthorized: () -> Unit = {}
+): HttpSendInterceptor = { requestBuilder ->
     val call = execute(requestBuilder)
     val response = call.response
     val statusCode = response.status.value
+    if (statusCode == 401) {
+        onUnauthorized()
+        throw AuthorizationException("Session expired")
+    }
     if (statusCode in listOf(400, 401, 409)) {
         val bodyText = response.bodyAsText()
         try {

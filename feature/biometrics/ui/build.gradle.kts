@@ -31,5 +31,8 @@ kotlin {
 
             implementation(projects.feature.biometrics.domain)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }

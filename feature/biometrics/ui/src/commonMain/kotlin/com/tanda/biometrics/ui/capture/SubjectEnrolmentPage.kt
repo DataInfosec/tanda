@@ -3,7 +3,10 @@ package com.tanda.biometrics.ui.capture
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,9 +23,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 data class SubjectBiometricUiConfig(
     val subjectName: String,
+    val expectedSubjectType: String = subjectName.lowercase(),
     val idTitle: String = "$subjectName ID",
     val inputDescription: String = "Enter ${subjectName.lowercase()} ID to capture biometrics data",
     val inputHint: String = "$subjectName ID",
+    val detailTitle: String = "$subjectName detail",
     val listingTitle: String = "$subjectName Listing",
     val searchHint: String = "$subjectName name"
 )
@@ -46,8 +51,11 @@ fun SubjectEnrolmentPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .imePadding()
             .background(MaterialTheme.colorScheme.background)
-            .padding( vertical = 18.dp)
+            .padding( vertical = 12.dp)
     ) {
 
         BiometricCaptureHeader(

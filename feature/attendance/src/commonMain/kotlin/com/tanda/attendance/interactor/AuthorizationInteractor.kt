@@ -10,6 +10,6 @@ class AuthorizationInteractor(
     private val tokenRepository: TokenRepository
 ) : MobileDeviceTokenProvider {
     override fun currentToken(): String {
-        return "86MtYqYuMTjV-sTN7LVhQZ8fjocWCbPsqTGIl2uOYCo"
+        return "f9F8Wm3dyLRR-xgv2cuuKa5dxXJ4SVm9bSk8LJctTCw"/* "86MtYqYuMTjV-sTN7LVhQZ8fjocWCbPsqTGIl2uOYCo"*/
     }
 }
