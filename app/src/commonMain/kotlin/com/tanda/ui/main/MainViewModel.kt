@@ -3,8 +3,9 @@ package com.tanda.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.account.domain.usecase.TokenUsecase
 import com.tanda.biometrics.domain.model.ScannerSessionState
+import com.tanda.biometrics.domain.model.DeviceConfiguration
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,12 +14,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val dispatcher: Dispatcher,
-    private val tokenUsecase: TokenUsecase,
     private val observeTokenUsecase: ObserveTokenUsecase,
+    private val deviceConfigurationRepository: DeviceConfigurationRepository,
     private val scannerSessionManager: ScannerSessionManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Default)
@@ -34,18 +36,29 @@ class MainViewModel(
         scannerSessionManager.retry()
     }
 
+    fun configureDevice(deviceInstanceId: String, fingerprintToken: String) {
+        deviceConfigurationRepository.save(
+            DeviceConfiguration(
+                deviceInstanceId = deviceInstanceId,
+                fingerprintToken = fingerprintToken,
+            )
+        )
+        scannerSessionManager.start()
+    }
+
     operator fun invoke() {
         viewModelScope.launch(dispatcher.io) {
             try {
                 _state.tryEmit(State.Loading)
-                _state.tryEmit(State.Success(
-                    authenticated = !tokenUsecase().isNullOrBlank()
-                ))
-                observeTokenUsecase().collect { token ->
-                    _state.tryEmit(State.Success(
-                        authenticated = !token.isNullOrBlank()
-                    ))
-                }
+                combine(
+                    observeTokenUsecase(),
+                    deviceConfigurationRepository.observe(),
+                ) { token, configuration ->
+                    State.Success(
+                        authenticated = !token.isNullOrBlank(),
+                        deviceConfigured = configuration != null,
+                    )
+                }.collect(_state::emit)
             } catch (error: Throwable) {
                 _state.tryEmit(State.Error(error))
             }
@@ -60,7 +73,10 @@ class MainViewModel(
     sealed interface State {
         data object Default : State
         data object Loading : State
-        data class Success(val authenticated: Boolean) : State
+        data class Success(
+            val authenticated: Boolean,
+            val deviceConfigured: Boolean,
+        ) : State
         data class Error(val error: Throwable) : State
     }
 

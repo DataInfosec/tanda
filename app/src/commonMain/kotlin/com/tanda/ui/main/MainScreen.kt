@@ -27,7 +27,10 @@ import org.koin.core.scope.ScopeID
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun MainScreen(scope: ScopeID) {
+fun MainScreen(
+    scope: ScopeID,
+    onExitApplication: () -> Unit = {},
+) {
     val current = getKoin().getScope(scope)
     val component = remember { Main.Builder(current).build() }
     val interactor = remember { component.get<LocaleInteractor>() }
@@ -36,6 +39,7 @@ fun MainScreen(scope: ScopeID) {
     val controller = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     val scannerState = viewModel.scannerState.collectAsStateWithLifecycle()
+    val state = viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel() }
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -52,6 +56,7 @@ fun MainScreen(scope: ScopeID) {
             viewModel.scannerState,
         ) { auth, scanner ->
             when {
+                !auth.deviceConfigured -> MainRoute.Splash
                 !auth.authenticated -> MainRoute.Login
                 scanner is ScannerSessionState.Ready -> MainRoute.Dashboard
                 else -> MainRoute.Splash
@@ -89,6 +94,12 @@ fun MainScreen(scope: ScopeID) {
                     composable(MainRoute.Dashboard) { DashboardScreen(component.id) }
                     composable(MainRoute.Login) { LoginScreen(component.id) }
                 }
+            }
+            if ((state.value as? MainViewModel.State.Success)?.deviceConfigured == false) {
+                DeviceConfigurationDialog(
+                    onDismissClick = onExitApplication,
+                    onContinueClick = viewModel::configureDevice,
+                )
             }
         }
     }

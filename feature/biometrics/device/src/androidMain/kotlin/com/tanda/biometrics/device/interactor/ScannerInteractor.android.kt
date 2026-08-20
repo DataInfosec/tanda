@@ -94,7 +94,10 @@ actual class ScannerInteractor(
         handleDeviceAttached(deviceId, findDeviceIndex(deviceId))
     }
 
-    private fun handleDeviceAttached(deviceId: Int, deviceIndex: Int?) {
+    private fun handleDeviceAttached(
+        deviceId: Int,
+        deviceIndex: Int?,
+    ) {
         this.id = deviceId
         deviceIndex?.let { deviceIndexes[deviceId] = it }
         _status.tryEmit(Status.Attached(deviceId))
@@ -113,6 +116,11 @@ actual class ScannerInteractor(
 
     private fun findDeviceIndex(deviceId: Int): Int? {
         val count = runCatching { scanner.getDeviceCount() }.getOrDefault(0)
+        if (count == 1) {
+            Log.d(TAG, "using sole SDK scanner for Android deviceId=$deviceId")
+            return 0
+        }
+
         val matchingIndex = (0 until count).firstOrNull { index ->
             runCatching {
                 val description = scanner.getDeviceDescription(index)
@@ -124,16 +132,7 @@ actual class ScannerInteractor(
             }.getOrDefault(false)
         }
         if (matchingIndex != null) return matchingIndex
-
-        return if (count == 1) {
-            Log.w(
-                TAG,
-                "SDK device ID does not match Android deviceId=$deviceId; using sole scanner at index=0",
-            )
-            0
-        } else {
-            null
-        }
+        return null
     }
 
     @Synchronized

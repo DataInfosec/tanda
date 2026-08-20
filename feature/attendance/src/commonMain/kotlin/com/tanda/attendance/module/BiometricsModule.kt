@@ -4,6 +4,7 @@ import com.tanda.BuildConstants
 import com.tanda.biometrics.data.DataModule
 import com.tanda.biometrics.device.DeviceModule
 import com.tanda.biometrics.domain.DomainModule
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.biometrics.verification.VerificationModule
 import com.tanda.biometrics.verification.model.Credential
 import org.koin.core.annotation.Module
@@ -20,9 +21,15 @@ import org.koin.core.annotation.Single
 )
 class BiometricsModule {
     @Single
-    fun provideCredential(@Named("path") path: String): Credential {
+    fun provideCredential(
+        @Named("path") path: String,
+        deviceConfigurationRepository: DeviceConfigurationRepository,
+    ): Credential {
+        val deviceConfiguration = requireNotNull(deviceConfigurationRepository.get()) {
+            "Device configuration is required before biometric operations"
+        }
         return Credential(
-            id = BuildConstants.DEVICE_ID,
+            id = deviceConfiguration.deviceInstanceId,
             url = BuildConstants.FINGERPRINT_URL,
             path = path,
         )

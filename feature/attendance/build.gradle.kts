@@ -27,6 +27,7 @@ kotlin {
         val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.core.persistence)
             implementation(projects.core.ui)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)

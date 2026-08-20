@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -58,13 +59,20 @@ class MainActivity : ComponentActivity() {
                 windowsInsetsController.isAppearanceLightStatusBars = !isDarkTheme
                 windowsInsetsController.isAppearanceLightNavigationBars = !isDarkTheme
             }
-            MainScreen(component.id)
+            MainScreen(
+                scope = component.id,
+                onExitApplication = ::finishAndRemoveTask,
+            )
         }
     }
 
     override fun onStart() {
         super.onStart()
-        scannerSessionManager.start()
+        val deviceConfigurationRepository = (application as TandaApplication).scope
+            .get<DeviceConfigurationRepository>()
+        if (deviceConfigurationRepository.get() != null) {
+            scannerSessionManager.start()
+        }
     }
 
     override fun onStop() {

@@ -1,8 +1,8 @@
 package com.tanda.ui.main
 
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.account.domain.usecase.TokenUsecase
 import com.tanda.biometrics.domain.session.ScannerSessionManager
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.account.ui.login.Login
 import com.tanda.campus.ui.dashboard.Dashboard
 import com.tanda.core.common.concurrent.Dispatcher
@@ -26,8 +26,8 @@ object Main {
                         scoped {
                             MainViewModel(
                                 dispatcher = get<Dispatcher>(),
-                                tokenUsecase = get<TokenUsecase>(),
                                 observeTokenUsecase = get<ObserveTokenUsecase>(),
+                                deviceConfigurationRepository = get<DeviceConfigurationRepository>(),
                                 scannerSessionManager = get<ScannerSessionManager>(),
                             )
                         }
