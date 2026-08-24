@@ -11,6 +11,8 @@ kotlin {
     }
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+
             implementation(projects.feature.scanner.liblfd)
             implementation(projects.feature.scanner.libusb)
             implementation(projects.feature.scanner.libibscancommon)

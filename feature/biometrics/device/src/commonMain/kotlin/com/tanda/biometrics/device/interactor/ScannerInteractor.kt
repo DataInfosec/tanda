@@ -16,11 +16,17 @@ expect class ScannerInteractor {
 
     fun start()
 
+    fun observe(): Flow<Boolean?>
+
+    fun isActive(): Boolean
+
     fun hasPermission(id: Int): Boolean
 
     fun requestPermission(id: Int)
 
     suspend fun capture(finger: Finger, index: Int, option: Option)
+
+    fun count(): Int
 
     fun stop()
 }

@@ -7,7 +7,6 @@ import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
-import com.tanda.module.TandaModule
 import com.tanda.ui.home.Home
 import com.tanda.ui.splash.Splash
 import org.koin.core.annotation.Module
@@ -49,7 +48,6 @@ object Main {
                         }
                     }
                 },
-                TandaModule.module,
                 Main.module
             ))
             return scope

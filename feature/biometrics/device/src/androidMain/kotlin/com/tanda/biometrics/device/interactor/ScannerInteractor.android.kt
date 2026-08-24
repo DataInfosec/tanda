@@ -23,9 +23,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import com.tanda.biometrics.device.scanner.ScannerFactory
 import com.tanda.biometrics.device.scanner.ScannerObservable
 import com.tanda.biometrics.device.scanner.ScannerObservableDelegate
+import com.tanda.biometrics.device.scanner.ScannerService
+import com.tanda.core.persistence.usecase.GetBooleanUsecase
+import com.tanda.core.persistence.usecase.ObservableBooleanUsecase
 
 actual class ScannerInteractor(
     private val context: Context,
+    private val getter: GetBooleanUsecase,
+    private val observer: ObservableBooleanUsecase,
     private val factory: ScannerFactory = ScannerFactory.Delegate(),
     private val observable: ScannerObservable = ScannerObservableDelegate(),
     private val listener: IBScanDeviceListener = observable as IBScanDeviceListener
@@ -41,14 +46,35 @@ actual class ScannerInteractor(
     actual val status: Flow<Status> get() = _status
 
     actual fun start() {
+        if (isActive()) {
+            scanner.setScanListener(this)
+            syncAttachedDevices()
+            return
+        }
+        toggle(true)
+        scanner.setScanListener(this)
+        syncAttachedDevices()
+    }
+
+    private fun toggle(status: Boolean) {
         context.sendBroadcast(
             Intent().apply {
                 action = ACTION_FINGER_CONFIG
-                putExtra(STATUS_KEY, true)
+                putExtra(STATUS_KEY, status)
             }
         )
-        scanner.setScanListener(this)
-        syncAttachedDevices()
+    }
+
+    actual fun observe(): Flow<Boolean?> = observer(ScannerService.KEY)
+
+    actual fun isActive(): Boolean {
+        for (i in 0 until count()) {
+            val desc = scanner.getDeviceDescription(i)
+            if (desc.isOpened) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun syncAttachedDevices() {
@@ -158,13 +184,10 @@ actual class ScannerInteractor(
         }
     }
 
+    actual fun count(): Int = scanner.deviceCount
+
     actual fun stop() {
-        context.sendBroadcast(
-            Intent().apply {
-                action = ACTION_FINGER_CONFIG
-                putExtra(STATUS_KEY, false)
-            }
-        )
+        toggle(false)
         device?.let { runCatching { if (it.isCaptureActive) it.cancelCaptureImage() } }
         observable.reset()
         _status.tryEmit(Status.Default)
