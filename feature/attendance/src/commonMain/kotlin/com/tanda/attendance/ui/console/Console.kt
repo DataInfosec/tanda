@@ -5,13 +5,10 @@ import com.tanda.attendance.ui.enrollment.Enrollment
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
-import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.koin.ksp.generated.module
 
-@Module
 object Console {
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
@@ -29,8 +26,7 @@ object Console {
                             )
                         }
                     }
-                },
-                Console.module
+                }
             ))
             return scope
         }

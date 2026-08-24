@@ -28,6 +28,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.persistence)
+            implementation(projects.core.remote)
             implementation(projects.core.ui)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -41,6 +42,10 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(libs.navigation)
+
+            implementation(libs.ktor.client)
+            implementation(libs.ktor.json)
+            implementation(libs.ktor.negotiation)
 
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
@@ -56,7 +61,17 @@ kotlin {
             implementation(projects.feature.biometrics.verification)
             implementation(projects.feature.biometrics.ui)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.test.coroutine)
+        }
     }
 }
 dependencies { debugImplementation(compose.uiTooling) }
 tasks.named("preBuild") { dependsOn("generateBuildConstants") }
+
+tasks.configureEach {
+    if ((name.startsWith("compile") && name.contains("Kotlin")) || name.startsWith("ksp")) {
+        dependsOn("generateBuildConstants")
+    }
+}

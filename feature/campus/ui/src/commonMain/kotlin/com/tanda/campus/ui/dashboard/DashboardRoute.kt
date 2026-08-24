@@ -5,4 +5,5 @@ internal object DashboardRoute {
     const val BiometricCapture = "biometric_capture"
     const val StaffBiometric = "staff_biometric"
     const val StudentBiometric = "student_biometric"
+    const val StudentAttendance = "student_attendance"
 }

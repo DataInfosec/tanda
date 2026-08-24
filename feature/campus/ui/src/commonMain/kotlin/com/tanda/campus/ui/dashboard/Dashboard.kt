@@ -1,6 +1,7 @@
 package com.tanda.campus.ui.dashboard
 
 import com.tanda.biometrics.ui.capture.BiometricCapture
+import com.tanda.attendance.ui.student.StudentAttendance
 import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.tanda.campus.domain.usecase.ObserveProfileNameUsecase
 import com.tanda.campus.domain.usecase.ProfileNameUsecase
@@ -31,6 +32,7 @@ object Dashboard {
                             listOf(
                                 this@Builder,
                                 BiometricCapture.Builder(scope),
+                                StudentAttendance.Builder(scope),
                             )
                         )
                     }

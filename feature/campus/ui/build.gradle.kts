@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.feature.campus.domain)
             implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.ui)
+            implementation(projects.feature.attendance)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)

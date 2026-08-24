@@ -8,5 +8,11 @@ import org.koin.core.annotation.Module
         BiometricsModule::class,
     ]
 )
-@ComponentScan("com.tanda.attendance.interactor")
+@ComponentScan(
+    value = [
+        "com.tanda.attendance.data",
+        "com.tanda.attendance.domain.usecase",
+        "com.tanda.attendance.interactor",
+    ]
+)
 class AttendanceModule

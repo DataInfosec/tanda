@@ -9,6 +9,8 @@ class AuthorizationInteractor(
     private val deviceConfigurationRepository: DeviceConfigurationRepository,
 ) : MobileDeviceTokenProvider {
     override fun currentToken(): String {
-        return deviceConfigurationRepository.get()?.fingerprintToken.orEmpty()
+        val deviceToken =deviceConfigurationRepository.get()?.fingerprintToken.orEmpty()
+        println("deviceToken: $deviceToken")
+        return deviceToken
     }
 }

@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tanda.biometrics.ui.capture.BiometricCaptureScreen
+import com.tanda.attendance.ui.student.StudentAttendanceScreen
 import com.tanda.biometrics.domain.model.ScannerSessionState
 import com.tanda.biometrics.ui.staff.StaffBiometricScreen
 import com.tanda.biometrics.ui.student.StudentBiometricScreen
@@ -66,7 +67,9 @@ fun DashboardScreen(scope: ScopeID){
                                     controller.navigate(DashboardRoute.BiometricCapture)
                                 },
                                 onStaffAttendance = {},
-                                onStudentAttendance = {},
+                                onStudentAttendance = {
+                                    controller.navigate(DashboardRoute.StudentAttendance)
+                                },
                                 onExeatActivity = {},
                                 onAttendanceHistory = {},
                                 onDeviceInformation = {},
@@ -105,6 +108,16 @@ fun DashboardScreen(scope: ScopeID){
                                 onBackClick = {
                                     controller.popBackStack()
                                 }
+                            )
+                        }
+                        composable(DashboardRoute.StudentAttendance) {
+                            StudentAttendanceScreen(
+                                scope = component.id,
+                                deviceId = scanner.deviceId,
+                                deviceIndex = scanner.deviceIndex,
+                                onBackClick = {
+                                    controller.popBackStack()
+                                },
                             )
                         }
                     }
