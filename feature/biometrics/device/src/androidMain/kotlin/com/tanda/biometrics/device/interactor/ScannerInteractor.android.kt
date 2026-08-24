@@ -159,10 +159,8 @@ actual class ScannerInteractor(
     actual suspend fun capture(finger: Finger, index: Int, option: Option) {
         try {
             observable.reset()
-            if (device == null) {
-                device = scanner.openDevice(index)
-                device?.setScanDeviceListener(listener)
-            }
+            if (device == null) device = scanner.openDevice(index)
+            device?.setScanDeviceListener(listener)
             if (device?.isCaptureActive == true) {
                 device?.captureImageManually()
             } else {

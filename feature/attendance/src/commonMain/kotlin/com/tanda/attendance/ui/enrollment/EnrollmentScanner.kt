@@ -53,7 +53,7 @@ fun EnrollmentScanner(
         ) {
             when (status.value) {
                 is FingerprintViewModel.Status.Default -> {
-                    DesignText("Place your finger to scan (${mode.value::class.simpleName})")
+                    DesignText("Place your finger to scan (${mode.value})")
                 }
                 is FingerprintViewModel.Status.Capture -> {
                     val img: Image = (status.value as FingerprintViewModel.Status.Capture).image
