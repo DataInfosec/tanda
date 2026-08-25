@@ -6,31 +6,23 @@ import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
-import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.koin.ksp.generated.module
 
-@Module
 object Checkin {
-    @org.koin.core.annotation.Scope(Checkin::class)
-    fun provideViewModel(
-        dispatcher: Dispatcher,
-        usecase: IdentificationUsecase
-    ): CheckinViewModel {
-        return CheckinViewModel(
-            dispatcher = dispatcher,
-            usecase = usecase,
-        )
-    }
-
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
             val scope = scope(named<Checkin>())
             scope.getKoin().loadModules(listOf(
                 module {
                     scope<Checkin> {
+                        scoped {
+                            CheckinViewModel(
+                                dispatcher = get<Dispatcher>(),
+                                usecase = get<IdentificationUsecase>(),
+                            )
+                        }
                         factory<UiComponentProvider.Factory> {
                             UiBuilderFactory(
                                 listOf(
@@ -40,8 +32,7 @@ object Checkin {
                             )
                         }
                     }
-                },
-                Checkin.module
+                }
             ))
             return scope
         }

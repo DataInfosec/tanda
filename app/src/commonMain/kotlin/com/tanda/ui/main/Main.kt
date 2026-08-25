@@ -1,48 +1,42 @@
 package com.tanda.ui.main
 
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.account.domain.usecase.TokenUsecase
+import com.tanda.biometrics.domain.session.ScannerSessionManager
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.account.ui.login.Login
+import com.tanda.campus.ui.dashboard.Dashboard
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
 import com.tanda.module.TandaModule
-import com.tanda.ui.home.Home
 import com.tanda.ui.splash.Splash
-import org.koin.core.annotation.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
-@Module
 object Main {
-    @org.koin.core.annotation.Scope(Main::class)
-    fun provideViewModel(
-        dispatcher: Dispatcher,
-        usecase: TokenUsecase,
-        observableUseCase: ObserveTokenUsecase
-    ): MainViewModel {
-        return MainViewModel(
-            dispatcher = dispatcher,
-            tokenUsecase = usecase,
-            observeTokenUsecase = observableUseCase
-        )
-    }
-
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
             val scope = scope(named<Main>())
             scope.getKoin().loadModules(listOf(
                 module {
                     scope<Main> {
+                        scoped {
+                            MainViewModel(
+                                dispatcher = get<Dispatcher>(),
+                                observeTokenUsecase = get<ObserveTokenUsecase>(),
+                                deviceConfigurationRepository = get<DeviceConfigurationRepository>(),
+                                scannerSessionManager = get<ScannerSessionManager>(),
+                            )
+                        }
                         factory<UiComponentProvider.Factory> {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
                                     Splash.Builder(scope),
-                                    Home.Builder(scope),
+                                    Dashboard.Builder(scope),
                                     Login.Builder(scope),
                                 )
                             )
@@ -50,7 +44,6 @@ object Main {
                     }
                 },
                 TandaModule.module,
-                Main.module
             ))
             return scope
         }

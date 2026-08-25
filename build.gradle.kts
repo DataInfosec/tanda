@@ -18,7 +18,7 @@ subprojects {
         ":feature:account:ui",
         ":feature:biometrics:ui",
         ":feature:attendance",
-        ":feature:campus",
+        ":feature:campus:ui",
     )
     extra["library"] = listOf(
         ":feature:scanner:liblfd",

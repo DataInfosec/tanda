@@ -11,4 +11,12 @@ class TokenUsecase(
     override suspend fun invoke(): String? {
         return repository.get()
     }
+
+    fun clear() {
+        repository.clear()
+    }
+
+    fun expire() {
+        repository.expire()
+    }
 }

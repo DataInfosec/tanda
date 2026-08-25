@@ -38,6 +38,16 @@ if (!isLibrary) {
         description = "Runs KSP on commonMain metadata"
         dependsOn("kspCommonMainKotlinMetadata")
     }
+
+    tasks.configureEach { task ->
+        def isKotlinCompilation = task.name.startsWith("compile") &&
+                task.name.contains("Kotlin")
+        def isPlatformKsp = task.name.startsWith("ksp") &&
+                task.name != "kspCommonMainKotlinMetadata"
+        if (isKotlinCompilation || isPlatformKsp) {
+            task.dependsOn("kspCommonMainKotlinMetadata")
+        }
+    }
 }
 
 kotlin {

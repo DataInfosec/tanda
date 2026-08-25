@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tanda.biometrics.domain.exception.ScannerException
 import com.tanda.core.ui.design.DesignText
+import com.tanda.core.ui.theme.DesignTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ConsoleError(error: Throwable) {
@@ -27,5 +29,13 @@ fun ConsoleError(error: Throwable) {
         } else {
             DesignText("Error: ${(error.cause ?: error)::class.simpleName}")
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewConsoleError(){
+    DesignTheme(darkTheme = false){
+        ConsoleError(ScannerException("Scanner not found"))
     }
 }

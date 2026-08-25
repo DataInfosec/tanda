@@ -57,3 +57,6 @@ include(":feature:attendance")
 include(":feature:campus")
 
 include(":app")
+include(":feature:campus:data")
+include(":feature:campus:ui")
+include(":feature:campus:domain")

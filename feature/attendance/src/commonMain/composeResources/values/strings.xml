@@ -3,4 +3,9 @@
     <string name="checkin">Checkin</string>
     <string name="capture">Capture</string>
     <string name="identity">Identity</string>
+    <string name="student_attendance">Student attendance</string>
+    <string name="manage_student_attendance">Manage student attendance activities</string>
+    <string name="attendance_points_empty">No student attendance points are available</string>
+    <string name="attendance_points_retry">Try again</string>
+    <string name="attendance_recorded">Student attendance record completed</string>
 </resources>

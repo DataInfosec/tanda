@@ -39,3 +39,9 @@ kotlin {
 tasks.named("preBuild") {
     dependsOn("generateSupportedLocale")
 }
+
+tasks.configureEach {
+    if ((name.startsWith("compile") && name.contains("Kotlin")) || name.startsWith("ksp")) {
+        dependsOn("generateSupportedLocale")
+    }
+}

@@ -1,15 +1,16 @@
 package com.tanda.attendance.interactor
 
 import com.datainfosec.biometric.MobileDeviceTokenProvider
-import com.tanda.account.domain.repository.TokenRepository
-import com.tanda.attendance.exception.AuthorizationException
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import org.koin.core.annotation.Factory
 
 @Factory
 class AuthorizationInteractor(
-    private val tokenRepository: TokenRepository
+    private val deviceConfigurationRepository: DeviceConfigurationRepository,
 ) : MobileDeviceTokenProvider {
     override fun currentToken(): String {
-        return "86MtYqYuMTjV-sTN7LVhQZ8fjocWCbPsqTGIl2uOYCo"
+        val deviceToken =deviceConfigurationRepository.get()?.fingerprintToken.orEmpty()
+        println("deviceToken: $deviceToken")
+        return deviceToken
     }
 }

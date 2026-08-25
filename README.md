@@ -70,7 +70,6 @@ gitignored and must be created manually:
 
 ```properties
 tanda.base.url=<base-url>
-tanda.device.id=<device-id>
 tanda.fingerprint.url=<fingerprint-url>
 ```
 
@@ -84,9 +83,8 @@ automatically as part of `preBuild`/KSP, but can also be triggered manually:
 
 - `./gradlew generateDepencencyMain` — runs KSP against the `commonMain` metadata to
   generate Koin dependency injection code for a module.
-- `./gradlew generateBuildConstants` — reads `tanda.fingerprint.url` and
-  `tanda.fingerprint.secret` from `local.properties` and generates the `BuildConstants`
-  object consumed by `app`.
+- `./gradlew generateBuildConstants` — reads the API and fingerprint URLs from
+  `local.properties` and generates the `BuildConstants` object consumed by `app`.
 - `./gradlew generateSupportedLocale` — scans the existing `values*` resource folders
   under `composeResources` in a module (e.g. `feature/preference`) and generates a
   `SupportedLocale` list of the languages the app currently ships translations for.

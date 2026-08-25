@@ -19,8 +19,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.tanda.core.ui.design.DesignOutlineButton
 import com.tanda.core.ui.design.DesignText
 import com.tanda.core.ui.theme.DesignTheme
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -49,6 +51,9 @@ fun BiometricCapturePage(
     onStudentBiometricCapture: () -> Unit = {},
     onBackClicked: () -> Unit = {}
 ) {
+    val handleStudentBiometric by rememberUpdatedState(onStudentBiometricCapture)
+    val handleStaffBiometric by rememberUpdatedState(onStaffBiometricCapture)
+    val handleBackClicked by rememberUpdatedState(onBackClicked)
     Column(
         modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -59,7 +64,7 @@ fun BiometricCapturePage(
             .padding(horizontal = 20.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BiometricCaptureHeader(onBackClicked = onBackClicked)
+        BiometricCaptureHeader(onBackClicked = { handleBackClicked() })
 
         Spacer(modifier.height(40.dp))
 
@@ -85,7 +90,7 @@ fun BiometricCapturePage(
 
         DesignOutlineButton(
             text = stringResource(Res.string.staff_biometric),
-            onClick = onStaffBiometricCapture,
+            onClick = { handleStaffBiometric() },
             leading = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_staff_biometric),
@@ -109,7 +114,7 @@ fun BiometricCapturePage(
 
         DesignOutlineButton(
             text = stringResource(Res.string.student_biometric),
-            onClick = onStudentBiometricCapture,
+            onClick = { handleStudentBiometric() },
             leading = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_student_biometric),
@@ -135,10 +140,11 @@ fun BiometricCapturePage(
 @Composable
 fun BiometricCaptureHeader(
     onBackClicked: () -> Unit,
-    text: String = stringResource(Res.string.biometric)
+    text: String = stringResource(Res.string.biometric),
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         IconButton(

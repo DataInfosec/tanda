@@ -4,5 +4,10 @@ import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
 @Module
-@ComponentScan("com.tanda.biometrics.domain.usecase")
+@ComponentScan(
+    value = [
+        "com.tanda.biometrics.domain.usecase",
+        "com.tanda.biometrics.domain.session",
+    ]
+)
 class DomainModule

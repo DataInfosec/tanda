@@ -3,12 +3,15 @@ package com.tanda.biometrics.verification.repository
 import com.datainfosec.biometric.MobileBiometricSdk
 import com.datainfosec.biometric.MobileDeviceTokenProvider
 import com.datainfosec.biometric.MobileIdentifyOutcome
+import com.tanda.biometrics.domain.exception.ClockEventException
 import com.tanda.biometrics.domain.exception.EnrollmentException
 import com.tanda.biometrics.domain.exception.FingerprintException
+import com.tanda.biometrics.domain.model.AttendanceType
 import com.tanda.biometrics.domain.model.Capture
 import com.tanda.biometrics.domain.model.Image
 import com.tanda.biometrics.domain.repository.FingerprintRepository
 import com.tanda.biometrics.verification.mapper.mapToByte
+import com.tanda.biometrics.verification.mapper.mapToData
 import com.tanda.biometrics.verification.mapper.mapToDomain
 import com.tanda.biometrics.verification.model.Credential
 import org.koin.core.annotation.Singleton
@@ -50,9 +53,26 @@ class FingerprintRepositoryDelegate(
         }
     }
 
+    override suspend fun clockActivities(
+        pointID: String,
+        captureEvidence: Capture,
+        mobileAttendanceType: AttendanceType
+    ): String {
+         try {
+           return sdk.queueClockEvent(
+                attendancePointId = pointID,
+                eventType = mobileAttendanceType.mapToData(),
+                evidence = captureEvidence.mapToData()
+            )
+        }catch (e: Throwable){
+            throw ClockEventException(e.message ?: "Unknown error")
+        }
+    }
+
     override suspend fun synchronize() {
         sdk.sync()
     }
+
 
     private companion object {
         const val UNDEFINED_SCORE = -1f

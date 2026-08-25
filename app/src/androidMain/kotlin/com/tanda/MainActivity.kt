@@ -6,14 +6,14 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
+import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import com.tanda.ui.main.Main
@@ -22,9 +22,12 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 class MainActivity : ComponentActivity() {
+    private val scannerSessionManager: ScannerSessionManager
+        get() = (application as TandaApplication).scope.get()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         installSplashScreen()
+        super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         val scope = (application as TandaApplication).scope
@@ -39,11 +42,11 @@ class MainActivity : ComponentActivity() {
                 single<String>(qualifier = named("path")) { filesDir.absolutePath }
             }
         ))
+        val component = Main.Builder(scope).build()
         setContent {
             val view = LocalView.current
 //            val isDarkTheme = isSystemInDarkTheme()
             val isDarkTheme = false
-            val component = remember { Main.Builder(scope).build() }
             SideEffect {
                 if (view.context !is Activity) return@SideEffect
                 val window = (view.context as Activity).window
@@ -56,7 +59,27 @@ class MainActivity : ComponentActivity() {
                 windowsInsetsController.isAppearanceLightStatusBars = !isDarkTheme
                 windowsInsetsController.isAppearanceLightNavigationBars = !isDarkTheme
             }
-            MainScreen(component.id)
+            MainScreen(
+                scope = component.id,
+                onExitApplication = ::finishAndRemoveTask,
+            )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val deviceConfigurationRepository = (application as TandaApplication).scope
+            .get<DeviceConfigurationRepository>()
+        if (deviceConfigurationRepository.get() != null) {
+            scannerSessionManager.start()
+        }
+    }
+
+    override fun onStop() {
+        try {
+            scannerSessionManager.stop()
+        } finally {
+            super.onStop()
         }
     }
 }
