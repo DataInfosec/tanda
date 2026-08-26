@@ -48,6 +48,11 @@ class MainViewModel(
         }
     }
 
+    override fun onCleared() {
+        invoke(false)
+        super.onCleared()
+    }
+
     sealed interface State {
         data object Default : State
         data object Loading : State

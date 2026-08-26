@@ -2,7 +2,6 @@ package com.tanda.ui.main
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -52,8 +51,5 @@ fun MainScreen(scope: ScopeID) {
                 composable<MainNavigation.Login> { LoginScreen(component.id) }
             }
         }
-    }
-    DisposableEffect(Unit) {
-        onDispose { viewModel(false) }
     }
 }

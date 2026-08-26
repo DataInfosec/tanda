@@ -29,7 +29,7 @@ fun SplashScreen(scope: ScopeID) {
             .filterIsInstance<SplashViewModel.State.Success>()
             .distinctUntilChanged()
             .collectLatest { state ->
-                if (localEvent.initialized()) {
+                if (!localEvent.initialized()) {
                     localEvent(SplashEvent.Event.Setup)
                 } else {
                     localEvent(if (state.authenticated) {

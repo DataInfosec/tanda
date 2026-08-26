@@ -18,11 +18,11 @@ class MainInteractor(
     private val setStringUsecase: SetStringUsecase = scope.get(),
 ) : SplashEvent, SetupEvent, HomeEvent, LoginEvent {
     override fun initialized(): Boolean {
-        return false
+        return true
     }
 
     override fun invoke(event: SplashEvent.Event) {
-        when(event) {
+        when (event) {
             is SplashEvent.Event.Login -> controller.route(MainNavigation.Login)
             is SplashEvent.Event.Setup -> controller.route(MainNavigation.Setup)
             is SplashEvent.Event.Home -> {
@@ -33,20 +33,26 @@ class MainInteractor(
     }
 
     override fun invoke(event: SetupEvent.Event) {
-        when(event) {
-            is SetupEvent.Event.Complete -> controller.route(MainNavigation.Login)
+        when (event) {
+            is SetupEvent.Event.Complete -> {
+                //Todo Set device Id And token
+                controller.route(MainNavigation.Login)
+            }
         }
     }
 
     override fun invoke(event: HomeEvent.Event) {
-        when(event) {
+        when (event) {
             is HomeEvent.Event.Logout -> controller.route(MainNavigation.Login)
         }
     }
 
     override fun invoke(event: LoginEvent.Event) {
-        when(event) {
-            is LoginEvent.Event.Home -> controller.route(MainNavigation.Home)
+        when (event) {
+            is LoginEvent.Event.Home -> {
+                onStart()
+                controller.route(MainNavigation.Home)
+            }
         }
     }
 }
