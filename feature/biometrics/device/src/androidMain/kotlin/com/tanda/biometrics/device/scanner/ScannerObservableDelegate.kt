@@ -85,6 +85,17 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
             ))
     }
 
+    override fun post(image: IBScanDevice.ImageData) {
+        _state.tryEmit(
+            Snapshot.Capture(
+                Image(
+                    width = image.width,
+                    height = image.height,
+                    data = image.buffer
+                )
+            ))
+    }
+
     override fun deviceImageResultExtendedAvailable(
         device: IBScanDevice?,
         imageStatus: IBScanException?,
@@ -96,7 +107,7 @@ class ScannerObservableDelegate : ScannerObservable, IBScanDeviceListener {
     ) {}
 
     override fun devicePlatenStateChanged(
-        device: IBScanDevice?,
+        device: IBScanDevice,
         platenState: IBScanDevice.PlatenState
     ) {
         _mode.tryEmit(Mode.Platen(platenState.name))

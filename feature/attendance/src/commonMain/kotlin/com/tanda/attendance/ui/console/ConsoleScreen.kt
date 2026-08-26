@@ -1,6 +1,7 @@
 package com.tanda.attendance.ui.console
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -9,9 +10,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tanda.attendance.ui.checkin.CheckinEvent.Companion.LocalCheckinEvent
 import com.tanda.attendance.ui.checkin.CheckinScreen
+import com.tanda.attendance.ui.enrollment.EnrollmentEvent.Companion.LocalEnrollmentEvent
 import com.tanda.attendance.ui.enrollment.EnrollmentScreen
 import com.tanda.biometrics.domain.model.Status
+import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
 import com.tanda.biometrics.ui.scanner.ScannerScreen
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignStream
@@ -51,25 +55,31 @@ fun ConsoleScreen(scope: ScopeID) {
             loading = { ConsoleLoader() },
             error = { ConsoleError(it.value) },
         ) { state ->
-            NavHost(
-                navController = controller,
-                startDestination = "home"
-            ) {
-                composable("home") {
-                    ConsolePage(onCheckin = { controller.navigate("checkin") }) {
-                        controller.navigate("enrol")
+            FingerprintScreen(component.id, state.value) { vm, stream ->
+                val interactor = remember { ConsoleInteractor(vm, stream) }
+                CompositionLocalProvider(
+                    LocalEnrollmentEvent provides interactor,
+                    LocalCheckinEvent provides interactor,
+                ) {
+                    NavHost(
+                        navController = controller,
+                        startDestination = "home"
+                    ) {
+                        composable("home") {
+                            ConsolePage(onCheckin = { controller.navigate("checkin") }) {
+                                controller.navigate("enrol")
+                            }
+                        }
+                        composable("enrol") {
+                            EnrollmentScreen(component.id, state.value)
+                        }
+                        composable("checkin") {
+                            CheckinScreen(component.id, state.value)
+                        }
                     }
-                }
-                composable("enrol") {
-                    EnrollmentScreen(component.id, state.value)
-                }
-                composable("checkin") {
-                    CheckinScreen(component.id, state.value)
                 }
             }
         }
-        DisposableEffect(Unit) {
-            onDispose { vm.stop() }
-        }
+        DisposableEffect(Unit) { onDispose { vm.stop() } }
     }
 }

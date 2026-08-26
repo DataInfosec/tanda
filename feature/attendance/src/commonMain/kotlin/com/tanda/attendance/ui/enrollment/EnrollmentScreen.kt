@@ -14,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.tanda.attendance.ui.enrollment.EnrollmentEvent.Companion.LocalEnrollmentEvent
 import com.tanda.biometrics.domain.model.Mode
-import com.tanda.biometrics.ui.fingerprint.FingerprintScreen
 import com.tanda.biometrics.ui.fingerprint.FingerprintViewModel
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignStreamState
@@ -40,59 +40,58 @@ fun EnrollmentScreen(
     val processing = remember { derivedStateOf { state.value is EnrollmentViewModel.State.Loading } }
     val identifier = remember { TextFieldState() }
     val controller = rememberNavController()
-    FingerprintScreen(component.id, deviceId) { vm, stream ->
-        val status = vm.status.collectAsStateWithLifecycle()
-        val scannerState = vm.state.collectAsStateWithLifecycle()
-        val mode = vm.mode.collectAsStateWithLifecycle()
-        val isInitialized = remember { derivedStateOf {
-            scannerState.value is FingerprintViewModel.State.Initialized
-        } }
-        val isLoading = remember { derivedStateOf { stream.value is DesignStreamState.Loading } }
-        val snackbar = remember { SnackbarHostState() }
-        NavHost(
-            navController = controller,
-            startDestination = "enroll"
-        ) {
-            composable("enroll") {
-                EnrollmentPage(
-                    identifier = identifier,
-                    isLoading = isLoading
-                ) { vm(deviceId, 0) }
-            }
-            composable<ScanRoute> { backStackEntry ->
-                Scaffold(snackbarHost = { SnackbarHost(snackbar) }) {
-                    EnrollmentScanner(
-                        identifier = backStackEntry.toRoute<ScanRoute>().id,
-                        mode = mode,
-                        status = status,
-                        processing = processing
-                    ) { identifier, image -> viewModel(identifier, image) }
-                }
+    val localEvent = LocalEnrollmentEvent.current
+    val status = localEvent.viewModel.status.collectAsStateWithLifecycle()
+    val scannerState = localEvent.viewModel.state.collectAsStateWithLifecycle()
+    val mode = localEvent.viewModel.mode.collectAsStateWithLifecycle()
+    val isInitialized = remember { derivedStateOf {
+        scannerState.value is FingerprintViewModel.State.Initialized
+    } }
+    val isLoading = remember { derivedStateOf { localEvent.stream.value is DesignStreamState.Loading } }
+    val snackbar = remember { SnackbarHostState() }
+    NavHost(
+        navController = controller,
+        startDestination = "enroll"
+    ) {
+        composable("enroll") {
+            EnrollmentPage(
+                identifier = identifier,
+                isLoading = isLoading
+            ) { localEvent.viewModel(deviceId, 0) }
+        }
+        composable<ScanRoute> { backStackEntry ->
+            Scaffold(snackbarHost = { SnackbarHost(snackbar) }) {
+                EnrollmentScanner(
+                    identifier = backStackEntry.toRoute<ScanRoute>().id,
+                    mode = mode,
+                    status = status,
+                    processing = processing
+                ) { identifier, image -> viewModel(identifier, image) }
             }
         }
-        LaunchedEffect(Unit) {
-            snapshotFlow { mode.value to isInitialized.value }
-                .collectLatest { value ->
-                    if (value.first is Mode.Platen && value.second) {
-                        controller.navigate(ScanRoute(identifier.text.toString())) {
-                            popUpTo("enroll") {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { mode.value to isInitialized.value }
+            .collectLatest { value ->
+                if (value.first is Mode.Platen && value.second) {
+                    controller.navigate(ScanRoute(identifier.text.toString())) {
+                        popUpTo("enroll") {
+                            inclusive = true
                         }
+                        launchSingleTop = true
                     }
                 }
-        }
-        LaunchedEffect(state.value) {
-            val message = when (val current = state.value) {
-                EnrollmentViewModel.State.Default -> null
-                EnrollmentViewModel.State.Loading -> "Processing..."
-                is EnrollmentViewModel.State.Success -> "Enrollment successful"
-                is EnrollmentViewModel.State.Error -> {
-                    current.error.message ?: "Something went wrong"
-                }
             }
-            message?.let { snackbar.showSnackbar(it) }
+    }
+    LaunchedEffect(state.value) {
+        val message = when (val current = state.value) {
+            EnrollmentViewModel.State.Default -> null
+            EnrollmentViewModel.State.Loading -> "Processing..."
+            is EnrollmentViewModel.State.Success -> "Enrollment successful"
+            is EnrollmentViewModel.State.Error -> {
+                current.error.message ?: "Something went wrong"
+            }
         }
+        message?.let { snackbar.showSnackbar(it) }
     }
 }

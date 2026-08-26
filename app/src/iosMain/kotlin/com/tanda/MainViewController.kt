@@ -5,10 +5,12 @@ import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.ObservableSettings
 import com.tanda.biometrics.device.interactor.ScannerInteractor
 import com.tanda.core.ui.extension.scopeOf
+import com.tanda.module.TandaModule
 import com.tanda.ui.main.MainScreen
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import org.koin.ksp.generated.module
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
@@ -46,7 +48,8 @@ object IosApp {
                         .firstOrNull() as? NSURL
                     cachesURL?.path ?: error("Unable to resolve caches directory")
                 }
-            }
+            },
+            TandaModule.module
         ))
     }
 }

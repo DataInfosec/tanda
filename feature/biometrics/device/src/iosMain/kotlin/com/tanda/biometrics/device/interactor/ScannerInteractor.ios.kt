@@ -29,11 +29,17 @@ actual class ScannerInteractor {
 
     actual fun start() {}
 
+    actual fun observe(): Flow<Boolean?> { TODO("Not yet implemented") }
+
+    actual fun isActive(): Boolean = false
+
     actual fun hasPermission(id: Int): Boolean { TODO("Not yet implemented") }
 
     actual fun requestPermission(id: Int) {}
 
     actual suspend fun capture(finger: Finger, index: Int, option: Option) {}
+
+    actual fun count(): Int = 0
 
     actual fun stop() {}
 
