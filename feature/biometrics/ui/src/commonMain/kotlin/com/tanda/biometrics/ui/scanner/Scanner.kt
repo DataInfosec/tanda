@@ -1,8 +1,6 @@
 package com.tanda.biometrics.ui.scanner
 
 import com.tanda.biometrics.domain.usecase.ObserveStatusUsecase
-import com.tanda.biometrics.domain.usecase.StartUsecase
-import com.tanda.biometrics.domain.usecase.StopUsecase
 import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
@@ -16,16 +14,8 @@ import org.koin.ksp.generated.*
 @Module
 object Scanner {
     @org.koin.core.annotation.Scope(Scanner::class)
-    fun provideViewModel(
-        startUsecase: StartUsecase,
-        stopUsecase: StopUsecase,
-        observeStatusUsecase: ObserveStatusUsecase,
-    ): ScannerViewModel {
-        return ScannerViewModel(
-            startUsecase,
-            stopUsecase,
-            observeStatusUsecase
-        )
+    fun provideViewModel(observeStatusUsecase: ObserveStatusUsecase): ScannerViewModel {
+        return ScannerViewModel(observeStatusUsecase)
     }
 
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {

@@ -2,45 +2,56 @@ package com.tanda.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.account.domain.usecase.TokenUsecase
+import com.tanda.biometrics.domain.usecase.StartUsecase
+import com.tanda.biometrics.domain.usecase.StopUsecase
 import com.tanda.core.common.concurrent.Dispatcher
+import com.tanda.core.common.interactor.LocaleInteractor
+import com.tanda.core.common.model.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val dispatcher: Dispatcher,
-    private val tokenUsecase: TokenUsecase,
-    private val observeTokenUsecase: ObserveTokenUsecase
+    dispatcher: Dispatcher,
+    private val usecase: StartUsecase,
+    private val stopUsecase: StopUsecase,
+    private val interactor: LocaleInteractor,
 ) : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Default)
 
+    private val _locale = MutableStateFlow(interactor.current())
+
     val state: StateFlow<State> = _state.asStateFlow()
 
-    operator fun invoke() {
+    val locale: StateFlow<Locale> = _locale.asStateFlow()
+
+    init {
         viewModelScope.launch(dispatcher.io) {
-            try {
-                _state.tryEmit(State.Loading)
-                _state.tryEmit(State.Success(
-                    authenticated = !tokenUsecase().isNullOrBlank()
-                ))
-                observeTokenUsecase().collect { token ->
-                    _state.tryEmit(State.Success(
-                        authenticated = !token.isNullOrBlank()
-                    ))
-                }
-            } catch (error: Throwable) {
-                _state.tryEmit(State.Error(error))
+            interactor.observe()
+                .collectLatest { _locale.value = it }
+        }
+    }
+
+    operator fun invoke(enable: Boolean = true) {
+        try {
+            _state.value = State.Loading
+            if (enable) {
+                usecase()
+            } else {
+                stopUsecase()
             }
+            _state.value = State.Success
+        } catch (error: Throwable) {
+            _state.value = State.Error(error)
         }
     }
 
     sealed interface State {
         data object Default : State
         data object Loading : State
-        data class Success(val authenticated: Boolean) : State
+        data object Success : State
         data class Error(val error: Throwable) : State
     }
 }
