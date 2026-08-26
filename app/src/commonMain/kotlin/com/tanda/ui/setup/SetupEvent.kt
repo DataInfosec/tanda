@@ -7,7 +7,8 @@ interface SetupEvent {
     operator fun invoke(event: Event)
 
     sealed interface Event {
-        data object Complete : Event
+        data class Complete(val id: String, val token: String) : Event
+        data object Dismiss: Event
     }
 
     companion object {
