@@ -4,7 +4,30 @@
     <string name="student_biometric">Student biometric</string>
     <string name="employee_id">Employee ID</string>
     <string name="continue">Continue</string>
+    <string name="capture">Capture</string>
+    <string name="listing">Listing</string>
+    <string name="search_label">SearchHeader</string>
+    <string name="search">Search</string>
     <string name="subject_id">Subject name</string>
+    <string name="name">Name</string>
+    <string name="id">ID</string>
+    <string name="capture_biometric">Capture Biometrics</string>
+    <string name="use_another_id">Use another ID</string>
+    <string name="profile_completeness">Profile completeness</string>
+    <string name="record_verification">Record verification</string>
+    <string name="subject_type">Subject type</string>
+    <string name="staff">Staff</string>
+    <string name="staff_name">Staff name</string>
+    <string name="staff_id">Staff ID</string>
+    <string name="enter_staff_id">Enter staff ID to capture biometrics data</string>
+    <string name="staff_detail">Staff Detail</string>
+    <string name="staff_listing">Staff Listing</string>
+    <string name="student">Student</string>
+    <string name="student_name">Student name</string>
+    <string name="student_id">Student ID</string>
+    <string name="enter_student_id">Enter student ID to capture biometrics data</string>
+    <string name="student_detail">Student Detail</string>
+    <string name="student_listing">Student Listing</string>
     <string name="capture_or_view_details">Capture or view details of the biometric of either employee or student.</string>
 
 </resources>

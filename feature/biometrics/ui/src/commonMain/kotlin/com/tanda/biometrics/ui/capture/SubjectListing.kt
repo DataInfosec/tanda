@@ -58,7 +58,8 @@ import tanda.feature.biometrics.ui.generated.resources.ic_close
 import tanda.feature.biometrics.ui.generated.resources.ic_person
 import tanda.feature.biometrics.ui.generated.resources.ic_right_arrow
 import tanda.feature.biometrics.ui.generated.resources.ic_search
-import tanda.feature.biometrics.ui.generated.resources.subject_id
+import tanda.feature.biometrics.ui.generated.resources.search
+import tanda.feature.biometrics.ui.generated.resources.search_label
 
 data class SubjectDetail(
     val name: String = "Atiku Abubakar",
@@ -72,6 +73,7 @@ val subjectList = List(17) { SubjectDetail() }
 fun SubjectListing(
     subjects: List<SubjectDetail> = emptyList(),
     searchQuery: TextFieldState = TextFieldState(),
+    searchHint: String = "Subject name",
     onSubjectClick: (SubjectDetail) -> Unit = {}
 ) {
     Column(
@@ -83,7 +85,10 @@ fun SubjectListing(
             .padding(horizontal = 20.dp, vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchHeader(searchQuery)
+        SearchHeader(
+            searchQuery = searchQuery,
+            hint = searchHint
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -166,7 +171,8 @@ fun SubjectBiometricItem(
 
 @Composable
 fun SearchHeader(
-    searchQuery: TextFieldState = TextFieldState()
+    searchQuery: TextFieldState = TextFieldState(),
+    hint: String
 ) {
     var toggleSearch by remember { mutableStateOf(false) }
     val icon = if (toggleSearch) Res.drawable.ic_close  else Res.drawable.ic_search
@@ -179,20 +185,20 @@ fun SearchHeader(
         AnimatedContent(
             targetState = toggleSearch,
             transitionSpec = { fadeIn() + slideInHorizontally() togetherWith fadeOut() + slideOutHorizontally() },
-            label = "SearchHeader",
+            label = stringResource(Res.string.search_label),
             modifier = Modifier.weight(1f)
         ) { showSearchBar ->
             if (showSearchBar) {
                 DesignTextField(
-                    hint = stringResource(Res.string.subject_id),
+                    hint = hint,
                     state = searchQuery,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
                 Text(
-                    text = "Search",
+                    text = stringResource(Res.string.search),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.designScheme.text
                     )
@@ -221,7 +227,7 @@ fun SearchHeader(
 fun PreviewSearchHeader() {
     DesignTheme(darkTheme = false) {
         Column(verticalArrangement = Arrangement.spacedBy(40.dp)) {
-            SearchHeader()
+            SearchHeader(hint = "Subject name")
 
             SubjectBiometricItem(
                 subject = SubjectDetail()
