@@ -35,7 +35,12 @@ class ScannerService : Service() {
         val scope = (application as Provider).scope
         setter = scope.get()
         interactor = scope.get()
-        val enable = interactor.isActive()
+        val enable = try {
+            interactor.isActive()
+        } catch (error: Throwable) {
+            error.printStackTrace()
+            false
+        }
         val filter = IntentFilter("mtk.intent.ACTION_FINGER_CONFIG")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(fingerConfigReceiver, filter, RECEIVER_NOT_EXPORTED)

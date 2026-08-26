@@ -1,9 +1,10 @@
 package com.tanda.ui.main
 
-import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.account.domain.usecase.TokenUsecase
 import com.tanda.account.ui.login.Login
+import com.tanda.biometrics.domain.usecase.StartUsecase
+import com.tanda.biometrics.domain.usecase.StopUsecase
 import com.tanda.core.common.concurrent.Dispatcher
+import com.tanda.core.common.interactor.LocaleInteractor
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.factory.UiBuilderFactory
@@ -20,13 +21,15 @@ object Main {
     @org.koin.core.annotation.Scope(Main::class)
     fun provideViewModel(
         dispatcher: Dispatcher,
-        usecase: TokenUsecase,
-        observableUseCase: ObserveTokenUsecase
+        usecase: StartUsecase,
+        stopUsecase: StopUsecase,
+        interactor: LocaleInteractor,
     ): MainViewModel {
         return MainViewModel(
             dispatcher = dispatcher,
-            tokenUsecase = usecase,
-            observeTokenUsecase = observableUseCase
+            usecase = usecase,
+            stopUsecase = stopUsecase,
+            interactor = interactor
         )
     }
 

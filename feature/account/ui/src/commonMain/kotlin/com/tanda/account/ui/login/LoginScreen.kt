@@ -11,6 +11,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tanda.account.ui.login.LoginEvent.Companion.LocalLoginEvent
 import com.tanda.core.ui.component.UiComponentProvider
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -25,6 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 @OptIn(FlowPreview::class)
 fun LoginScreen(scope: ScopeID) {
+    val localEvent = LocalLoginEvent.current
     val factory = getKoin().getScope(scope).get<UiComponentProvider.Factory>()
     val component = remember { factory.builder(Login.Builder::class).build() }
     val viewModel: LoginViewModel = koinViewModel(scope = component)
@@ -60,6 +62,8 @@ fun LoginScreen(scope: ScopeID) {
                         animationSpec = tween(durationMillis = 1)
                     )
                     keyboardController?.show()
+                } else if (it.second) {
+                    localEvent(LoginEvent.Event.Home)
                 }
             }
     }

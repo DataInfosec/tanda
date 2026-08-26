@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tanda.biometrics.domain.model.Status
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignStreamState
 import org.koin.compose.getKoin
@@ -16,7 +17,7 @@ import org.koin.core.scope.ScopeID
 @Composable
 fun ScannerScreen(
     scope: ScopeID,
-    content: @Composable (ScannerViewModel, State<DesignStreamState<Boolean>>) -> Unit
+    content: @Composable (State<DesignStreamState<Int>>) -> Unit
 ) {
     val factory = getKoin().getScope(scope).get<UiComponentProvider.Factory>()
     val component = remember { factory.builder(Scanner.Builder::class).build() }
@@ -25,15 +26,12 @@ fun ScannerScreen(
     val updatedContent by rememberUpdatedState(content)
     val derivedState = remember { derivedStateOf {
         when(state.value) {
-            is ScannerViewModel.State.Default -> DesignStreamState.Default
-            is ScannerViewModel.State.Loading -> DesignStreamState.Loading
-            is ScannerViewModel.State.Success -> {
-                DesignStreamState.Success((state.value as ScannerViewModel.State.Success).active)
-            }
-            is ScannerViewModel.State.Error -> {
-                DesignStreamState.Error((state.value as ScannerViewModel.State.Error).error)
-            }
+            is Status.Detached -> DesignStreamState.Default
+            is Status.Initialize -> DesignStreamState.Success((state.value as Status.Initialize).id)
+            is Status.Attached -> DesignStreamState.Success((state.value as Status.Attached).id)
+            is Status.Error -> DesignStreamState.Error((state.value as Status.Error).error)
+            else -> DesignStreamState.Loading
         }
     } }
-    updatedContent(viewModel, derivedState)
+    updatedContent(derivedState)
 }

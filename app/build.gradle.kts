@@ -1,6 +1,10 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+plugins {
+    kotlin("plugin.serialization") version libs.versions.serialization.get()
+}
+
 android {
     defaultConfig {
         versionCode = 1
