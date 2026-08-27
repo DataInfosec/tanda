@@ -5,13 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.tanda.biometrics.ui.capture.SubjectBiometricUiConfig
-import com.tanda.biometrics.ui.capture.SubjectEnrolmentPage
+import com.tanda.biometrics.ui.capture.CaptureSubject
 
 @Composable
 fun StaffBiometricScreen(
     onBackClick: () -> Unit = {}
 ) {
-    SubjectEnrolmentPage(
+    CaptureSubject(
         config = SubjectBiometricUiConfig(
             subjectName = "Staff",
             idTitle = "Staff ID",

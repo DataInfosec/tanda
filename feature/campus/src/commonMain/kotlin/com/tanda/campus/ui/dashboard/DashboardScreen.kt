@@ -1,14 +1,17 @@
 package com.tanda.campus.ui.dashboard
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tanda.biometrics.ui.capture.CaptureEvent.Companion.LocalCaptureEvent
+import com.tanda.biometrics.ui.capture.CaptureOption
 import com.tanda.biometrics.ui.capture.CaptureScreen
 import com.tanda.core.ui.component.UiComponentProvider
+import com.tanda.core.ui.design.DesignNavigation
 import com.tanda.core.ui.design.DesignStream
 import com.tanda.core.ui.design.DesignStreamState
 import org.koin.compose.viewmodel.koinViewModel
@@ -36,15 +39,24 @@ fun DashboardScreen(scope: ScopeID) {
         }
     } }
     val controller = rememberNavController()
-    NavHost(
-        navController = controller,
-        startDestination = "dashboard"
-    ) {
-        composable("dashboard") {
-            DesignStream(derivedState) {
-                DashboardPage(it.value.username)
+    val interactor = remember { DashboardInteractor(controller) }
+    CompositionLocalProvider(LocalCaptureEvent provides interactor) {
+        DesignNavigation(
+            navController = controller,
+            startDestination = "dashboard"
+        ) {
+            composable("dashboard") {
+                DesignStream(derivedState) {
+                    DashboardPage(
+                        userName = it.value.username,
+                        onBiometricCapture = { controller.navigate("biometrics") }
+                    )
+                }
             }
+            composable("biometrics") {
+                CaptureOption(onStudentBiometricCapture = { controller.navigate("subject") })
+            }
+            composable("subject") { CaptureScreen(component.id) }
         }
-        composable("biometrics") { CaptureScreen(component.id) }
     }
 }

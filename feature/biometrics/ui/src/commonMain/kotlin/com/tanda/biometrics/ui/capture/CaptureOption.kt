@@ -44,7 +44,7 @@ import tanda.feature.biometrics.ui.generated.resources.staff_biometric
 import tanda.feature.biometrics.ui.generated.resources.student_biometric
 
 @Composable
-fun CapturePage(
+fun CaptureOption(
     modifier: Modifier = Modifier,
     onStaffBiometricCapture: () -> Unit = {},
     onStudentBiometricCapture: () -> Unit = {},
@@ -82,9 +82,7 @@ fun CapturePage(
             ),
             modifier = Modifier.padding(horizontal = 20.dp)
         )
-
         Spacer(modifier.height(35.dp))
-
         DesignOutlineButton(
             text = stringResource(Res.string.staff_biometric),
             onClick = { handleStaffBiometric() },
@@ -108,7 +106,6 @@ fun CapturePage(
             containerColor = MaterialTheme.colorScheme.background
         )
         Spacer(modifier.height(25.dp))
-
         DesignOutlineButton(
             text = stringResource(Res.string.student_biometric),
             onClick = { handleStudentBiometric() },
@@ -163,12 +160,10 @@ fun CaptureHeader(
     }
 }
 
-
-@Preview()
+@Preview
 @Composable
-fun PreviewCapturePage() {
+fun PreviewCaptureOption() {
     DesignTheme(darkTheme = false) {
-        CapturePage()
+        CaptureOption()
     }
-
 }

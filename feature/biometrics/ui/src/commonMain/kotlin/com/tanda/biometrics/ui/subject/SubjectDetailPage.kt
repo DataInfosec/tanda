@@ -1,4 +1,4 @@
-package com.tanda.biometrics.ui.capture
+package com.tanda.biometrics.ui.subject
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tanda.biometrics.domain.model.Subject
+import com.tanda.biometrics.ui.capture.CaptureHeader
 import com.tanda.core.ui.design.DesignButton
 import com.tanda.core.ui.design.DesignOutlineButton
 import com.tanda.core.ui.design.DesignText

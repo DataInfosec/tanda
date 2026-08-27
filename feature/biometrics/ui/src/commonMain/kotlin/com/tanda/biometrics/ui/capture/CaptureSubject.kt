@@ -32,7 +32,7 @@ data class SubjectBiometricUiConfig(
 )
 
 @Composable
-fun SubjectEnrolmentPage(
+fun CaptureSubject(
     onBackClick: () -> Unit = {},
     onContinue: () -> Unit = {},
     config: SubjectBiometricUiConfig = SubjectBiometricUiConfig(subjectName = "Staff"),
@@ -46,7 +46,6 @@ fun SubjectEnrolmentPage(
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val pageTitle = if (selectedTab == 0) config.idTitle else config.listingTitle
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +57,6 @@ fun SubjectEnrolmentPage(
             text = pageTitle,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         )
-
         TandaTabLayout(
             selectedTab = selectedTab,
             onTabSelected = {
@@ -69,9 +67,7 @@ fun SubjectEnrolmentPage(
                 stringResource(Res.string.listing)
             )
         )
-
         when (selectedTab) {
-
             0 -> {
                 SubjectInput(
                     title = config.idTitle,
@@ -84,7 +80,6 @@ fun SubjectEnrolmentPage(
                     onContinue = { onContinue() }
                 )
             }
-
             1 -> {
                 SubjectListing(
                     subjects = subjects,
@@ -99,8 +94,8 @@ fun SubjectEnrolmentPage(
 
 @Preview
 @Composable
-fun PreviewSubjectEnrolmentPage(){
+fun PreviewCaptureSubject(){
     DesignTheme(darkTheme = false) {
-        SubjectEnrolmentPage()
+        CaptureSubject()
     }
 }
