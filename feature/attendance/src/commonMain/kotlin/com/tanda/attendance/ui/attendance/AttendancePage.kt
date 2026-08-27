@@ -1,4 +1,4 @@
-package com.tanda.ui.home
+package com.tanda.attendance.ui.attendance
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +17,11 @@ import com.tanda.core.ui.design.DesignText
 import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import tanda.app.generated.resources.Res
-import tanda.app.generated.resources.attendance
+import tanda.feature.attendance.generated.resources.Res
+import tanda.feature.attendance.generated.resources.attendance
 
 @Composable
-fun HomePage(onClick: () -> Unit) {
+fun AttendancePage(onClick: () -> Unit) {
     val handleClick by rememberUpdatedState(onClick)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -40,8 +40,8 @@ fun HomePage(onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun PreviewHomePage() {
+fun PreviewAttendancePage() {
     DesignTheme(darkTheme = false) {
-        HomePage {}
+        AttendancePage {}
     }
 }

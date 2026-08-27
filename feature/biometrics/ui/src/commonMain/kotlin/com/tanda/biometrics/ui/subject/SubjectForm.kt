@@ -1,4 +1,4 @@
-package com.tanda.biometrics.ui.capture
+package com.tanda.biometrics.ui.subject
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -45,7 +45,7 @@ import tanda.feature.biometrics.ui.generated.resources.Res
 import tanda.feature.biometrics.ui.generated.resources.`continue`
 
 @Composable
-fun SubjectInput(
+fun SubjectForm(
     title: String = "Staff ID",
     description: String = "Enter staff ID to capture biometrics data",
     hint: String = "Staff ID",
@@ -144,9 +144,9 @@ fun SubjectInput(
 
 @Preview
 @Composable
-private fun PreviewSubjectInput(){
+private fun PreviewSubjectForm(){
     DesignTheme(darkTheme = false){
-        SubjectInput(
+        SubjectForm(
             title = "Staff ID",
             description = "Enter staff ID to capture biometrics data",
             hint = "Staff ID",

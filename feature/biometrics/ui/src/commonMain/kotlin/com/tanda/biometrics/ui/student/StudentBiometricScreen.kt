@@ -4,14 +4,14 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.tanda.biometrics.ui.capture.SubjectBiometricUiConfig
-import com.tanda.biometrics.ui.capture.CaptureSubject
+import com.tanda.biometrics.ui.subject.SubjectBiometricUiConfig
+import com.tanda.biometrics.ui.subject.SubjectPage
 
 @Composable
 fun StudentBiometricScreen(
     onBackClick: () -> Unit = {}
 ) {
-    CaptureSubject(
+    SubjectPage(
         config = SubjectBiometricUiConfig(
             subjectName = "Student",
             idTitle = "Student ID",

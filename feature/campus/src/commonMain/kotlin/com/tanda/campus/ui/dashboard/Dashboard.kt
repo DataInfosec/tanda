@@ -1,6 +1,8 @@
 package com.tanda.campus.ui.dashboard
 
 import com.tanda.account.domain.usecase.AccountUsecase
+import com.tanda.biometrics.ui.capture.Capture
+import com.tanda.biometrics.ui.subject.Subject
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
@@ -34,6 +36,8 @@ object Dashboard {
                             UiBuilderFactory(
                                 listOf(
                                     this@Builder,
+                                    Capture.Builder(scope),
+                                    Subject.Builder(scope),
                                 )
                             )
                         }

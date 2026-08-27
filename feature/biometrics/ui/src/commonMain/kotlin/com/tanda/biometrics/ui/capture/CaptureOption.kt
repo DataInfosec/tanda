@@ -73,7 +73,6 @@ fun CaptureOption(
             )
         )
         Spacer(modifier.height(20.dp))
-
         DesignText(
             text = stringResource(Res.string.capture_or_view_details),
             style = MaterialTheme.typography.bodyLarge.copy(

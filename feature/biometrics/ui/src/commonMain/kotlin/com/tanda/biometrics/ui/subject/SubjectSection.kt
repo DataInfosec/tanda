@@ -1,4 +1,4 @@
-package com.tanda.biometrics.ui.capture
+package com.tanda.biometrics.ui.subject
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,11 +23,11 @@ import com.tanda.core.ui.theme.DesignTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TandaTabLayout(
+fun SubjectSection(
     selectedTab: Int = 0,
-    onTabSelected: (Int) -> Unit ={},
+    onSelected: (Int) -> Unit ={},
     modifier: Modifier = Modifier,
-    tabs: List<String> = listOf("Capture", "Listing")
+    sections: List<String> = listOf("Capture", "Listing")
 ) {
     Row(
         modifier = modifier
@@ -40,10 +40,8 @@ fun TandaTabLayout(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        tabs.forEachIndexed { index, title ->
-
+        sections.forEachIndexed { index, title ->
             val selected = selectedTab == index
-
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -57,7 +55,7 @@ fun TandaTabLayout(
                         }
                     )
                     .clickable {
-                        onTabSelected(index)
+                        onSelected(index)
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -79,8 +77,8 @@ fun TandaTabLayout(
 
 @Preview
 @Composable
-private fun PreviewTablayout(){
+private fun PreviewSubjectSection(){
     DesignTheme(darkTheme = false){
-        TandaTabLayout()
+        SubjectSection()
     }
 }

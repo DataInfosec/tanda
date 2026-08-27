@@ -35,7 +35,7 @@ import tanda.feature.biometrics.ui.generated.resources.subject_type
 import tanda.feature.biometrics.ui.generated.resources.use_another_id
 
 @Composable
-fun SubjectDetailPage(
+fun SubjectProfile(
     title: String,
     subject: Subject,
     onBackClick: () -> Unit = {},
@@ -62,16 +62,16 @@ fun SubjectDetailPage(
                 .verticalScroll(rememberScrollState())
                 .padding(top = 24.dp)
         ) {
-            SubjectDetailRow(label = stringResource(Res.string.id), value = subject.externalReference)
-            subject.profileFields["first_name"]?.let {
+            SubjectDetailRow(label = stringResource(Res.string.id), value = subject.reference)
+            subject.properties["first_name"]?.let {
                 SubjectDetailRow(label = "First name", value = it)
             }
-            subject.profileFields["last_name"]?.let {
+            subject.properties["last_name"]?.let {
                 SubjectDetailRow(label = "Last name", value = it)
             }
-            SubjectDetailRow(label = stringResource(Res.string.subject_type), value = subject.subjectType)
-            SubjectDetailRow(label = stringResource(Res.string.record_verification), value = subject.recordVerification)
-            SubjectDetailRow(label = stringResource(Res.string.profile_completeness), value = subject.profileCompleteness)
+            SubjectDetailRow(label = stringResource(Res.string.subject_type), value = subject.type)
+            SubjectDetailRow(label = stringResource(Res.string.record_verification), value = subject.record)
+            SubjectDetailRow(label = stringResource(Res.string.profile_completeness), value = subject.state)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -124,26 +124,26 @@ private fun SubjectDetailRow(
 
 @Preview
 @Composable
-private fun PreviewSubjectDetailPage() {
+private fun PreviewSubjectProfile() {
     DesignTheme(darkTheme = false) {
-        SubjectDetailPage(
+        SubjectProfile(
             title = "Student detail",
             subject = Subject(
                 createdAt = "",
-                credentialStatus = "active",
-                displayName = "Sarah Johnson",
-                externalReference = "STD1234",
+                status = "active",
+                name = "Sarah Johnson",
+                reference = "STD1234",
                 id = "subject-id",
-                lifecycleStatus = "active",
-                organizationId = "organization-id",
-                profileCompleteness = "complete",
-                profileFields = mapOf(
+                lifecycle = "active",
+                organization = "organization-id",
+                state = "complete",
+                properties = mapOf(
                     "first_name" to "Sarah",
                     "last_name" to "Johnson"
                 ),
-                recordVerification = "verified",
-                siteId = "site-id",
-                subjectType = "student",
+                record = "verified",
+                site = "site-id",
+                type = "student",
                 updatedAt = "",
                 version = 1
             )

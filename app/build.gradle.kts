@@ -5,6 +5,8 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.serialization.get()
 }
 
+apply("$rootDir/gradle/configuration.gradle")
+
 android {
     defaultConfig {
         versionCode = 1
@@ -40,6 +42,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.splash)
         }
+        val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.persistence)
@@ -67,6 +70,12 @@ kotlin {
             implementation(projects.feature.account.remote)
             implementation(projects.feature.account.ui)
 
+            implementation(projects.feature.biometrics.domain)
+            implementation(projects.feature.biometrics.data)
+            implementation(projects.feature.biometrics.device)
+            implementation(projects.feature.biometrics.verification)
+            implementation(projects.feature.biometrics.remote)
+
             implementation(projects.feature.campus)
             implementation(projects.feature.attendance)
 
@@ -80,3 +89,4 @@ kotlin {
     }
 }
 dependencies { debugImplementation(compose.uiTooling) }
+tasks.named("preBuild") { dependsOn("generateBuildConstants") }

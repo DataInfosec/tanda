@@ -8,7 +8,6 @@ interface CaptureEvent {
 
     sealed interface Event {
         data object Enroll : Event
-        data object Profile : Event
     }
 
     companion object {

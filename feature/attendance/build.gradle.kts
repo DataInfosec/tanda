@@ -2,8 +2,6 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.serialization.get()
 }
 
-apply("$rootDir/gradle/configuration.gradle")
-
 kotlin {
     androidTarget()
     listOf(
@@ -24,7 +22,6 @@ kotlin {
 
             implementation(compose.preview)
         }
-        val commonMain by getting { kotlin.srcDir("$buildDir/generated/source/buildConfig") }
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.ui)
@@ -48,14 +45,9 @@ kotlin {
 
             implementation(projects.feature.account.domain)
 
-            api(projects.feature.biometrics.domain)
-            api(projects.feature.biometrics.data)
-            api(projects.feature.biometrics.device)
-
-            implementation(projects.feature.biometrics.verification)
+            implementation(projects.feature.biometrics.domain)
             implementation(projects.feature.biometrics.ui)
         }
     }
 }
 dependencies { debugImplementation(compose.uiTooling) }
-tasks.named("preBuild") { dependsOn("generateBuildConstants") }

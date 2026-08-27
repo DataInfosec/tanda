@@ -10,11 +10,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tanda.attendance.ui.attendance.AttendanceEvent.Companion.LocalAttendanceEvent
+import com.tanda.attendance.ui.attendance.AttendanceScreen
 import com.tanda.attendance.ui.console.ConsoleScreen
 import com.tanda.campus.ui.dashboard.DashboardScreen
-import com.tanda.core.common.interactor.LocaleInteractor
 import com.tanda.core.ui.component.UiComponentProvider
-import com.tanda.core.ui.design.DesignLocale
 import com.tanda.core.ui.theme.DesignTheme
 import com.tanda.ui.home.HomeEvent.Companion.LocalHomeEvent
 import kotlinx.coroutines.flow.collectLatest
@@ -32,17 +32,17 @@ fun HomeScreen(scope: ScopeID) {
     val isLoggedOut = remember { derivedStateOf {
         (state.value as? HomeViewModel.State.Success?)?.authenticated == false
     } }
-    val interactor = remember { component.get<LocaleInteractor>() }
-    val locale = interactor.observe().collectAsStateWithLifecycle(interactor.current())
     val controller = rememberNavController()
-    CompositionLocalProvider(DesignLocale provides locale) {
+    val interactor = remember { HomeInteractor(controller) }
+    CompositionLocalProvider(LocalAttendanceEvent provides interactor) {
         DesignTheme {
             NavHost(
                 navController = controller,
                 startDestination = "dashboard"
             ) {
                 composable("dashboard") { DashboardScreen(component.id) }
-                composable("attendance") { ConsoleScreen(component.id) }
+                composable("attendance") { AttendanceScreen(component.id) }
+                composable("console") { ConsoleScreen(component.id) }
             }
         }
     }
