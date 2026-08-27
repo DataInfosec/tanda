@@ -18,7 +18,9 @@ class MainInteractor(
     private val setStringUsecase: SetStringUsecase = scope.get(),
 ) : SplashEvent, SetupEvent, HomeEvent, LoginEvent {
     override fun initialized(): Boolean {
-        return true
+        val token = getStringUsecase(args = DEVICE_TOKEN)
+        val deviceId = getStringUsecase(args = DEVICE_ID)
+        return token != null && deviceId != null
     }
 
     override fun invoke(event: SplashEvent.Event) {
@@ -35,8 +37,12 @@ class MainInteractor(
     override fun invoke(event: SetupEvent.Event) {
         when (event) {
             is SetupEvent.Event.Complete -> {
-                //Todo Set device Id And token
+                setStringUsecase(SetStringUsecase.Argument(key = DEVICE_TOKEN, event.token))
+                setStringUsecase(SetStringUsecase.Argument(key = DEVICE_ID, event.id))
                 controller.route(MainNavigation.Login)
+            }
+            is SetupEvent.Event.Dismiss -> {
+                //TODO finish the activity
             }
         }
     }
@@ -54,5 +60,10 @@ class MainInteractor(
                 controller.route(MainNavigation.Home)
             }
         }
+    }
+    companion object{
+        const val DEVICE_TOKEN = "device token"
+        const val DEVICE_ID = "device id"
+
     }
 }
