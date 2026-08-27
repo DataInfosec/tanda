@@ -53,8 +53,7 @@ fun SubjectEnrolmentPage(
             .background(MaterialTheme.colorScheme.background)
             .padding( vertical = 18.dp)
     ) {
-
-        BiometricCaptureHeader(
+        CaptureHeader(
             onBackClicked = onBackClick,
             text = pageTitle,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)

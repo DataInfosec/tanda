@@ -1,7 +1,7 @@
-package com.tanda.preference.repository
+package com.tanda.preference.delegate
 
 import com.russhwolf.settings.ObservableSettings
-import com.tanda.core.persistence.repository.PersistenceRepository
+import com.tanda.core.persistence.preference.SharedPreference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,10 +15,10 @@ import kotlin.reflect.KType
 
 @Single
 @Suppress("UNCHECKED_CAST")
-class PersistenceRepositoryDelegate(
+class SharedPreferenceDelegate(
     private val json: Json,
     private val settings: ObservableSettings,
-) : PersistenceRepository {
+) : SharedPreference {
     override fun <T : @Serializable Any> observe(
         key: String,
         type: KType

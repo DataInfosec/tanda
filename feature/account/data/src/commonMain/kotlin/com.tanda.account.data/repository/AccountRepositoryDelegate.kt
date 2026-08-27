@@ -1,12 +1,35 @@
 package com.tanda.account.data.repository
 
+import com.tanda.account.data.api.AccountApi
+import com.tanda.account.data.api.AuthenticationApi
+import com.tanda.account.data.mapper.mapFromDomain
+import com.tanda.account.data.mapper.mapToDomain
+import com.tanda.account.data.model.Authentication
+import com.tanda.account.data.model.Profile
 import com.tanda.account.domain.model.Account
 import com.tanda.account.domain.repository.AccountRepository
-import org.koin.core.annotation.Factory
+import com.tanda.core.persistence.preference.SharedPreference
+import org.koin.core.annotation.Single
+import kotlin.reflect.typeOf
 
-@Factory
-class AccountRepositoryDelegate : AccountRepository {
+@Single
+class AccountRepositoryDelegate(
+    private val api: AccountApi,
+    private val preference: SharedPreference
+) : AccountRepository, AuthenticationApi.Listener {
     override suspend fun get(): Account {
-        TODO("Not yet implemented")
+        return preference.get<Profile>(ACCOUNT_KEY, typeOf<Profile>())?.mapToDomain()
+            ?: api.get().apply {
+                preference.set(ACCOUNT_KEY, mapFromDomain())
+            }
+    }
+
+    override fun onAuthenticate(authentication: Authentication?) {
+        authentication?.let { preference.set(ACCOUNT_KEY, it.account.mapFromDomain()) }
+            ?: preference.remove(ACCOUNT_KEY)
+    }
+
+    private companion object {
+        const val ACCOUNT_KEY = "account"
     }
 }

@@ -48,7 +48,7 @@ fun SubjectDetailPage(
             .padding(horizontal = 20.dp, vertical = 18.dp)
 
     ) {
-        BiometricCaptureHeader(
+        CaptureHeader(
             onBackClicked = onBackClick,
             text = title
         )

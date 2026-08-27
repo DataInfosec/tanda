@@ -8,16 +8,17 @@ import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
 @Module
-object BiometricCapture {
+object Capture {
     class Builder(scope: Scope): UiComponent.ComponentBuilder(scope) {
         override fun build(): Scope {
-            val scope = scope(named<BiometricCapture>())
+            val scope = scope(named<Capture>())
             scope.getKoin().loadModules(listOf(
-                module { scope<BiometricCapture> {
-                    scoped {}
-                }
+                module {
+                    scope<Capture> {
+
+                    }
                 },
-                BiometricCapture.module
+                Capture.module
             ))
             return scope
         }

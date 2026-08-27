@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 
 @Module
 @ComponentScan(value = [
-    "com.tanda.preference.repository",
+    "com.tanda.preference.delegate",
     "com.tanda.preference.interactor"
 ])
 class PreferenceModule {

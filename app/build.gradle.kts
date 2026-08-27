@@ -67,6 +67,7 @@ kotlin {
             implementation(projects.feature.account.remote)
             implementation(projects.feature.account.ui)
 
+            implementation(projects.feature.campus)
             implementation(projects.feature.attendance)
 
             implementation(libs.ktor.json)
