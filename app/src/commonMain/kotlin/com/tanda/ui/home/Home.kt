@@ -2,6 +2,7 @@ package com.tanda.ui.home
 
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
 import com.tanda.attendance.ui.console.Console
+import com.tanda.campus.ui.dashboard.Dashboard
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
@@ -37,6 +38,7 @@ object Home {
                                 listOf(
                                     this@Builder,
                                     Console.Builder(scope),
+                                    Dashboard.Builder(scope),
                                 )
                             )
                         }

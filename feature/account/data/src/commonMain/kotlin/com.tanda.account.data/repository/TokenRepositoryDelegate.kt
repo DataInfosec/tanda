@@ -3,43 +3,36 @@ package com.tanda.account.data.repository
 import com.tanda.account.data.api.AuthenticationApi
 import com.tanda.account.data.model.Authentication
 import com.tanda.account.domain.repository.TokenRepository
-import com.tanda.core.persistence.usecase.ClearStringUsecase
-import com.tanda.core.persistence.usecase.GetStringUsecase
-import com.tanda.core.persistence.usecase.ObservableStringUsecase
-import com.tanda.core.persistence.usecase.SetStringUsecase
+import com.tanda.core.persistence.preference.SharedPreference
 import kotlinx.coroutines.flow.Flow
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Single
+import kotlin.reflect.typeOf
 
-@Factory
+@Single
 class TokenRepositoryDelegate(
-    private val getStringUsecase: GetStringUsecase,
-    private val setStringUsecase: SetStringUsecase,
-    private val observableStringUsecase: ObservableStringUsecase,
-    private val clearStringUsecase: ClearStringUsecase
+    private val preference: SharedPreference
 ) : TokenRepository, AuthenticationApi.Listener {
     override fun observe(): Flow<String?> {
-        return observableStringUsecase(TOKEN_KEY)
+        return preference.observe(TOKEN_KEY, typeOf<String>())
     }
 
     override fun get(): String? {
-        return getStringUsecase(TOKEN_KEY)
+        return preference.get(TOKEN_KEY, typeOf<String>())
     }
 
     override fun onAuthenticate(authentication: Authentication?) {
         if (authentication != null) {
-            setStringUsecase(
-                SetStringUsecase.Argument(
-                    key = TOKEN_KEY,
-                    value = authentication.token
-                )
+            preference.set(
+                TOKEN_KEY,
+                authentication.token
             )
         } else {
-            clearStringUsecase(TOKEN_KEY)
+            preference.remove(TOKEN_KEY)
         }
     }
 
     override fun clear() {
-        clearStringUsecase(TOKEN_KEY)
+        preference.remove(TOKEN_KEY)
     }
 
     private companion object {

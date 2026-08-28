@@ -2,7 +2,7 @@ package com.tanda.preference.interactor
 
 import com.tanda.core.common.interactor.LocaleInteractor
 import com.tanda.core.common.model.Locale
-import com.tanda.core.persistence.repository.PersistenceRepository
+import com.tanda.core.persistence.preference.SharedPreference
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
@@ -11,7 +11,7 @@ import kotlin.reflect.typeOf
 
 @Single
 class LocaleInteractorDelegate(
-    private val repository: PersistenceRepository,
+    private val repository: SharedPreference,
     private val interactor: LanguageInteractor
 ) : LocaleInteractor {
     private val availableLocales: List<Locale>

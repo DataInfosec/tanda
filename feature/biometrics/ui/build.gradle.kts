@@ -23,6 +23,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.navigation)
+
             implementation(libs.koin.core)
             implementation(libs.koin.annotation)
             implementation(libs.koin.compose)

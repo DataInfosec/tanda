@@ -1,18 +1,18 @@
 package com.tanda.biometrics.domain.model
 
 data class Subject(
-    val createdAt: String,
-    val credentialStatus: String,
-    val displayName: String,
-    val externalReference: String,
     val id: String,
-    val lifecycleStatus: String,
-    val organizationId: String,
-    val profileCompleteness: String,
-    val profileFields: Map<String, String>,
-    val recordVerification: String,
-    val siteId: String,
-    val subjectType: String,
+    val site: String,
+    val type: String,
+    val name: String,
+    val reference: String,
+    val state: String,
+    val status: String,
+    val record: String,
+    val lifecycle: String,
+    val organization: String,
+    val properties: Map<String, String>,
+    val version: Int,
     val updatedAt: String,
-    val version: Int
+    val createdAt: String,
 )

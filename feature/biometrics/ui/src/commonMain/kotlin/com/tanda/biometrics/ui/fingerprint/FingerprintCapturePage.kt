@@ -22,12 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tanda.biometrics.ui.capture.BiometricCaptureHeader
+import com.tanda.biometrics.ui.capture.CaptureHeader
 import com.tanda.core.ui.design.DesignButton
 import com.tanda.core.ui.design.DesignOutlineButton
 import com.tanda.core.ui.design.DesignText
@@ -76,7 +75,7 @@ fun FingerprintCapturePage(
             .imePadding()
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        BiometricCaptureHeader(
+        CaptureHeader(
             onBackClicked = { handleBackClick() },
             text = "Fingerprint"
         )

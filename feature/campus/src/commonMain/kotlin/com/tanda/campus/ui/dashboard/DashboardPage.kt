@@ -62,6 +62,7 @@ import tanda.feature.campus.generated.resources.welcome
 
 @Composable
 fun DashboardPage(
+    userName: String,
     onBiometricCapture: () -> Unit = {},
     onStudentAttendance: () -> Unit = {},
     onStaffAttendance: () -> Unit = {},
@@ -97,7 +98,7 @@ fun DashboardPage(
         Spacer(modifier = Modifier.height(34.dp))
 
         ProfileSection(
-            userName = "Bello Yakub",
+            userName = userName,
             imageUrl = "1234rfgt"
         )
 
@@ -270,6 +271,6 @@ fun ProfileSection(
 @Composable
 fun PreviewDashboardPage() {
     DesignTheme(darkTheme = false) {
-        DashboardPage()
+        DashboardPage("Bello Yakub")
     }
 }

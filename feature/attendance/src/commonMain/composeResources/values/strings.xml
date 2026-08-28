@@ -3,4 +3,5 @@
     <string name="checkin">Checkin</string>
     <string name="capture">Capture</string>
     <string name="identity">Identity</string>
+    <string name="attendance">Attendance</string>
 </resources>
