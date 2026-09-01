@@ -1,8 +1,8 @@
 package com.tanda.campus.ui.dashboard
 
 import com.tanda.biometrics.ui.capture.BiometricCapture
+import com.tanda.biometrics.ui.scanner.Scanner
 import com.tanda.attendance.ui.student.StudentAttendance
-import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.tanda.campus.domain.usecase.ObserveProfileNameUsecase
 import com.tanda.campus.domain.usecase.ProfileNameUsecase
 import com.tanda.core.common.concurrent.Dispatcher
@@ -24,13 +24,13 @@ object Dashboard {
                             dispatcher = get<Dispatcher>(),
                             profileNameUsecase = get<ProfileNameUsecase>(),
                             observeProfileNameUsecase = get<ObserveProfileNameUsecase>(),
-                            scannerSessionManager = get<ScannerSessionManager>(),
                         )
                     }
                     factory<UiComponentProvider.Factory> {
                         UiBuilderFactory(
                             listOf(
                                 this@Builder,
+                                Scanner.Builder(scope),
                                 BiometricCapture.Builder(scope),
                                 StudentAttendance.Builder(scope),
                             )

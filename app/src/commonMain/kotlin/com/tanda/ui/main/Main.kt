@@ -1,7 +1,6 @@
 package com.tanda.ui.main
 
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
 import com.tanda.account.ui.login.Login
 import com.tanda.campus.ui.dashboard.Dashboard
@@ -28,7 +27,6 @@ object Main {
                                 dispatcher = get<Dispatcher>(),
                                 observeTokenUsecase = get<ObserveTokenUsecase>(),
                                 deviceConfigurationRepository = get<DeviceConfigurationRepository>(),
-                                scannerSessionManager = get<ScannerSessionManager>(),
                             )
                         }
                         factory<UiComponentProvider.Factory> {

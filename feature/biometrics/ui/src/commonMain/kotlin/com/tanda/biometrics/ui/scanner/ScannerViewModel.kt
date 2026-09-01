@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.tanda.biometrics.domain.model.Status
 import com.tanda.biometrics.domain.usecase.ObserveStatusUsecase
 import com.tanda.biometrics.domain.usecase.StartUsecase
-import com.tanda.biometrics.domain.usecase.StopUsecase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class ScannerViewModel(
     private val startUsecase: StartUsecase,
-    private val stopUsecase: StopUsecase,
     private val observeStatusUsecase: ObserveStatusUsecase,
 ) : ViewModel() {
 
@@ -51,16 +49,6 @@ class ScannerViewModel(
             _state.tryEmit(State.Loading)
             startUsecase()
             _state.tryEmit(State.Success(true))
-        } catch (error: Throwable) {
-            _state.tryEmit(State.Error(error))
-        }
-    }
-
-    fun stop() {
-        try {
-            _state.tryEmit(State.Loading)
-            stopUsecase()
-            _state.tryEmit(State.Success(false))
         } catch (error: Throwable) {
             _state.tryEmit(State.Error(error))
         }

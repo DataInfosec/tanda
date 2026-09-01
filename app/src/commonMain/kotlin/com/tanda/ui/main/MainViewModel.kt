@@ -3,10 +3,8 @@ package com.tanda.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanda.account.domain.usecase.ObserveTokenUsecase
-import com.tanda.biometrics.domain.model.ScannerSessionState
 import com.tanda.biometrics.domain.model.DeviceConfiguration
 import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
-import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +19,6 @@ class MainViewModel(
     private val dispatcher: Dispatcher,
     private val observeTokenUsecase: ObserveTokenUsecase,
     private val deviceConfigurationRepository: DeviceConfigurationRepository,
-    private val scannerSessionManager: ScannerSessionManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Default)
     private val _effect = MutableSharedFlow<Effect>(
@@ -30,11 +27,6 @@ class MainViewModel(
 
     val state: StateFlow<State> = _state.asStateFlow()
     val effect: SharedFlow<Effect> = _effect.asSharedFlow()
-    val scannerState: StateFlow<ScannerSessionState> = scannerSessionManager.state
-
-    fun retryScanner() {
-        scannerSessionManager.retry()
-    }
 
     fun configureDevice(deviceInstanceId: String, fingerprintToken: String) {
         deviceConfigurationRepository.save(
@@ -43,7 +35,6 @@ class MainViewModel(
                 fingerprintToken = fingerprintToken,
             )
         )
-        scannerSessionManager.start()
     }
 
     operator fun invoke() {

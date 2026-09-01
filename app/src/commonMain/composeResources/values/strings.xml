@@ -8,4 +8,5 @@
     <string name="continue_button">Continue</string>
     <string name="field_required">%1$s is required</string>
     <string name="field_minimum_length">%1$s must be at least %2$d characters</string>
+    <string name="splash_screen_image">Splash screen image</string>
 </resources>

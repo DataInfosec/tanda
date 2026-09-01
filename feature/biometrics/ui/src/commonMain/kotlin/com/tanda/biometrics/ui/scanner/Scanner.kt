@@ -2,7 +2,6 @@ package com.tanda.biometrics.ui.scanner
 
 import com.tanda.biometrics.domain.usecase.ObserveStatusUsecase
 import com.tanda.biometrics.domain.usecase.StartUsecase
-import com.tanda.biometrics.domain.usecase.StopUsecase
 import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.ui.component.UiComponent
 import com.tanda.core.ui.component.UiComponentProvider
@@ -21,7 +20,6 @@ object Scanner {
                         scoped {
                             ScannerViewModel(
                                 startUsecase = get<StartUsecase>(),
-                                stopUsecase = get<StopUsecase>(),
                                 observeStatusUsecase = get<ObserveStatusUsecase>()
                             )
                         }

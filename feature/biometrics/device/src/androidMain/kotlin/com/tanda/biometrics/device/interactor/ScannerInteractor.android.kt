@@ -265,7 +265,8 @@ actual class ScannerInteractor(
         try {
             observable.reset()
             if (device == null) {
-                throw DeviceNotFoundException()
+                device = scanner.openDevice(index)
+                device?.setScanDeviceListener(listener)
             }
             if (device?.isCaptureActive == true) {
                 device?.captureImageManually()

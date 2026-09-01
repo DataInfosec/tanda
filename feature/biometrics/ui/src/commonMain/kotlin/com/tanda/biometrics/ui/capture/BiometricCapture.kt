@@ -3,6 +3,7 @@ package com.tanda.biometrics.ui.capture
 import com.tanda.biometrics.domain.usecase.ReadSubjectUsecase
 import com.tanda.biometrics.domain.usecase.EnrollmentUsecase
 import com.tanda.biometrics.domain.usecase.IdentificationUsecase
+import com.tanda.biometrics.domain.usecase.SynchronizeUsecase
 import com.tanda.biometrics.ui.fingerprint.Fingerprint
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
@@ -23,7 +24,8 @@ object BiometricCapture {
                             dispatcher = get<Dispatcher>(),
                             readSubjectUsecase = get<ReadSubjectUsecase>(),
                             identificationUsecase = get<IdentificationUsecase>(),
-                            enrollmentUsecase = get<EnrollmentUsecase>()
+                            enrollmentUsecase = get<EnrollmentUsecase>(),
+                            syncUsecase = get<SynchronizeUsecase>()
                         )
                     }
                     factory<UiComponentProvider.Factory> {

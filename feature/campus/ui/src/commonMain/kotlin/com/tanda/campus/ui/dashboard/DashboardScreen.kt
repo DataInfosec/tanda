@@ -18,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tanda.biometrics.ui.capture.BiometricCaptureScreen
 import com.tanda.attendance.ui.student.StudentAttendanceScreen
-import com.tanda.biometrics.domain.model.ScannerSessionState
+import com.tanda.biometrics.ui.scanner.ScannerScreen
 import com.tanda.biometrics.ui.staff.StaffBiometricScreen
 import com.tanda.biometrics.ui.student.StudentBiometricScreen
 import com.tanda.core.common.interactor.LocaleInteractor
@@ -26,6 +26,7 @@ import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignText
 import com.tanda.core.ui.design.DesignButton
 import com.tanda.core.ui.design.DesignLocale
+import com.tanda.core.ui.design.DesignStreamState
 import com.tanda.core.ui.theme.DesignTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.scope.ScopeID
@@ -39,7 +40,6 @@ fun DashboardScreen(scope: ScopeID){
     val locale = interactor.observe().collectAsStateWithLifecycle(interactor.current())
     val viewModel: DashboardViewModel = koinViewModel(scope = component)
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val scannerState = viewModel.scannerState.collectAsStateWithLifecycle()
     val userName = remember {
         derivedStateOf {
             (state.value as? DashboardViewModel.State.Success)
@@ -54,79 +54,82 @@ fun DashboardScreen(scope: ScopeID){
     CompositionLocalProvider(DesignLocale provides locale) {
 
         DesignTheme {
-            when (val scanner = scannerState.value) {
-                is ScannerSessionState.Ready -> {
-                    NavHost(
-                        navController = controller,
-                        startDestination = DashboardRoute.Home
-                    ) {
-                        composable(DashboardRoute.Home) {
-                            DashboardPage(
-                                userName = userName.value,
-                                onBiometricCapture = {
-                                    controller.navigate(DashboardRoute.BiometricCapture)
-                                },
-                                onStaffAttendance = {},
-                                onStudentAttendance = {
-                                    controller.navigate(DashboardRoute.StudentAttendance)
-                                },
-                                onExeatActivity = {},
-                                onAttendanceHistory = {},
-                                onDeviceInformation = {},
-                                onLogout = {}
-                            )
-                        }
-                        composable(DashboardRoute.BiometricCapture) {
-                            BiometricCaptureScreen(
-                                scope = component.id,
-                                onStaffBiometricCapture = {
-                                    controller.navigate(DashboardRoute.StaffBiometric)
-                                },
-                                onStudentBiometricCapture = {
-                                    controller.navigate(DashboardRoute.StudentBiometric)
-                                },
-                                onBackClicked = {
-                                    controller.popBackStack()
-                                }
-                            )
-                        }
-                        composable(DashboardRoute.StaffBiometric) {
-                            StaffBiometricScreen(
-                                scope = component.id,
-                                deviceId = scanner.deviceId,
-                                deviceIndex = scanner.deviceIndex,
-                                onBackClick = {
-                                    controller.popBackStack()
-                                }
-                            )
-                        }
-                        composable(DashboardRoute.StudentBiometric) {
-                            StudentBiometricScreen(
-                                scope = component.id,
-                                deviceId = scanner.deviceId,
-                                deviceIndex = scanner.deviceIndex,
-                                onBackClick = {
-                                    controller.popBackStack()
-                                }
-                            )
-                        }
-                        composable(DashboardRoute.StudentAttendance) {
-                            StudentAttendanceScreen(
-                                scope = component.id,
-                                deviceId = scanner.deviceId,
-                                deviceIndex = scanner.deviceIndex,
-                                onBackClick = {
-                                    controller.popBackStack()
-                                },
-                            )
+            ScannerScreen(component.id) { scannerViewModel, scannerStream ->
+                when (val scanner = scannerStream.value) {
+                    is DesignStreamState.Success -> {
+                        val ready = scanner.data
+                        NavHost(
+                            navController = controller,
+                            startDestination = DashboardRoute.Home
+                        ) {
+                            composable(DashboardRoute.Home) {
+                                DashboardPage(
+                                    userName = userName.value,
+                                    onBiometricCapture = {
+                                        controller.navigate(DashboardRoute.BiometricCapture)
+                                    },
+                                    onStaffAttendance = {},
+                                    onStudentAttendance = {
+                                        controller.navigate(DashboardRoute.StudentAttendance)
+                                    },
+                                    onExeatActivity = {},
+                                    onAttendanceHistory = {},
+                                    onDeviceInformation = {},
+                                    onLogout = {}
+                                )
+                            }
+                            composable(DashboardRoute.BiometricCapture) {
+                                BiometricCaptureScreen(
+                                    scope = component.id,
+                                    onStaffBiometricCapture = {
+                                        controller.navigate(DashboardRoute.StaffBiometric)
+                                    },
+                                    onStudentBiometricCapture = {
+                                        controller.navigate(DashboardRoute.StudentBiometric)
+                                    },
+                                    onBackClicked = {
+                                        controller.popBackStack()
+                                    }
+                                )
+                            }
+                            composable(DashboardRoute.StaffBiometric) {
+                                StaffBiometricScreen(
+                                    scope = component.id,
+                                    deviceId = ready.id,
+                                    deviceIndex = ready.index,
+                                    onBackClick = {
+                                        controller.popBackStack()
+                                    }
+                                )
+                            }
+                            composable(DashboardRoute.StudentBiometric) {
+                                StudentBiometricScreen(
+                                    scope = component.id,
+                                    deviceId = ready.id,
+                                    deviceIndex = ready.index,
+                                    onBackClick = {
+                                        controller.popBackStack()
+                                    }
+                                )
+                            }
+                            composable(DashboardRoute.StudentAttendance) {
+                                StudentAttendanceScreen(
+                                    scope = component.id,
+                                    deviceId = ready.id,
+                                    deviceIndex = ready.index,
+                                    onBackClick = {
+                                        controller.popBackStack()
+                                    },
+                                )
+                            }
                         }
                     }
+                    is DesignStreamState.Error -> DashboardScannerSplash(
+                        message = scanner.error.message ?: "Preparing scanner",
+                    )
+                    is DesignStreamState.Loading -> DashboardScannerSplash()
+                    else -> {}
                 }
-                is ScannerSessionState.Error -> DashboardScannerSplash(
-                    message = scanner.error.message ?: "Unable to initialize scanner",
-                    onRetry = viewModel::retryScanner,
-                )
-                else -> DashboardScannerSplash()
             }
         }
     }

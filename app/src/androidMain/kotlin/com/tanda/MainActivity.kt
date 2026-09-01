@@ -12,8 +12,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.tanda.biometrics.domain.repository.DeviceConfigurationRepository
-import com.tanda.biometrics.domain.session.ScannerSessionManager
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import com.tanda.ui.main.Main
@@ -22,9 +20,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 class MainActivity : ComponentActivity() {
-    private val scannerSessionManager: ScannerSessionManager
-        get() = (application as TandaApplication).scope.get()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -63,23 +58,6 @@ class MainActivity : ComponentActivity() {
                 scope = component.id,
                 onExitApplication = ::finishAndRemoveTask,
             )
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val deviceConfigurationRepository = (application as TandaApplication).scope
-            .get<DeviceConfigurationRepository>()
-        if (deviceConfigurationRepository.get() != null) {
-            scannerSessionManager.start()
-        }
-    }
-
-    override fun onStop() {
-        try {
-            scannerSessionManager.stop()
-        } finally {
-            super.onStop()
         }
     }
 }

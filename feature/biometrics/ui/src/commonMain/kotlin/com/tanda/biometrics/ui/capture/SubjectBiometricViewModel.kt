@@ -8,6 +8,7 @@ import com.tanda.biometrics.domain.model.Subject
 import com.tanda.biometrics.domain.usecase.EnrollmentUsecase
 import com.tanda.biometrics.domain.usecase.IdentificationUsecase
 import com.tanda.biometrics.domain.usecase.ReadSubjectUsecase
+import com.tanda.biometrics.domain.usecase.SynchronizeUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ class SubjectBiometricViewModel(
     private val dispatcher: Dispatcher,
     private val readSubjectUsecase: ReadSubjectUsecase,
     private val identificationUsecase: IdentificationUsecase,
-    private val enrollmentUsecase: EnrollmentUsecase
+    private val enrollmentUsecase: EnrollmentUsecase,
+    private val syncUsecase: SynchronizeUsecase
 ) : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Default)
     private val _enrollmentState = MutableStateFlow<EnrollmentState>(EnrollmentState.Default)
@@ -92,6 +94,7 @@ class SubjectBiometricViewModel(
                         images = listOf(image)
                     )
                 )
+                syncUsecase()
                 _enrollmentState.tryEmit(EnrollmentState.Success)
             } catch (throwable: Throwable) {
                 _enrollmentState.tryEmit(
