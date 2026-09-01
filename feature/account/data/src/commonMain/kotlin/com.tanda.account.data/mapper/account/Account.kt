@@ -1,6 +1,6 @@
-package com.tanda.account.data.mapper
+package com.tanda.account.data.mapper.account
 
-import com.tanda.account.data.model.Profile
+import com.tanda.account.data.model.account.Profile
 import com.tanda.account.domain.model.Account
 
 fun Profile.mapToDomain(): Account {

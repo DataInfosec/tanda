@@ -1,6 +1,6 @@
 package com.tanda.ui.home
 
-import com.tanda.account.domain.usecase.ObserveTokenUsecase
+import com.tanda.account.domain.usecase.auth.ObserveTokenUsecase
 import com.tanda.attendance.ui.console.Console
 import com.tanda.campus.ui.dashboard.Dashboard
 import com.tanda.core.common.concurrent.Dispatcher

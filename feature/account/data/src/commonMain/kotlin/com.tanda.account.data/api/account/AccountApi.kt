@@ -1,4 +1,4 @@
-package com.tanda.account.data.api
+package com.tanda.account.data.api.account
 
 import com.tanda.account.domain.model.Account
 

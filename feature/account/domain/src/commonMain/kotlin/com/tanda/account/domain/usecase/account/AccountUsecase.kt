@@ -1,4 +1,4 @@
-package com.tanda.account.domain.usecase
+package com.tanda.account.domain.usecase.account
 
 import com.tanda.account.domain.model.Account
 import com.tanda.account.domain.repository.AccountRepository

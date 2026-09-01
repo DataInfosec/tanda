@@ -1,6 +1,6 @@
 package com.tanda.account.data.repository
 
-import com.tanda.account.data.api.AuthenticationApi
+import com.tanda.account.data.api.authentication.AuthenticationApi
 import com.tanda.account.domain.repository.AuthenticationRepository
 import org.koin.core.annotation.Single
 

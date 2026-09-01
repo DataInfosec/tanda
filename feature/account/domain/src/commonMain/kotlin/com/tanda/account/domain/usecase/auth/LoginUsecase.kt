@@ -1,4 +1,4 @@
-package com.tanda.account.domain.usecase
+package com.tanda.account.domain.usecase.auth
 
 import com.tanda.account.domain.repository.AuthenticationRepository
 import com.tanda.core.common.usecase.SuspendWithArgsUseCase
@@ -14,7 +14,7 @@ class LoginUsecase(
             password = args.password
         )
     }
-    
+
     data class Argument(
         val login: String,
         val password: String,

@@ -1,6 +1,6 @@
 package com.tanda.ui.splash
 
-import com.tanda.account.domain.usecase.TokenUsecase
+import com.tanda.account.domain.usecase.auth.TokenUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import org.koin.core.annotation.Module

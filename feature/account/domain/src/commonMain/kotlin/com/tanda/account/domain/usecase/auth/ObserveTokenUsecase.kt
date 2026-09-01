@@ -1,4 +1,4 @@
-package com.tanda.account.domain.usecase
+package com.tanda.account.domain.usecase.auth
 
 import com.tanda.account.domain.repository.TokenRepository
 import com.tanda.core.common.usecase.ObservableUseCase

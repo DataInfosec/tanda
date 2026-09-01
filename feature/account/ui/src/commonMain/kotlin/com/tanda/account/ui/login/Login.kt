@@ -1,6 +1,6 @@
 package com.tanda.account.ui.login
 
-import com.tanda.account.domain.usecase.LoginUsecase
+import com.tanda.account.domain.usecase.auth.LoginUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import com.tanda.core.ui.component.UiComponent
 import org.koin.core.annotation.Module

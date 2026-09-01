@@ -1,7 +1,7 @@
 package com.tanda.account.remote.api
 
-import com.tanda.account.data.api.AuthenticationApi
-import com.tanda.account.data.model.Authentication
+import com.tanda.account.data.api.authentication.AuthenticationApi
+import com.tanda.account.data.model.auth.Authentication
 import com.tanda.account.remote.mapper.mapToDomain
 import com.tanda.account.remote.model.AuthenticationModel
 import com.tanda.account.remote.payload.Credential

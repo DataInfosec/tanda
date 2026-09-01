@@ -2,7 +2,7 @@ package com.tanda.account.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tanda.account.domain.usecase.LoginUsecase
+import com.tanda.account.domain.usecase.auth.LoginUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

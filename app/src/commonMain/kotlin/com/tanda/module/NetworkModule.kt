@@ -1,7 +1,7 @@
 package com.tanda.module
 
 import com.tanda.BuildConstants
-import com.tanda.account.domain.usecase.TokenUsecase
+import com.tanda.account.domain.usecase.auth.TokenUsecase
 import com.tanda.account.remote.interceptor.createJwtInterceptor
 import com.tanda.core.remote.client.getHttpClient
 import com.tanda.core.remote.interceptor.createErrorInterceptor

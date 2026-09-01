@@ -1,11 +1,11 @@
 package com.tanda.account.data.repository
 
-import com.tanda.account.data.api.AccountApi
-import com.tanda.account.data.api.AuthenticationApi
-import com.tanda.account.data.mapper.mapFromDomain
-import com.tanda.account.data.mapper.mapToDomain
-import com.tanda.account.data.model.Authentication
-import com.tanda.account.data.model.Profile
+import com.tanda.account.data.api.account.AccountApi
+import com.tanda.account.data.api.authentication.AuthenticationApi
+import com.tanda.account.data.mapper.account.mapFromDomain
+import com.tanda.account.data.mapper.account.mapToDomain
+import com.tanda.account.data.model.auth.Authentication
+import com.tanda.account.data.model.account.Profile
 import com.tanda.account.domain.model.Account
 import com.tanda.account.domain.repository.AccountRepository
 import com.tanda.core.persistence.preference.SharedPreference

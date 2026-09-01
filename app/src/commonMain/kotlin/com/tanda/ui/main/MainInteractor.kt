@@ -37,7 +37,7 @@ class MainInteractor(
     override fun invoke(event: SetupEvent.Event) {
         when (event) {
             is SetupEvent.Event.Complete -> {
-                setStringUsecase(SetStringUsecase.Argument(key = DEVICE_TOKEN, event.token))
+
                 setStringUsecase(SetStringUsecase.Argument(key = DEVICE_ID, event.id))
                 controller.route(MainNavigation.Login)
             }

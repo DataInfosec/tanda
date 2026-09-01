@@ -1,7 +1,7 @@
 package com.tanda.account.data.repository
 
-import com.tanda.account.data.api.AuthenticationApi
-import com.tanda.account.data.model.Authentication
+import com.tanda.account.data.api.authentication.AuthenticationApi
+import com.tanda.account.data.model.auth.Authentication
 import com.tanda.account.domain.repository.TokenRepository
 import com.tanda.core.persistence.preference.SharedPreference
 import kotlinx.coroutines.flow.Flow
