@@ -4,7 +4,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import org.koin.ext.getFullName
 
 interface SplashEvent {
-    fun initialized(): Boolean
+    suspend fun initialized(): Boolean
 
     operator fun invoke(event: Event)
 

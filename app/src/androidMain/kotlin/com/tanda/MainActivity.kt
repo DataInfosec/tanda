@@ -47,7 +47,9 @@ class MainActivity : ComponentActivity() {
                 windowsInsetsController.isAppearanceLightStatusBars = !isDarkTheme
                 windowsInsetsController.isAppearanceLightNavigationBars = !isDarkTheme
             }
-            MainScreen(component.id)
+            MainScreen(component.id){
+                finishAndRemoveTask()
+            }
         }
     }
 }

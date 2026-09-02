@@ -33,6 +33,7 @@ fun DesignOutlineButton(
     leading: @Composable () -> Unit = {},
     trailing: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     textColor: Color = MaterialTheme.colorScheme.primary,
     borderColor: Color = MaterialTheme.colorScheme.primary,
     containerColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -43,6 +44,7 @@ fun DesignOutlineButton(
     val updatedTrailing by rememberUpdatedState(trailing)
     OutlinedButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .height(86.dp)

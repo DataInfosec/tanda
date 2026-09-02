@@ -1,9 +1,9 @@
 package com.tanda.ui.main
 
 import androidx.navigation.NavController
+import com.tanda.account.domain.usecase.device.DeviceIdUsecase
+import com.tanda.account.domain.usecase.device.DeviceTokenUsecase
 import com.tanda.account.ui.login.LoginEvent
-import com.tanda.core.persistence.usecase.GetStringUsecase
-import com.tanda.core.persistence.usecase.SetStringUsecase
 import com.tanda.core.ui.extension.route
 import com.tanda.ui.home.HomeEvent
 import com.tanda.ui.setup.SetupEvent
@@ -14,12 +14,13 @@ class MainInteractor(
     private val scope: Scope,
     private val controller: NavController,
     private val onStart: () -> Unit,
-    private val getStringUsecase: GetStringUsecase = scope.get(),
-    private val setStringUsecase: SetStringUsecase = scope.get(),
+    private val onFinish: () -> Unit = {},
+    private val deviceIdUsecase: DeviceIdUsecase = scope.get(),
+    private val deviceTokenUsecase: DeviceTokenUsecase = scope.get(),
 ) : SplashEvent, SetupEvent, HomeEvent, LoginEvent {
-    override fun initialized(): Boolean {
-        val token = getStringUsecase(args = DEVICE_TOKEN)
-        val deviceId = getStringUsecase(args = DEVICE_ID)
+    override suspend fun initialized(): Boolean {
+        val token = deviceTokenUsecase()
+        val deviceId = deviceIdUsecase()
         return token != null && deviceId != null
     }
 
@@ -36,13 +37,11 @@ class MainInteractor(
 
     override fun invoke(event: SetupEvent.Event) {
         when (event) {
-            is SetupEvent.Event.Complete -> {
-
-                setStringUsecase(SetStringUsecase.Argument(key = DEVICE_ID, event.id))
+            SetupEvent.Event.Complete -> {
                 controller.route(MainNavigation.Login)
             }
-            is SetupEvent.Event.Dismiss -> {
-                //TODO finish the activity
+            SetupEvent.Event.Dismiss -> {
+                onFinish()
             }
         }
     }
@@ -60,10 +59,5 @@ class MainInteractor(
                 controller.route(MainNavigation.Home)
             }
         }
-    }
-    companion object{
-        const val DEVICE_TOKEN = "device token"
-        const val DEVICE_ID = "device id"
-
     }
 }

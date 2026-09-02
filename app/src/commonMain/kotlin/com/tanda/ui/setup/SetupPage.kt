@@ -21,9 +21,11 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,29 +41,33 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import tanda.app.generated.resources.Res
+import tanda.app.generated.resources.activation_code
 import tanda.app.generated.resources.app_logo
 import tanda.app.generated.resources.configure_device
 import tanda.app.generated.resources.configure_device_description
 import tanda.app.generated.resources.continue_button
-import tanda.app.generated.resources.device_instance_id
 import tanda.app.generated.resources.dismiss
-import tanda.app.generated.resources.fingerprint_token
+import tanda.app.generated.resources.field_exact_length
+import tanda.app.generated.resources.field_required
 import tanda.app.generated.resources.ic_lagos
 import tanda.app.generated.resources.ic_tanda
 
 
 @Composable
 fun SetupPage(
+    isLoading: State<Boolean>,
+    error: State<String?>,
     onDismissClick: () -> Unit,
-    onContinueClick: (deviceInstanceId: String, fingerprintToken: String) -> Unit,
+    onContinueClick: (activationCode: String) -> Unit,
 ) {
-    val deviceId = remember { TextFieldState() }
-    val token = remember { TextFieldState() }
-    var deviceIdError by remember { mutableStateOf<String?>(null) }
-    var tokenError by remember { mutableStateOf<String?>(null) }
+    val handleDismiss by rememberUpdatedState(onDismissClick)
+    val handleContinue by rememberUpdatedState(onContinueClick)
+    var activationCodeError by remember { mutableStateOf<String?>(null) }
+    val activationCode: TextFieldState = remember { TextFieldState() }
 
-    val deviceIdLabel = stringResource(Res.string.device_instance_id)
-    val tokenLabel = stringResource(Res.string.fingerprint_token)
+    val activationCodeLabel = stringResource(Res.string.activation_code)
+    val requiredError = stringResource(Res.string.field_required, activationCodeLabel)
+    val lengthError = stringResource(Res.string.field_exact_length, activationCodeLabel, ACTIVATION_CODE_LENGTH)
 
     Column(
         modifier = Modifier
@@ -79,7 +85,7 @@ fun SetupPage(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(58.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
@@ -115,9 +121,18 @@ fun SetupPage(
 
             Spacer(Modifier.height(40.dp))
 
-            ConfigurationField(deviceIdLabel, deviceId, deviceIdError)
-            Spacer(Modifier.height(20.dp))
-            ConfigurationField(tokenLabel, token, tokenError)
+            ConfigurationField(activationCodeLabel, activationCode, activationCodeError)
+
+            error.value?.let {
+                DesignText(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, start = 10.dp, end = 10.dp),
+                )
+            }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -129,27 +144,26 @@ fun SetupPage(
             DesignOutlineButton(
                 text = stringResource(Res.string.dismiss),
                 modifier = Modifier.weight(1f).height(52.dp),
-                onClick = onDismissClick,
+                enabled = !isLoading.value,
+                onClick = { handleDismiss() },
             )
 
             DesignButton(
                 modifier = Modifier.weight(1f).height(52.dp),
+                enabled = !isLoading.value,
+                isLoading = isLoading.value,
                 shape = RoundedCornerShape(5.dp),
                 onClick = {
-                    val id = deviceId.text.toString().trim()
-                    val fingerprintToken = token.text.toString().trim()
+                    val code = activationCode.text.toString().trim()
 
-                    deviceIdError = validateConfigurationField(
-                        value = id,
-                        label = deviceIdLabel,
-                    )
-                    tokenError = validateConfigurationField(
-                        value = fingerprintToken,
-                        label = tokenLabel,
+                    activationCodeError = validateConfigurationField(
+                        value = code,
+                        requiredError = requiredError,
+                        lengthError = lengthError,
                     )
 
-                    if (deviceIdError == null && tokenError == null) {
-                        onContinueClick(id, fingerprintToken)
+                    if (activationCodeError == null) {
+                        handleContinue(code)
                     }
                 },
             ) {
@@ -189,20 +203,25 @@ private fun ConfigurationField(
 
 private fun validateConfigurationField(
     value: String,
-    label: String,
+    requiredError: String,
+    lengthError: String,
 ): String? = when {
-    value.isBlank() -> "$label is required"
-    value.length < 3 -> "$label must be at least 3 characters "
+    value.isBlank() -> requiredError
+    value.replace("-", "").length != ACTIVATION_CODE_LENGTH -> lengthError
     else -> null
 }
+
+private const val ACTIVATION_CODE_LENGTH = 12
 
 @Composable
 @Preview
 private fun PreviewSetUpPage(){
     DesignTheme(darkTheme = false) {
         SetupPage(
+            isLoading = remember { mutableStateOf(false) },
+            error = remember { mutableStateOf(null) },
             onDismissClick = {},
-            onContinueClick = { _, _ -> }
+            onContinueClick = { _ -> }
         )
     }
 }
