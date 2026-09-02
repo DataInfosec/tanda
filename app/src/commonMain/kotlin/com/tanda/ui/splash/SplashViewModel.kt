@@ -2,7 +2,7 @@ package com.tanda.ui.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tanda.account.domain.usecase.TokenUsecase
+import com.tanda.account.domain.usecase.auth.TokenUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

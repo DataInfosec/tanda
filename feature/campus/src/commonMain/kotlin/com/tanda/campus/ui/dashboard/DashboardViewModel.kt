@@ -3,7 +3,7 @@ package com.tanda.campus.ui.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanda.account.domain.model.Account
-import com.tanda.account.domain.usecase.AccountUsecase
+import com.tanda.account.domain.usecase.account.AccountUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,12 +1,15 @@
 <resources>
     <string name="attendance">Attendance</string>
     <string name="configure_device">Configure device</string>
-    <string name="configure_device_description">Enter the configuration assigned to this device.</string>
-    <string name="device_instance_id">Device instance ID</string>
+    <string name="configure_device_description">Enter the activation code for device.</string>
+    <string name="activation_code">Activation code</string>
     <string name="fingerprint_token">Fingerprint token</string>
     <string name="dismiss">Dismiss</string>
     <string name="continue_button">Continue</string>
     <string name="field_required">%1$s is required</string>
     <string name="field_minimum_length">%1$s must be at least %2$d characters</string>
+    <string name="field_exact_length">%1$s must be %2$d characters</string>
+    <string name="error_default_message">Something went wrong. Please try again.</string>
     <string name="app_logo">App logo</string>
+    <string name="splash_screen_image">Splash screen image</string>
 </resources>

@@ -1,6 +1,6 @@
 package com.tanda.campus.ui.dashboard
 
-import com.tanda.account.domain.usecase.AccountUsecase
+import com.tanda.account.domain.usecase.account.AccountUsecase
 import com.tanda.biometrics.ui.capture.Capture
 import com.tanda.biometrics.ui.subject.Subject
 import com.tanda.core.common.concurrent.Dispatcher

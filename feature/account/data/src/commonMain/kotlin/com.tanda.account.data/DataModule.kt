@@ -1,6 +1,5 @@
 package com.tanda.account.data
 
-import com.tanda.account.data.api.AuthenticationApi
 import com.tanda.account.data.repository.AccountRepositoryDelegate
 import com.tanda.account.data.repository.AuthenticationRepositoryDelegate
 import com.tanda.account.data.repository.TokenRepositoryDelegate

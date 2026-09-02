@@ -8,6 +8,7 @@ import com.russhwolf.settings.SharedPreferencesSettings
 import com.tanda.biometrics.device.interactor.ScannerInteractor
 import com.tanda.biometrics.device.scanner.ScannerService
 import com.tanda.core.ui.extension.scopeOf
+import com.tanda.module.AccountModule
 import com.tanda.module.TandaModule
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.qualifier.named
@@ -34,6 +35,7 @@ class TandaApplication : Application(), ScannerService.Provider {
                         ScannerInteractor(context, get(), get())
                     }
                 },
+                AccountModule.deviceActivationModule,
                 TandaModule.module
             )
         }.koin.scopeOf(named<TandaApplication>())

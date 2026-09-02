@@ -2,7 +2,7 @@ package com.tanda.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tanda.account.domain.usecase.ObserveTokenUsecase
+import com.tanda.account.domain.usecase.auth.ObserveTokenUsecase
 import com.tanda.core.common.concurrent.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

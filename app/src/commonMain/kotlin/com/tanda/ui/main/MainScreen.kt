@@ -22,7 +22,7 @@ import org.koin.core.scope.ScopeID
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun MainScreen(scope: ScopeID) {
+fun MainScreen(scope: ScopeID, onFinish: () -> Unit) {
     val current = getKoin().getScope(scope)
     val component = remember { Main.Builder(current).build() }
     val viewModel: MainViewModel = koinViewModel(scope = component)
@@ -31,7 +31,8 @@ fun MainScreen(scope: ScopeID) {
     val interactor = remember { MainInteractor(
         scope = component,
         controller = controller,
-        onStart = viewModel::invoke
+        onStart = viewModel::invoke,
+        onFinish = onFinish
     ) }
     CompositionLocalProvider(
         DesignLocale provides locale,

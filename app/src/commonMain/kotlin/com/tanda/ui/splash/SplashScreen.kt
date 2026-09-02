@@ -1,5 +1,6 @@
 package com.tanda.ui.splash
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -13,9 +14,14 @@ import com.tanda.ui.splash.SplashEvent.Companion.LocalSplashEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.scope.ScopeID
 import org.koin.mp.KoinPlatform.getKoin
+import tanda.app.generated.resources.Res
+import tanda.app.generated.resources.splash_image
+import tanda.app.generated.resources.splash_screen_image
 
 @Composable
 fun SplashScreen(scope: ScopeID) {
@@ -42,6 +48,11 @@ fun SplashScreen(scope: ScopeID) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        DesignText("Splash Screen")
+        Image(
+            painter = painterResource(Res.drawable.splash_image),
+            contentDescription = stringResource(
+                Res.string.splash_screen_image
+            )
+        )
     }
 }

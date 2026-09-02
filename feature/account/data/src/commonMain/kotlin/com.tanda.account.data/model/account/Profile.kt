@@ -1,4 +1,4 @@
-package com.tanda.account.data.model
+package com.tanda.account.data.model.account
 
 import kotlinx.serialization.Serializable
 
