@@ -9,8 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tanda.biometrics.ui.capture.CaptureEvent.Companion.LocalCaptureEvent
 import com.tanda.biometrics.ui.capture.CaptureScreen
+import com.tanda.biometrics.ui.staff.StaffBiometricScreen
 import com.tanda.biometrics.ui.subject.SubjectEvent.Companion.LocalSubjectEvent
-import com.tanda.biometrics.ui.subject.SubjectScreen
+import com.tanda.biometrics.ui.student.StudentBiometricScreen
 import com.tanda.core.ui.component.UiComponentProvider
 import com.tanda.core.ui.design.DesignNavigation
 import com.tanda.core.ui.design.DesignStream
@@ -25,20 +26,27 @@ fun DashboardScreen(scope: ScopeID) {
     val component = remember { factory.builder(Dashboard.Builder::class).build() }
     val viewModel: DashboardViewModel = koinViewModel(scope = component)
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val derivedState = remember { derivedStateOf {
-        when(state.value) {
-            is DashboardViewModel.State.Default -> DesignStreamState.Default
-            is DashboardViewModel.State.Loading -> DesignStreamState.Loading
-            is DashboardViewModel.State.Success -> {
-                DesignStreamState.Success((state.value
-                        as DashboardViewModel.State.Success).account)
-            }
-            is DashboardViewModel.State.Error -> {
-                DesignStreamState.Error((state.value
-                        as DashboardViewModel.State.Error).error)
+    val derivedState = remember {
+        derivedStateOf {
+            when (state.value) {
+                is DashboardViewModel.State.Default -> DesignStreamState.Default
+                is DashboardViewModel.State.Loading -> DesignStreamState.Loading
+                is DashboardViewModel.State.Success -> {
+                    DesignStreamState.Success(
+                        (state.value
+                                as DashboardViewModel.State.Success).account
+                    )
+                }
+
+                is DashboardViewModel.State.Error -> {
+                    DesignStreamState.Error(
+                        (state.value
+                                as DashboardViewModel.State.Error).error
+                    )
+                }
             }
         }
-    } }
+    }
     val controller = rememberNavController()
     val interactor = remember { DashboardInteractor(controller) }
     CompositionLocalProvider(
@@ -57,8 +65,19 @@ fun DashboardScreen(scope: ScopeID) {
                     )
                 }
             }
-            composable("biometrics") { CaptureScreen(component.id) }
-            composable("subject") { SubjectScreen(component.id) }
+            composable("biometrics") { CaptureScreen(scope = component.id) }
+            composable("staff-subject") {
+                StaffBiometricScreen(
+                    scope = component.id,
+                    onBackClick = { controller.popBackStack() }
+                )
+            }
+            composable("student-subject") {
+                StudentBiometricScreen(
+                    scope = component.id,
+                    onBackClick = { controller.popBackStack() }
+                )
+            }
         }
     }
 }

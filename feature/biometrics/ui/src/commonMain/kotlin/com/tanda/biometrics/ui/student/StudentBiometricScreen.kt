@@ -1,29 +1,27 @@
 package com.tanda.biometrics.ui.student
 
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import com.tanda.biometrics.ui.subject.SubjectBiometricUiConfig
-import com.tanda.biometrics.ui.subject.SubjectPage
+import com.tanda.biometrics.ui.subject.SubjectScreen
+import org.koin.core.scope.ScopeID
 
 @Composable
 fun StudentBiometricScreen(
+    scope: ScopeID,
     onBackClick: () -> Unit = {}
 ) {
-    SubjectPage(
+    SubjectScreen(
+        scope = scope,
         config = SubjectBiometricUiConfig(
             subjectName = "Student",
+            expectedSubjectType = "student",
             idTitle = "Student ID",
             inputDescription = "Enter student ID to capture biometrics data",
             inputHint = "Student ID",
+            detailTitle = "Student detail",
             listingTitle = "Student Listing",
             searchHint = "Student name"
         ),
-        subjectID = remember { TextFieldState() },
-        searchQuery = remember { TextFieldState() },
-        isLoading = remember { mutableStateOf(false) },
-        error = remember { mutableStateOf(null) },
         onBackClick = onBackClick
     )
 }
