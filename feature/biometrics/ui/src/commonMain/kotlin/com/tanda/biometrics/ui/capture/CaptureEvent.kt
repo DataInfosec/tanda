@@ -7,7 +7,9 @@ interface CaptureEvent {
     operator fun invoke(event: Event)
 
     sealed interface Event {
-        data object Enroll : Event
+        data object OnBackClick : Event
+        data object OnStaffEnrollment : Event
+        data object OnStudentEnrollment : Event
     }
 
     companion object {

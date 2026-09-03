@@ -25,9 +25,11 @@ import tanda.feature.biometrics.ui.generated.resources.listing
 
 data class SubjectBiometricUiConfig(
     val subjectName: String,
+    val expectedSubjectType: String = subjectName.lowercase(),
     val idTitle: String = "$subjectName ID",
     val inputDescription: String = "Enter ${subjectName.lowercase()} ID to capture biometrics data",
     val inputHint: String = "$subjectName ID",
+    val detailTitle: String = "$subjectName Detail",
     val listingTitle: String = "$subjectName Listing",
     val searchHint: String = "$subjectName name"
 )
